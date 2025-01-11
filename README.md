@@ -1,6 +1,6 @@
 # Lean.Cur
 
-基于.NET Core的轻量级权限管理系统。
+基于.NET Core的轻量级权限管理系统。完全由Cursor AI自动创建。
 
 ## 功能特性
 
@@ -56,4 +56,4 @@ Lean.Cur/
 
 ## 开源协议
 
-本项目采用MIT协议。详见 [LICENSE](LICENSE) 文件。 
+本项目采用MIT协议。详见 [LICENSE](LICENSE) 文件。
