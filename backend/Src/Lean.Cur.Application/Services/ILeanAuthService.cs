@@ -1,4 +1,4 @@
-using Lean.Cur.Application.DTOs;
+using Lean.Cur.Application.DTOs.Auth;
 
 namespace Lean.Cur.Application.Services;
 

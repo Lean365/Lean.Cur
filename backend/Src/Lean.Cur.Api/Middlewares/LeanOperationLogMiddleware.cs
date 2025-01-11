@@ -58,15 +58,15 @@ public class LeanOperationLogMiddleware
       {
         RequestMethod = context.Request.Method,
         RequestPath = context.Request.Path,
-        RequestBody = requestBody,
-        ResponseStatus = context.Response.StatusCode,
+        Parameters = requestBody,
+        StatusCode = context.Response.StatusCode,
         ExecutionTime = (int)(DateTime.Now - startTime).TotalMilliseconds,
         UserAgent = context.Request.Headers["User-Agent"].ToString(),
-        IpAddress = context.Connection.RemoteIpAddress?.ToString(),
-        UserId = GetCurrentUserId(context)
+        RequestIp = context.Connection.RemoteIpAddress?.ToString(),
+        OperatorId = GetCurrentUserId(context)
       };
 
-      await _dbContext.OperationLogs.AddAsync(operationLog);
+      await _dbContext.AddOperationLogAsync(operationLog);
       await _dbContext.SaveChangesAsync();
     }
     catch (Exception ex)
@@ -76,9 +76,9 @@ public class LeanOperationLogMiddleware
     }
   }
 
-  private long? GetCurrentUserId(HttpContext context)
+  private long GetCurrentUserId(HttpContext context)
   {
     // TODO: 从Token或Session中获取用户ID
-    return null;
+    return 0;
   }
 }

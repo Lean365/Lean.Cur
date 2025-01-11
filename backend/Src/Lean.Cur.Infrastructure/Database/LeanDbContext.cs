@@ -8,6 +8,8 @@
 
 using SqlSugar;
 using Lean.Cur.Domain.Entities.Admin;
+using Lean.Cur.Domain.Entities.Log;
+using Lean.Cur.Common.Enums;
 
 namespace Lean.Cur.Infrastructure.Database;
 
@@ -35,8 +37,10 @@ public class LeanDbContext
     _db.DbMaintenance.CreateDatabase();
 
     // 创建表
-    _db.CodeFirst.InitTables(typeof(LeanUser).Assembly.GetTypes()
-        .Where(t => t.Namespace != null && t.Namespace.StartsWith("Lean.Cur.Domain.Entities")));
+    var entityTypes = typeof(LeanUser).Assembly.GetTypes()
+        .Where(t => t.Namespace != null && t.Namespace.StartsWith("Lean.Cur.Domain.Entities"))
+        .ToArray();
+    _db.CodeFirst.InitTables(entityTypes);
 
     // 检查是否已初始化
     if (_db.Queryable<LeanUser>().Any())
@@ -50,7 +54,7 @@ public class LeanDbContext
       RoleName = "超级管理员",
       RoleCode = "superadmin",
       OrderNum = 1,
-      Status = true,
+      Status = LeanStatus.Normal,
       CreateTime = DateTime.Now
     };
     _db.Insertable(adminRole).ExecuteReturnEntity();
@@ -61,7 +65,7 @@ public class LeanDbContext
       UserName = "admin",
       Password = "e10adc3949ba59abbe56e057f20f883e", // 123456
       NickName = "超级管理员",
-      Status = true,
+      Status = LeanStatus.Normal,
       CreateTime = DateTime.Now
     };
     _db.Insertable(adminUser).ExecuteReturnEntity();
@@ -101,5 +105,21 @@ public class LeanDbContext
   public ISqlSugarClient GetDatabase()
   {
     return _db;
+  }
+
+  /// <summary>
+  /// 添加操作日志
+  /// </summary>
+  public async Task AddOperationLogAsync(LeanOperationLog log)
+  {
+    await _db.Insertable(log).ExecuteCommandAsync();
+  }
+
+  /// <summary>
+  /// 保存更改
+  /// </summary>
+  public async Task SaveChangesAsync()
+  {
+    await _db.SaveQueuesAsync();
   }
 }

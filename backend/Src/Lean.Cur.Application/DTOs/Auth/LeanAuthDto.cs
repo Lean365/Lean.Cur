@@ -1,3 +1,5 @@
+using Lean.Cur.Application.DTOs.User;
+
 namespace Lean.Cur.Application.DTOs.Auth;
 
 public class LeanLoginRequestDto
@@ -11,7 +13,7 @@ public class LeanLoginResponseDto
 {
   public string Token { get; set; } = null!;
   public string RefreshToken { get; set; } = null!;
-  public LeanUserInfoDto UserInfo { get; set; } = null!;
+  public Lean.Cur.Application.DTOs.User.LeanUserInfoDto UserInfo { get; set; } = null!;
 }
 
 public class LeanUserInfoDto

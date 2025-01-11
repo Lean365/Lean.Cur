@@ -47,7 +47,7 @@ public class LeanRole : LeanBaseEntity
   /// 状态
   /// </summary>
   [SugarColumn(ColumnName = "status", ColumnDescription = "状态", ColumnDataType = "int", IsNullable = false)]
-  public Status Status { get; set; }
+  public LeanStatus Status { get; set; } = LeanStatus.Normal;
 
   /// <summary>
   /// 角色权限关联

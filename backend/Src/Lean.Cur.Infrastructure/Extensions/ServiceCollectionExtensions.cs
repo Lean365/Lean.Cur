@@ -16,7 +16,7 @@ public static class ServiceCollectionExtensions
     services.AddSingleton<LeanDbContext>();
     services.AddScoped(sp => sp.GetRequiredService<LeanDbContext>().GetDatabase());
 
-    services.AddScoped(typeof(ILeanRepository<>), typeof(LeanBaseRepository<>));
+    services.AddScoped(typeof(ILeanBaseRepository<>), typeof(LeanBaseRepository<>));
     services.AddScoped<ILeanUserRepository, LeanUserRepository>();
     services.AddScoped<ILeanRoleRepository, LeanRoleRepository>();
     services.AddScoped<ILeanPermissionRepository, LeanPermissionRepository>();

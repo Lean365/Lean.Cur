@@ -1,4 +1,5 @@
-using Lean.Cur.Application.DTOs;
+using Lean.Cur.Application.DTOs.User;
+using Lean.Cur.Application.DTOs.Auth;
 using Lean.Cur.Domain.Repositories;
 using Lean.Cur.Domain.Cache;
 using Microsoft.Extensions.Configuration;
@@ -7,6 +8,7 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Lean.Cur.Domain.Entities.Admin;
+using Lean.Cur.Common.Enums;
 
 namespace Lean.Cur.Application.Services.Impl;
 
@@ -39,7 +41,7 @@ public class LeanAuthService : ILeanAuthService
       throw new Exception("密码错误");
     }
 
-    if (!user.Status)
+    if (user.Status != LeanStatus.Normal)
     {
       throw new Exception("用户已被禁用");
     }
@@ -51,14 +53,14 @@ public class LeanAuthService : ILeanAuthService
     {
       Token = token,
       RefreshToken = refreshToken,
-      User = new LeanUserDto
+      UserInfo = new Lean.Cur.Application.DTOs.User.LeanUserInfoDto
       {
         Id = user.Id,
         UserName = user.UserName,
         NickName = user.NickName,
         Email = user.Email,
         Phone = user.Phone,
-        Sex = user.Sex,
+        Gender = user.Gender,
         Avatar = user.Avatar,
         Status = user.Status,
         DeptId = user.DeptId,
@@ -66,30 +68,7 @@ public class LeanAuthService : ILeanAuthService
         LoginDate = user.LoginDate,
         RoleIds = user.Roles.Select(r => r.Id).ToList(),
         DeptIds = user.Depts.Select(d => d.Id).ToList(),
-        PositionIds = user.Positions.Select(p => p.Id).ToList(),
-        Roles = user.Roles.Select(r => new LeanRoleDto
-        {
-          Id = r.Id,
-          RoleName = r.RoleName,
-          RoleCode = r.RoleCode,
-          OrderNum = r.OrderNum,
-          Status = r.Status,
-          Remark = r.Remark
-        }).ToList(),
-        Permissions = user.Roles.SelectMany(r => r.Permissions).Select(p => new LeanPermissionDto
-        {
-          Id = p.Id,
-          PermissionName = p.PermissionName,
-          PermissionCode = p.PermissionCode,
-          ParentId = p.ParentId,
-          OrderNum = p.OrderNum,
-          Path = p.Path,
-          Component = p.Component,
-          Icon = p.Icon,
-          Status = p.Status,
-          Visible = p.Visible,
-          Remark = p.Remark
-        }).Distinct().ToList()
+        PositionIds = user.Positions.Select(p => p.Id).ToList()
       }
     };
 

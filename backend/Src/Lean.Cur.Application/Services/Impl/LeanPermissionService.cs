@@ -5,12 +5,12 @@ namespace Lean.Cur.Application.Services.Impl;
 
 public class LeanPermissionService : ILeanPermissionService
 {
-  private readonly ILeanRepository<LeanPermission> _permissionRepository;
+  private readonly ILeanBaseRepository<LeanPermission> _permissionRepository;
   private readonly ILeanUserRepository _userRepository;
   private readonly ILeanRoleRepository _roleRepository;
 
   public LeanPermissionService(
-      ILeanRepository<LeanPermission> permissionRepository,
+      ILeanBaseRepository<LeanPermission> permissionRepository,
       ILeanUserRepository userRepository,
       ILeanRoleRepository roleRepository)
   {

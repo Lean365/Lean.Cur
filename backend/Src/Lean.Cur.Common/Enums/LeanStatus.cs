@@ -13,7 +13,7 @@ namespace Lean.Cur.Common.Enums;
 /// <summary>
 /// 状态枚举
 /// </summary>
-public enum Status
+public enum LeanStatus
 {
   /// <summary>
   /// 禁用
@@ -25,5 +25,11 @@ public enum Status
   /// 正常
   /// </summary>
   [Description("正常")]
-  Normal = 1
+  Normal = 1,
+
+  /// <summary>
+  /// 已删除
+  /// </summary>
+  [Description("已删除")]
+  Deleted = 2
 }

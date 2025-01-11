@@ -10,7 +10,6 @@
     <ProjectReference Include="..\Lean.Cur.Domain\Lean.Cur.Domain.csproj" />
     <ProjectReference Include="..\Lean.Cur.Application\Lean.Cur.Application.csproj" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="8.0.0" />
-    <PackageReference Include="SqlSugarCore" Version="5.1.4.127" />
   </ItemGroup>
 
 </Project>

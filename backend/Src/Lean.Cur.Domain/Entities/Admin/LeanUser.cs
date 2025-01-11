@@ -85,7 +85,7 @@ public class LeanUser : LeanBaseEntity
   /// 状态
   /// </summary>
   [SugarColumn(ColumnName = "status", ColumnDescription = "状态", ColumnDataType = "int", IsNullable = false)]
-  public Status Status { get; set; } = Status.Normal;
+  public LeanStatus Status { get; set; } = LeanStatus.Normal;
 
   /// <summary>
   /// 部门ID

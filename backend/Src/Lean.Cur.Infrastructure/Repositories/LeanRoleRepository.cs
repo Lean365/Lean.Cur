@@ -14,7 +14,7 @@ public class LeanRoleRepository : LeanBaseRepository<LeanRole>, ILeanRoleReposit
   {
     return await Db.Queryable<LeanPermission>()
         .InnerJoin<LeanRolePermission>((p, rp) => p.Id == rp.PermissionId)
-        .Where((p, rp) => rp.RoleId == roleId && !p.IsDeleted)
+        .Where((p, rp) => rp.RoleId == roleId && p.IsDeleted == 0)
         .Select((p, rp) => p)
         .ToListAsync();
   }
@@ -35,7 +35,7 @@ public class LeanRoleRepository : LeanBaseRepository<LeanRole>, ILeanRoleReposit
   {
     return await Db.Queryable<LeanPermission>()
         .InnerJoin<LeanRolePermission>((p, rp) => p.Id == rp.PermissionId)
-        .Where((p, rp) => rp.RoleId == roleId && p.PermissionCode == permissionCode && !p.IsDeleted)
+        .Where((p, rp) => rp.RoleId == roleId && p.PermissionCode == permissionCode && p.IsDeleted == 0)
         .AnyAsync();
   }
 }

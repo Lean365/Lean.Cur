@@ -1,3 +1,5 @@
+using Lean.Cur.Domain.Entities.Admin;
+
 namespace Lean.Cur.Domain.Entities;
 
 public class LeanDataScope : LeanBaseEntity

@@ -21,47 +21,77 @@ public enum LeanBusinessType
   Other = 0,
 
   /// <summary>
-  /// 创建
+  /// 查询
   /// </summary>
-  Create = 1,
+  Query = 1,
+
+  /// <summary>
+  /// 新增
+  /// </summary>
+  Insert = 2,
 
   /// <summary>
   /// 修改
   /// </summary>
-  Update = 2,
+  Update = 3,
 
   /// <summary>
   /// 删除
   /// </summary>
-  Delete = 3,
+  Delete = 4,
 
   /// <summary>
   /// 授权
   /// </summary>
-  Grant = 4,
+  Grant = 5,
 
   /// <summary>
   /// 导出
   /// </summary>
-  Export = 5,
+  Export = 6,
 
   /// <summary>
   /// 导入
   /// </summary>
-  Import = 6,
+  Import = 7,
 
   /// <summary>
   /// 强制退出
   /// </summary>
-  ForceLogout = 7,
+  ForceLogout = 8,
 
   /// <summary>
   /// 生成代码
   /// </summary>
-  GenCode = 8,
+  GenCode = 9,
 
   /// <summary>
   /// 清空数据
   /// </summary>
-  Clean = 9
+  Clean = 10,
+
+  /// <summary>
+  /// 登录
+  /// </summary>
+  Login = 11,
+
+  /// <summary>
+  /// 退出
+  /// </summary>
+  Logout = 12,
+
+  /// <summary>
+  /// 注册
+  /// </summary>
+  Register = 13,
+
+  /// <summary>
+  /// 重置密码
+  /// </summary>
+  ResetPassword = 14,
+
+  /// <summary>
+  /// 修改密码
+  /// </summary>
+  ChangePassword = 15
 }

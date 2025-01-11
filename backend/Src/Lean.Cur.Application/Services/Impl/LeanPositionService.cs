@@ -5,11 +5,11 @@ namespace Lean.Cur.Application.Services.Impl;
 
 public class LeanPositionService : ILeanPositionService
 {
-  private readonly ILeanRepository<LeanPosition> _positionRepository;
+  private readonly ILeanBaseRepository<LeanPosition> _positionRepository;
   private readonly ILeanUserRepository _userRepository;
 
   public LeanPositionService(
-      ILeanRepository<LeanPosition> positionRepository,
+      ILeanBaseRepository<LeanPosition> positionRepository,
       ILeanUserRepository userRepository)
   {
     _positionRepository = positionRepository;
