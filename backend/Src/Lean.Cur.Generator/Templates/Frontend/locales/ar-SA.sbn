@@ -1,0 +1,78 @@
+{{~ 
+  # 生成标题
+  title = entity_name + " إدارة"
+
+  # 生成属性翻译
+  comments = properties | array.map do
+    prop = $0
+    result = {}
+    
+    if prop.comment != null
+      # 解析注释中的类型信息
+      if prop.comment | string.contains "：" 
+        parts = prop.comment | string.split "："
+        result["label"] = parts[0] | string.replace "名称" "اسم" | string.replace "编码" "رمز" | string.replace "描述" "وصف" | string.replace "状态" "حالة" | string.replace "备注" "ملاحظات"
+        
+        # 处理选项值
+        if parts[1] != null
+          options = parts[1] | string.split "，"
+          result["options"] = options | array.map do
+            opt = $0
+            if opt | string.contains "="
+              kv = opt | string.split "="
+              value = kv[1]
+              label = kv[0] | string.replace "启用" "مفعل" | string.replace "禁用" "معطل" | string.replace "是" "نعم" | string.replace "否" "لا"
+              { "value": value, "label": label }
+            else
+              label = opt | string.replace "启用" "مفعل" | string.replace "禁用" "معطل" | string.replace "是" "نعم" | string.replace "否" "لا"
+              { "value": opt, "label": label }
+            end
+          end
+        end
+      else
+        result["label"] = prop.comment | string.replace "名称" "اسم" | string.replace "编码" "رمز" | string.replace "描述" "وصف" | string.replace "状态" "حالة" | string.replace "备注" "ملاحظات"
+      end
+    else
+      result["label"] = prop.name | string.pascalcase
+    end
+    
+    # 添加验证提示
+    result["validation"] = {
+      "required": "حقل " + result["label"] + " مطلوب",
+      "format": "تنسيق " + result["label"] + " غير صالح",
+      "length": "طول " + result["label"] + " يتجاوز الحد المسموح"
+    }
+    
+    result
+  end
+~}}
+export default {
+  {{ entity_name | string.downcase }}: {
+    title: '{{ title }}',
+    field: {
+      {{~ for prop in properties ~}}
+      {{ prop.name | string.downcase }}: {
+        label: '{{ comments[for.index].label }}',
+        {{~ if comments[for.index].options ~}}
+        options: [
+          {{~ for opt in comments[for.index].options ~}}
+          { value: '{{ opt.value }}', label: '{{ opt.label }}' },
+          {{~ end ~}}
+        ],
+        {{~ end ~}}
+        validation: {
+          required: '{{ comments[for.index].validation.required }}',
+          format: '{{ comments[for.index].validation.format }}',
+          length: '{{ comments[for.index].validation.length }}'
+        }
+      },
+      {{~ end ~}}
+    },
+    menu: {
+      list: 'قائمة {{ title }}',
+      create: 'إنشاء {{ title }}',
+      edit: 'تعديل {{ title }}',
+      delete: 'حذف {{ title }}'
+    }
+  }
+} 

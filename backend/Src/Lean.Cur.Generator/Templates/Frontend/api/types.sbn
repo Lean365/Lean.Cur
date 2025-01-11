@@ -1,0 +1,194 @@
+/**
+ * @description {{ entity_name }}类型定义
+ * @author CodeGenerator
+ * @date {{ date.now | date.to_string "%Y-%m-%d" }}
+ * @version 1.0.0
+ * @copyright © 2023 Lean. All rights reserved
+ */
+
+/**
+ * {{ entity_name }}查询参数接口
+ * @description 用于列表查询的参数定义
+ */
+export interface Lean{{ entity_name }}Query {
+  /** 
+   * 页码
+   * @description 当前页码，从1开始
+   * @minimum 1
+   */
+  pageIndex?: number
+
+  /** 
+   * 每页记录数
+   * @description 每页显示的记录数
+   * @minimum 1
+   * @maximum 100
+   */
+  pageSize?: number
+
+  /** 
+   * 关键字
+   * @description 用于模糊匹配的关键字
+   * @maxLength 50
+   */
+  keyword?: string
+}
+
+/**
+ * {{ entity_name }}创建参数接口
+ * @description 用于创建{{ entity_name }}的参数定义
+ */
+export interface Lean{{ entity_name }}Create {
+  {{~ for prop in properties ~}}
+  {{~ if !prop.is_key ~}}
+  /** 
+   * {{ prop.comment }}
+   * @description {{ prop.comment }}的详细说明
+   * {{~ if !prop.is_nullable ~}}
+   * @required
+   * {{~ end ~}}
+   * {{~ if prop.type == "string" ~}}
+   * @maxLength 50
+   * {{~ end ~}}
+   * {{~ if prop.type == "int" ~}}
+   * @minimum 0
+   * {{~ end ~}}
+   */
+  {{ prop.name | string.downcase }}: {{
+    if prop.type == "string" 
+      "string"
+    else if prop.type == "int" 
+      "number"
+    else if prop.type == "bool" 
+      "boolean"
+    else if prop.type == "DateTime" 
+      "string"
+    else 
+      "any"
+    end
+  }}{{ if prop.is_nullable }}| null{{ end }}
+  {{~ end ~}}
+  {{~ end ~}}
+}
+
+/**
+ * {{ entity_name }}更新参数接口
+ * @description 用于更新{{ entity_name }}的参数定义
+ */
+export interface Lean{{ entity_name }}Update {
+  /** 
+   * ID
+   * @description {{ entity_name }}的唯一标识符
+   * @required
+   * @minimum 1
+   */
+  id: number
+
+  {{~ for prop in properties ~}}
+  {{~ if !prop.is_key ~}}
+  /** 
+   * {{ prop.comment }}
+   * @description {{ prop.comment }}的详细说明
+   * {{~ if !prop.is_nullable ~}}
+   * @required
+   * {{~ end ~}}
+   * {{~ if prop.type == "string" ~}}
+   * @maxLength 50
+   * {{~ end ~}}
+   * {{~ if prop.type == "int" ~}}
+   * @minimum 0
+   * {{~ end ~}}
+   */
+  {{ prop.name | string.downcase }}: {{
+    if prop.type == "string" 
+      "string"
+    else if prop.type == "int" 
+      "number"
+    else if prop.type == "bool" 
+      "boolean"
+    else if prop.type == "DateTime" 
+      "string"
+    else 
+      "any"
+    end
+  }}{{ if prop.is_nullable }}| null{{ end }}
+  {{~ end ~}}
+  {{~ end ~}}
+}
+
+/**
+ * {{ entity_name }}完整接口
+ * @description {{ entity_name }}的完整数据结构定义
+ */
+export interface Lean{{ entity_name }} {
+  /** 
+   * ID
+   * @description {{ entity_name }}的唯一标识符
+   * @minimum 1
+   */
+  id: number
+
+  {{~ for prop in properties ~}}
+  /** 
+   * {{ prop.comment }}
+   * @description {{ prop.comment }}的详细说明
+   * {{~ if !prop.is_nullable ~}}
+   * @required
+   * {{~ end ~}}
+   * {{~ if prop.type == "string" ~}}
+   * @maxLength 50
+   * {{~ end ~}}
+   * {{~ if prop.type == "int" ~}}
+   * @minimum 0
+   * {{~ end ~}}
+   */
+  {{ prop.name | string.downcase }}: {{
+    if prop.type == "string" 
+      "string"
+    else if prop.type == "int" 
+      "number"
+    else if prop.type == "bool" 
+      "boolean"
+    else if prop.type == "DateTime" 
+      "string"
+    else 
+      "any"
+    end
+  }}{{ if prop.is_nullable }}| null{{ end }}
+  {{~ end ~}}
+
+  /** 
+   * 创建时间
+   * @description 记录创建的时间
+   * @format date-time
+   */
+  createTime: string
+
+  /** 
+   * 创建人ID
+   * @description 创建记录的用户ID
+   * @minimum 1
+   */
+  createBy: number
+
+  /** 
+   * 更新时间
+   * @description 最后一次更新的时间
+   * @format date-time
+   */
+  updateTime: string | null
+
+  /** 
+   * 更新人ID
+   * @description 最后一次更新的用户ID
+   * @minimum 1
+   */
+  updateBy: number | null
+
+  /** 
+   * 备注
+   * @description 记录的备注信息
+   * @maxLength 500
+   */
+  remark: string | null
+} 

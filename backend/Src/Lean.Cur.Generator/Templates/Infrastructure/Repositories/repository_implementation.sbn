@@ -1,0 +1,255 @@
+/**
+ * @description {{ entity_name }}仓储实现
+ * @author CodeGenerator
+ * @date {{ date.now | date.to_string "%Y-%m-%d" }}
+ * @version 1.0.0
+ * @copyright © 2023 Lean. All rights reserved
+ */
+
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using Lean.Cur.Domain.Entities;
+using Lean.Cur.Domain.Repositories;
+using Lean.Cur.Domain.Exceptions;
+using SqlSugar;
+
+namespace Lean.Cur.Infrastructure.Repositories;
+
+/// <summary>
+/// {{ entity_name }}仓储实现
+/// </summary>
+/// <remarks>
+/// 该类实现了ILean{{ entity_name }}Repository接口，继承自LeanBaseRepository基类
+/// 提供{{ entity_name }}实体的数据访问实现，包括：
+/// 
+/// 1. 基础功能实现（继承自基类）：
+///    - 查询：GetByIdAsync, GetListAsync等
+///    - 修改：AddAsync, UpdateAsync, DeleteAsync等
+///    - 事务：BeginTransactionAsync, CommitAsync等
+/// 
+/// 2. 扩展功能实现：
+///    - 关键字搜索
+///    - 批量操作
+///    - 分页查询
+/// 
+/// 3. 异常处理：
+///    - 参数验证
+///    - 数据一致性检查
+///    - 数据库异常转换
+/// </remarks>
+public class Lean{{ entity_name }}Repository : LeanBaseRepository<Lean{{ entity_name }}>, ILean{{ entity_name }}Repository
+{
+    /// <summary>
+    /// 构造函数
+    /// </summary>
+    /// <param name="db">数据库上下文 - SqlSugar客户端实例</param>
+    /// <exception cref="ArgumentNullException">当数据库上下文为空时抛出</exception>
+    public Lean{{ entity_name }}Repository(ISqlSugarClient db) : base(db)
+    {
+        if (db == null)
+        {
+            throw new ArgumentNullException(nameof(db));
+        }
+    }
+
+    /// <summary>
+    /// 根据条件获取{{ entity_name }}列表
+    /// </summary>
+    /// <param name="keyword">关键字 - 用于模糊匹配{{ entity_name }}的相关字段</param>
+    /// <returns>
+    /// 返回{{ entity_name }}列表：
+    /// - 如果存在匹配记录，返回匹配的{{ entity_name }}列表
+    /// - 如果不存在匹配记录，返回空列表
+    /// </returns>
+    /// <exception cref="ArgumentException">当关键字格式不正确时抛出</exception>
+    /// <exception cref="RepositoryException">当数据访问出现异常时抛出</exception>
+    public async Task<List<Lean{{ entity_name }}>> GetListByKeywordAsync(string? keyword)
+    {
+        try
+        {
+            var query = _db.Queryable<Lean{{ entity_name }}>();
+            
+            if (!string.IsNullOrEmpty(keyword))
+            {
+                // 添加关键字过滤条件
+                {{~ if has_name_property ~}}
+                query = query.Where(x => x.Name.Contains(keyword));
+                {{~ end ~}}
+            }
+
+            return await query.ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new RepositoryException($"获取{{ entity_name }}列表失败: {ex.Message}", ex);
+        }
+    }
+
+    /// <summary>
+    /// 批量创建{{ entity_name }}
+    /// </summary>
+    /// <param name="entities">{{ entity_name }}列表</param>
+    /// <returns>
+    /// 返回创建结果：
+    /// - 如果创建成功，返回创建的记录数
+    /// - 如果创建失败，抛出异常
+    /// </returns>
+    /// <exception cref="ArgumentNullException">当实体列表为空时抛出</exception>
+    /// <exception cref="ValidationException">当实体验证失败时抛出</exception>
+    /// <exception cref="RepositoryException">当数据访问出现异常时抛出</exception>
+    public async Task<int> BatchCreateAsync(List<Lean{{ entity_name }}> entities)
+    {
+        if (entities == null || !entities.Any())
+        {
+            throw new ArgumentNullException(nameof(entities));
+        }
+
+        try
+        {
+            return await _db.Insertable(entities).ExecuteCommandAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new RepositoryException($"批量创建{{ entity_name }}失败: {ex.Message}", ex);
+        }
+    }
+
+    /// <summary>
+    /// 批量更新{{ entity_name }}
+    /// </summary>
+    /// <param name="entities">{{ entity_name }}列表</param>
+    /// <returns>
+    /// 返回更新结果：
+    /// - 如果更新成功，返回更新的记录数
+    /// - 如果更新失败，抛出异常
+    /// </returns>
+    /// <exception cref="ArgumentNullException">当实体列表为空时抛出</exception>
+    /// <exception cref="ValidationException">当实体验证失败时抛出</exception>
+    /// <exception cref="NotFoundException">当指定ID的记录不存在时抛出</exception>
+    /// <exception cref="RepositoryException">当数据访问出现异常时抛出</exception>
+    public async Task<int> BatchUpdateAsync(List<Lean{{ entity_name }}> entities)
+    {
+        if (entities == null || !entities.Any())
+        {
+            throw new ArgumentNullException(nameof(entities));
+        }
+
+        try
+        {
+            // 验证所有实体是否存在
+            var ids = entities.Select(x => x.Id).ToList();
+            var existingCount = await _db.Queryable<Lean{{ entity_name }}>()
+                .Where(x => ids.Contains(x.Id))
+                .CountAsync();
+
+            if (existingCount != entities.Count)
+            {
+                throw new NotFoundException($"部分{{ entity_name }}记录不存在");
+            }
+
+            return await _db.Updateable(entities).ExecuteCommandAsync();
+        }
+        catch (Exception ex) when (!(ex is NotFoundException))
+        {
+            throw new RepositoryException($"批量更新{{ entity_name }}失败: {ex.Message}", ex);
+        }
+    }
+
+    /// <summary>
+    /// 批量删除{{ entity_name }}
+    /// </summary>
+    /// <param name="ids">ID列表</param>
+    /// <returns>
+    /// 返回删除结果：
+    /// - 如果删除成功，返回删除的记录数
+    /// - 如果删除失败，抛出异常
+    /// </returns>
+    /// <exception cref="ArgumentNullException">当ID列表为空时抛出</exception>
+    /// <exception cref="ArgumentException">当ID列表包含无效ID时抛出</exception>
+    /// <exception cref="NotFoundException">当指定ID的记录不存在时抛出</exception>
+    /// <exception cref="RepositoryException">当数据访问出现异常时抛出</exception>
+    public async Task<int> BatchDeleteAsync(List<long> ids)
+    {
+        if (ids == null || !ids.Any())
+        {
+            throw new ArgumentNullException(nameof(ids));
+        }
+
+        if (ids.Any(id => id <= 0))
+        {
+            throw new ArgumentException("ID列表包含无效的ID");
+        }
+
+        try
+        {
+            // 验证所有ID是否存在
+            var existingCount = await _db.Queryable<Lean{{ entity_name }}>()
+                .Where(x => ids.Contains(x.Id))
+                .CountAsync();
+
+            if (existingCount != ids.Count)
+            {
+                throw new NotFoundException($"部分{{ entity_name }}记录不存在");
+            }
+
+            return await _db.Deleteable<Lean{{ entity_name }}>()
+                .Where(x => ids.Contains(x.Id))
+                .ExecuteCommandAsync();
+        }
+        catch (Exception ex) when (!(ex is NotFoundException))
+        {
+            throw new RepositoryException($"批量删除{{ entity_name }}失败: {ex.Message}", ex);
+        }
+    }
+
+    /// <summary>
+    /// 获取{{ entity_name }}分页列表
+    /// </summary>
+    /// <param name="pageIndex">页码，从1开始</param>
+    /// <param name="pageSize">每页记录数</param>
+    /// <param name="keyword">关键字 - 用于模糊匹配{{ entity_name }}的相关字段</param>
+    /// <returns>
+    /// 返回分页结果：
+    /// - 包含当前页的记录列表
+    /// - 包含总记录数
+    /// - 包含总页数
+    /// </returns>
+    /// <exception cref="ArgumentException">当分页参数不正确时抛出</exception>
+    /// <exception cref="RepositoryException">当数据访问出现异常时抛出</exception>
+    public async Task<(List<Lean{{ entity_name }}> Items, int TotalCount)> GetPagedListAsync(int pageIndex, int pageSize, string? keyword)
+    {
+        if (pageIndex < 1)
+        {
+            throw new ArgumentException("页码必须大于0", nameof(pageIndex));
+        }
+
+        if (pageSize < 1)
+        {
+            throw new ArgumentException("每页记录数必须大于0", nameof(pageSize));
+        }
+
+        try
+        {
+            var query = _db.Queryable<Lean{{ entity_name }}>();
+
+            if (!string.IsNullOrEmpty(keyword))
+            {
+                // 添加关键字过滤条件
+                {{~ if has_name_property ~}}
+                query = query.Where(x => x.Name.Contains(keyword));
+                {{~ end ~}}
+            }
+
+            var result = await query.ToPageListAsync(pageIndex, pageSize);
+            var totalCount = await query.CountAsync();
+
+            return (result, totalCount);
+        }
+        catch (Exception ex)
+        {
+            throw new RepositoryException($"获取{{ entity_name }}分页列表失败: {ex.Message}", ex);
+        }
+    }
+} 

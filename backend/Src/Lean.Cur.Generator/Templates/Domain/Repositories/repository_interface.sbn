@@ -1,0 +1,120 @@
+/**
+ * @description {{ entity_name }}仓储接口
+ * @author CodeGenerator
+ * @date {{ date.now | date.to_string "%Y-%m-%d" }}
+ * @version 1.0.0
+ * @copyright © 2023 Lean. All rights reserved
+ */
+
+using System;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using Lean.Cur.Domain.Entities;
+
+namespace Lean.Cur.Domain.Repositories;
+
+/// <summary>
+/// {{ entity_name }}仓储接口
+/// </summary>
+/// <remarks>
+/// 该接口继承自ILeanBaseRepository，提供{{ entity_name }}实体的基础数据访问功能
+/// 
+/// 基础功能包括：
+/// 1. 查询操作
+///    - GetByIdAsync: 根据ID获取单条记录
+///    - GetListAsync: 获取所有记录
+///    - GetPagedListAsync: 获取分页记录
+///    - CountAsync: 获取记录总数
+///    - ExistsAsync: 检查记录是否存在
+/// 
+/// 2. 修改操作
+///    - AddAsync: 新增记录
+///    - UpdateAsync: 更新记录
+///    - DeleteAsync: 删除记录
+///    - SaveChangesAsync: 保存更改
+/// 
+/// 3. 事务操作
+///    - BeginTransactionAsync: 开始事务
+///    - CommitAsync: 提交事务
+///    - RollbackAsync: 回滚事务
+/// 
+/// 扩展功能：
+/// 1. 可以在此接口中定义特定的查询方法
+/// 2. 可以添加批量操作方法
+/// 3. 可以添加复杂查询方法
+/// </remarks>
+public interface ILean{{ entity_name }}Repository : ILeanBaseRepository<Lean{{ entity_name }}>
+{
+    /// <summary>
+    /// 根据条件获取{{ entity_name }}列表
+    /// </summary>
+    /// <param name="keyword">关键字 - 用于模糊匹配{{ entity_name }}的相关字段</param>
+    /// <returns>
+    /// 返回{{ entity_name }}列表：
+    /// - 如果存在匹配记录，返回匹配的{{ entity_name }}列表
+    /// - 如果不存在匹配记录，返回空列表
+    /// </returns>
+    /// <exception cref="ArgumentException">当关键字格式不正确时抛出</exception>
+    /// <exception cref="RepositoryException">当数据访问出现异常时抛出</exception>
+    Task<List<Lean{{ entity_name }}>> GetListByKeywordAsync(string? keyword);
+
+    /// <summary>
+    /// 批量创建{{ entity_name }}
+    /// </summary>
+    /// <param name="entities">{{ entity_name }}列表</param>
+    /// <returns>
+    /// 返回创建结果：
+    /// - 如果创建成功，返回创建的记录数
+    /// - 如果创建失败，抛出异常
+    /// </returns>
+    /// <exception cref="ArgumentNullException">当实体列表为空时抛出</exception>
+    /// <exception cref="ValidationException">当实体验证失败时抛出</exception>
+    /// <exception cref="RepositoryException">当数据访问出现异常时抛出</exception>
+    Task<int> BatchCreateAsync(List<Lean{{ entity_name }}> entities);
+
+    /// <summary>
+    /// 批量更新{{ entity_name }}
+    /// </summary>
+    /// <param name="entities">{{ entity_name }}列表</param>
+    /// <returns>
+    /// 返回更新结果：
+    /// - 如果更新成功，返回更新的记录数
+    /// - 如果更新失败，抛出异常
+    /// </returns>
+    /// <exception cref="ArgumentNullException">当实体列表为空时抛出</exception>
+    /// <exception cref="ValidationException">当实体验证失败时抛出</exception>
+    /// <exception cref="NotFoundException">当指定ID的记录不存在时抛出</exception>
+    /// <exception cref="RepositoryException">当数据访问出现异常时抛出</exception>
+    Task<int> BatchUpdateAsync(List<Lean{{ entity_name }}> entities);
+
+    /// <summary>
+    /// 批量删除{{ entity_name }}
+    /// </summary>
+    /// <param name="ids">ID列表</param>
+    /// <returns>
+    /// 返回删除结果：
+    /// - 如果删除成功，返回删除的记录数
+    /// - 如果删除失败，抛出异常
+    /// </returns>
+    /// <exception cref="ArgumentNullException">当ID列表为空时抛出</exception>
+    /// <exception cref="ArgumentException">当ID列表包含无效ID时抛出</exception>
+    /// <exception cref="NotFoundException">当指定ID的记录不存在时抛出</exception>
+    /// <exception cref="RepositoryException">当数据访问出现异常时抛出</exception>
+    Task<int> BatchDeleteAsync(List<long> ids);
+
+    /// <summary>
+    /// 获取{{ entity_name }}分页列表
+    /// </summary>
+    /// <param name="pageIndex">页码，从1开始</param>
+    /// <param name="pageSize">每页记录数</param>
+    /// <param name="keyword">关键字 - 用于模糊匹配{{ entity_name }}的相关字段</param>
+    /// <returns>
+    /// 返回分页结果：
+    /// - 包含当前页的记录列表
+    /// - 包含总记录数
+    /// - 包含总页数
+    /// </returns>
+    /// <exception cref="ArgumentException">当分页参数不正确时抛出</exception>
+    /// <exception cref="RepositoryException">当数据访问出现异常时抛出</exception>
+    Task<(List<Lean{{ entity_name }}> Items, int TotalCount)> GetPagedListAsync(int pageIndex, int pageSize, string? keyword);
+} 

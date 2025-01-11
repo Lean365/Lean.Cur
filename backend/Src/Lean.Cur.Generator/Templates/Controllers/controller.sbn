@@ -1,0 +1,241 @@
+/**
+ * @description {{ entity_name }}控制器
+ * @author CodeGenerator
+ * @date {{ date.now | date.to_string "%Y-%m-%d" }}
+ * @version 1.0.0
+ * @copyright © 2023 Lean. All rights reserved
+ */
+
+using System;
+using System.Net;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using Lean.Cur.Application.Services;
+using Lean.Cur.Domain.Entities;
+using Lean.Cur.Api.Controllers;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Lean.Cur.Api.Controllers;
+
+/// <summary>
+/// {{ entity_name }}控制器
+/// </summary>
+/// <remarks>
+/// 该控制器提供{{ entity_name }}的REST API接口，包括：
+/// 1. GET /api/Lean{{ entity_name }} - 获取列表，支持关键字搜索
+/// 2. GET /api/Lean{{ entity_name }}/{id} - 获取指定记录详情
+/// 3. POST /api/Lean{{ entity_name }} - 创建新记录
+/// 4. PUT /api/Lean{{ entity_name }} - 更新现有记录
+/// 5. DELETE /api/Lean{{ entity_name }}/{id} - 删除指定记录
+/// 
+/// 所有接口都需要进行身份验证和授权
+/// </remarks>
+[Authorize]
+[ApiController]
+[Route("api/[controller]")]
+[Produces("application/json")]
+public class Lean{{ entity_name }}Controller : LeanBaseController
+{
+    /// <summary>
+    /// {{ entity_name }}服务接口
+    /// </summary>
+    /// <remarks>
+    /// 通过依赖注入获取服务实例，实现业务逻辑的解耦
+    /// </remarks>
+    private readonly ILean{{ entity_name }}Service _{{ entity_name | string.downcase }}Service;
+
+    /// <summary>
+    /// 构造函数
+    /// </summary>
+    /// <param name="{{ entity_name | string.downcase }}Service">{{ entity_name }}服务接口实例</param>
+    /// <exception cref="ArgumentNullException">当服务接口为空时抛出</exception>
+    public Lean{{ entity_name }}Controller(ILean{{ entity_name }}Service {{ entity_name | string.downcase }}Service)
+    {
+        _{{ entity_name | string.downcase }}Service = {{ entity_name | string.downcase }}Service ?? throw new ArgumentNullException(nameof({{ entity_name | string.downcase }}Service));
+    }
+
+    /// <summary>
+    /// 获取{{ entity_name }}列表
+    /// </summary>
+    /// <param name="keyword">关键字 - 用于模糊匹配{{ entity_name }}的相关字段</param>
+    /// <returns>
+    /// 返回{{ entity_name }}列表：
+    /// - 200 OK: 返回匹配的{{ entity_name }}列表，如果没有匹配记录则返回空列表
+    /// - 400 Bad Request: 当请求参数格式不正确时返回
+    /// - 401 Unauthorized: 当用户未登录时返回
+    /// - 403 Forbidden: 当用户无权限访问时返回
+    /// - 500 Internal Server Error: 当服务器发生错误时返回
+    /// </returns>
+    /// <remarks>
+    /// 示例请求：
+    /// GET /api/Lean{{ entity_name }}?keyword=test
+    /// </remarks>
+    [HttpGet]
+    [ProducesResponseType(typeof(List<Lean{{ entity_name }}>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    public async Task<ActionResult<List<Lean{{ entity_name }}>>> Get{{ entity_name }}ListAsync([FromQuery] string? keyword)
+    {
+        return await _{{ entity_name | string.downcase }}Service.Get{{ entity_name }}ListAsync(keyword);
+    }
+
+    /// <summary>
+    /// 获取指定的{{ entity_name }}
+    /// </summary>
+    /// <param name="id">{{ entity_name }}ID - 必须大于0的有效标识符</param>
+    /// <returns>
+    /// 返回{{ entity_name }}信息：
+    /// - 200 OK: 返回指定的{{ entity_name }}对象
+    /// - 400 Bad Request: 当ID格式不正确时返回
+    /// - 401 Unauthorized: 当用户未登录时返回
+    /// - 403 Forbidden: 当用户无权限访问时返回
+    /// - 404 Not Found: 当指定ID的记录不存在时返回
+    /// - 500 Internal Server Error: 当服务器发生错误时返回
+    /// </returns>
+    /// <remarks>
+    /// 示例请求：
+    /// GET /api/Lean{{ entity_name }}/1
+    /// </remarks>
+    [HttpGet("{id}")]
+    [ProducesResponseType(typeof(Lean{{ entity_name }}), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    public async Task<ActionResult<Lean{{ entity_name }}>> Get{{ entity_name }}Async(long id)
+    {
+        var {{ entity_name | string.downcase }} = await _{{ entity_name | string.downcase }}Service.Get{{ entity_name }}Async(id);
+        if ({{ entity_name | string.downcase }} == null)
+        {
+            return NotFound();
+        }
+        return {{ entity_name | string.downcase }};
+    }
+
+    /// <summary>
+    /// 创建{{ entity_name }}
+    /// </summary>
+    /// <param name="{{ entity_name | string.downcase }}">
+    /// {{ entity_name }}信息 - 包含需要创建的{{ entity_name }}的完整信息
+    /// 必填字段：
+    /// {{~ for prop in properties ~}}
+    /// {{~ if !prop.is_nullable ~}}
+    /// - {{ prop.name }}: {{ prop.comment }}
+    /// {{~ end ~}}
+    /// {{~ end ~}}
+    /// </param>
+    /// <returns>
+    /// 返回创建结果：
+    /// - 201 Created: 返回创建后的{{ entity_name }}对象
+    /// - 400 Bad Request: 当请求数据格式不正确或验证失败时返回
+    /// - 401 Unauthorized: 当用户未登录时返回
+    /// - 403 Forbidden: 当用户无权限访问时返回
+    /// - 500 Internal Server Error: 当服务器发生错误时返回
+    /// </returns>
+    /// <remarks>
+    /// 示例请求：
+    /// POST /api/Lean{{ entity_name }}
+    /// Content-Type: application/json
+    /// 
+    /// {
+    /// {{~ for prop in properties ~}}
+    /// {{~ if !prop.is_key ~}}
+    ///   "{{ prop.name }}": "示例值", // {{ prop.comment }}
+    /// {{~ end ~}}
+    /// {{~ end ~}}
+    /// }
+    /// </remarks>
+    [HttpPost]
+    [ProducesResponseType(typeof(Lean{{ entity_name }}), (int)HttpStatusCode.Created)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    public async Task<ActionResult<Lean{{ entity_name }}>> Create{{ entity_name }}Async([FromBody] Lean{{ entity_name }} {{ entity_name | string.downcase }})
+    {
+        var result = await _{{ entity_name | string.downcase }}Service.Create{{ entity_name }}Async({{ entity_name | string.downcase }});
+        return CreatedAtAction(nameof(Get{{ entity_name }}Async), new { id = result.Id }, result);
+    }
+
+    /// <summary>
+    /// 更新{{ entity_name }}
+    /// </summary>
+    /// <param name="{{ entity_name | string.downcase }}">
+    /// {{ entity_name }}信息 - 包含需要更新的{{ entity_name }}的完整信息
+    /// 必填字段：
+    /// - Id: {{ entity_name }}ID
+    /// {{~ for prop in properties ~}}
+    /// {{~ if !prop.is_nullable ~}}
+    /// - {{ prop.name }}: {{ prop.comment }}
+    /// {{~ end ~}}
+    /// {{~ end ~}}
+    /// </param>
+    /// <returns>
+    /// 返回更新结果：
+    /// - 200 OK: 返回更新后的{{ entity_name }}对象
+    /// - 400 Bad Request: 当请求数据格式不正确或验证失败时返回
+    /// - 401 Unauthorized: 当用户未登录时返回
+    /// - 403 Forbidden: 当用户无权限访问时返回
+    /// - 404 Not Found: 当指定ID的记录不存在时返回
+    /// - 500 Internal Server Error: 当服务器发生错误时返回
+    /// </returns>
+    /// <remarks>
+    /// 示例请求：
+    /// PUT /api/Lean{{ entity_name }}
+    /// Content-Type: application/json
+    /// 
+    /// {
+    ///   "id": 1,
+    /// {{~ for prop in properties ~}}
+    /// {{~ if !prop.is_key ~}}
+    ///   "{{ prop.name }}": "示例值", // {{ prop.comment }}
+    /// {{~ end ~}}
+    /// {{~ end ~}}
+    /// }
+    /// </remarks>
+    [HttpPut]
+    [ProducesResponseType(typeof(Lean{{ entity_name }}), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    public async Task<ActionResult<Lean{{ entity_name }}>> Update{{ entity_name }}Async([FromBody] Lean{{ entity_name }} {{ entity_name | string.downcase }})
+    {
+        return await _{{ entity_name | string.downcase }}Service.Update{{ entity_name }}Async({{ entity_name | string.downcase }});
+    }
+
+    /// <summary>
+    /// 删除{{ entity_name }}
+    /// </summary>
+    /// <param name="id">{{ entity_name }}ID - 必须大于0的有效标识符</param>
+    /// <returns>
+    /// 返回删除结果：
+    /// - 200 OK: 删除成功
+    /// - 400 Bad Request: 当ID格式不正确时返回
+    /// - 401 Unauthorized: 当用户未登录时返回
+    /// - 403 Forbidden: 当用户无权限访问时返回
+    /// - 404 Not Found: 当指定ID的记录不存在时返回
+    /// - 500 Internal Server Error: 当服务器发生错误时返回
+    /// </returns>
+    /// <remarks>
+    /// 示例请求：
+    /// DELETE /api/Lean{{ entity_name }}/1
+    /// </remarks>
+    [HttpDelete("{id}")]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    public async Task<ActionResult> Delete{{ entity_name }}Async(long id)
+    {
+        await _{{ entity_name | string.downcase }}Service.Delete{{ entity_name }}Async(id);
+        return Ok();
+    }
+} 

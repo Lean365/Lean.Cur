@@ -1,0 +1,102 @@
+/**
+ * @description {{ entity_name }}服务接口
+ * @author CodeGenerator
+ * @date {{ date.now | date.to_string "%Y-%m-%d" }}
+ * @version 1.0.0
+ * @copyright © 2023 Lean. All rights reserved
+ */
+
+using Lean.Cur.Domain.Entities;
+
+namespace Lean.Cur.Application.Services;
+
+/// <summary>
+/// {{ entity_name }}服务接口
+/// </summary>
+/// <remarks>
+/// 该接口提供{{ entity_name }}的基础服务操作，包括：
+/// 1. 列表查询 - 支持关键字搜索
+/// 2. 详情查询 - 根据ID获取单条记录
+/// 3. 创建操作 - 新增{{ entity_name }}记录
+/// 4. 更新操作 - 修改现有{{ entity_name }}记录
+/// 5. 删除操作 - 删除指定{{ entity_name }}记录
+/// </remarks>
+public interface ILean{{ entity_name }}Service
+{
+    /// <summary>
+    /// 获取{{ entity_name }}列表
+    /// </summary>
+    /// <param name="keyword">关键字 - 用于模糊匹配{{ entity_name }}的相关字段</param>
+    /// <returns>
+    /// 返回{{ entity_name }}列表：
+    /// - 如果存在匹配记录，返回匹配的{{ entity_name }}列表
+    /// - 如果不存在匹配记录，返回空列表
+    /// </returns>
+    /// <exception cref="ArgumentException">当关键字格式不正确时抛出</exception>
+    Task<List<Lean{{ entity_name }}>> Get{{ entity_name }}ListAsync(string? keyword);
+
+    /// <summary>
+    /// 获取指定的{{ entity_name }}
+    /// </summary>
+    /// <param name="id">{{ entity_name }}ID - 必须大于0的有效标识符</param>
+    /// <returns>
+    /// 返回{{ entity_name }}信息：
+    /// - 如果找到指定ID的记录，返回对应的{{ entity_name }}对象
+    /// - 如果未找到指定ID的记录，返回null
+    /// </returns>
+    /// <exception cref="ArgumentException">当ID小于或等于0时抛出</exception>
+    Task<Lean{{ entity_name }}?> Get{{ entity_name }}Async(long id);
+
+    /// <summary>
+    /// 创建{{ entity_name }}
+    /// </summary>
+    /// <param name="{{ entity_name | string.downcase }}">
+    /// {{ entity_name }}信息 - 包含需要创建的{{ entity_name }}的完整信息
+    /// 必填字段：
+    /// {{~ for prop in properties ~}}
+    /// {{~ if !prop.is_nullable ~}}
+    /// - {{ prop.name }}: {{ prop.comment }}
+    /// {{~ end ~}}
+    /// {{~ end ~}}
+    /// </param>
+    /// <returns>
+    /// 返回创建后的{{ entity_name }}对象，包含系统生成的ID和默认字段
+    /// </returns>
+    /// <exception cref="ArgumentNullException">当必填字段为空时抛出</exception>
+    /// <exception cref="ValidationException">当字段验证失败时抛出</exception>
+    Task<Lean{{ entity_name }}> Create{{ entity_name }}Async(Lean{{ entity_name }} {{ entity_name | string.downcase }});
+
+    /// <summary>
+    /// 更新{{ entity_name }}
+    /// </summary>
+    /// <param name="{{ entity_name | string.downcase }}">
+    /// {{ entity_name }}信息 - 包含需要更新的{{ entity_name }}的完整信息
+    /// 必填字段：
+    /// - Id: {{ entity_name }}ID
+    /// {{~ for prop in properties ~}}
+    /// {{~ if !prop.is_nullable ~}}
+    /// - {{ prop.name }}: {{ prop.comment }}
+    /// {{~ end ~}}
+    /// {{~ end ~}}
+    /// </param>
+    /// <returns>
+    /// 返回更新后的{{ entity_name }}对象
+    /// </returns>
+    /// <exception cref="ArgumentNullException">当必填字段为空时抛出</exception>
+    /// <exception cref="ValidationException">当字段验证失败时抛出</exception>
+    /// <exception cref="NotFoundException">当指定ID的记录不存在时抛出</exception>
+    Task<Lean{{ entity_name }}> Update{{ entity_name }}Async(Lean{{ entity_name }} {{ entity_name | string.downcase }});
+
+    /// <summary>
+    /// 删除{{ entity_name }}
+    /// </summary>
+    /// <param name="id">{{ entity_name }}ID - 必须大于0的有效标识符</param>
+    /// <returns>
+    /// 返回Task对象，表示异步操作的完成状态：
+    /// - 如果删除成功，任务正常完成
+    /// - 如果删除失败，抛出对应异常
+    /// </returns>
+    /// <exception cref="ArgumentException">当ID小于或等于0时抛出</exception>
+    /// <exception cref="NotFoundException">当指定ID的记录不存在时抛出</exception>
+    Task Delete{{ entity_name }}Async(long id);
+} 

@@ -1,0 +1,125 @@
+-- 菜单初始化脚本
+-- 作者：CodeGenerator
+-- 日期：{{ date.now | date.to_string "%Y-%m-%d" }}
+-- 版本：1.0.0
+-- 说明：初始化{{ entity_name }}管理菜单数据
+
+-- 获取父级菜单ID（系统管理）
+DECLARE @ParentId bigint = (SELECT id FROM lean_menu WHERE menu_code = 'system' AND deleted = 0);
+DECLARE @MenuId bigint;
+
+-- {{ entity_name }}管理菜单
+INSERT INTO lean_menu (
+    menu_name, 
+    menu_code, 
+    parent_id, 
+    order_num, 
+    path, 
+    component, 
+    is_frame, 
+    is_cache, 
+    menu_type, 
+    visible, 
+    status, 
+    perms, 
+    icon, 
+    remark, 
+    create_by, 
+    create_time, 
+    update_by, 
+    update_time, 
+    deleted
+)
+VALUES (
+    '{{ entity_name }}管理',                                     -- menu_name：模块名称
+    '{{ entity_name | string.downcase }}',                      -- menu_code：模块代码
+    @ParentId,                                                  -- parent_id：父级菜单ID
+    (SELECT ISNULL(MAX(order_num), 0) + 10 
+     FROM lean_menu 
+     WHERE parent_id = @ParentId AND deleted = 0),             -- order_num：自动计算排序号
+    '/system/{{ entity_name | string.downcase }}',             -- path：路由路径
+    '/system/{{ entity_name | string.downcase }}/index',       -- component：组件路径
+    0,                                                         -- is_frame：是否外链
+    0,                                                         -- is_cache：是否缓存
+    'C',                                                       -- menu_type：菜单类型
+    1,                                                         -- visible：是否可见
+    1,                                                         -- status：状态
+    'system:{{ entity_name | string.downcase }}:list',         -- perms：权限标识
+    '{{ icon | default: "list" }}',                            -- icon：图标
+    '{{ entity_name }}管理菜单',                               -- remark：备注
+    'admin',                                                   -- create_by：创建人
+    GETDATE(),                                                 -- create_time：创建时间
+    'admin',                                                   -- update_by：更新人
+    GETDATE(),                                                 -- update_time：更新时间
+    0                                                          -- deleted：删除标记
+);
+
+-- 获取新插入的菜单ID
+SET @MenuId = SCOPE_IDENTITY();
+
+-- 生成按钮权限
+{{~ for button in buttons ~}}
+INSERT INTO lean_menu (
+    menu_name, 
+    menu_code, 
+    parent_id, 
+    order_num, 
+    path, 
+    component, 
+    is_frame, 
+    is_cache, 
+    menu_type, 
+    visible, 
+    status, 
+    perms, 
+    icon, 
+    remark, 
+    create_by, 
+    create_time, 
+    update_by, 
+    update_time, 
+    deleted
+)
+VALUES (
+    '{{ entity_name }}{{ button.name }}',                      -- menu_name：按钮名称
+    '{{ entity_name | string.downcase }}:{{ button.code }}',   -- menu_code：按钮代码
+    @MenuId,                                                   -- parent_id：所属菜单ID
+    {{ button.order }},                                        -- order_num：排序号
+    '',                                                        -- path：按钮无路径
+    '',                                                        -- component：按钮无组件
+    0,                                                         -- is_frame：是否外链
+    0,                                                         -- is_cache：是否缓存
+    'F',                                                       -- menu_type：按钮类型
+    1,                                                         -- visible：是否可见
+    1,                                                         -- status：状态
+    'system:{{ entity_name | string.downcase }}:{{ button.code }}', -- perms：权限标识
+    '#',                                                       -- icon：按钮无图标
+    '',                                                        -- remark：备注
+    'admin',                                                   -- create_by：创建人
+    GETDATE(),                                                 -- create_time：创建时间
+    'admin',                                                   -- update_by：更新人
+    GETDATE(),                                                 -- update_time：更新时间
+    0                                                          -- deleted：删除标记
+);
+{{~ end ~}}
+
+-- 为超级管理员角色分配菜单权限
+INSERT INTO lean_role_menu (
+    role_id, 
+    menu_id, 
+    create_by, 
+    create_time, 
+    update_by, 
+    update_time, 
+    deleted
+)
+SELECT 
+    1,                  -- role_id：超级管理员角色ID
+    id,                 -- menu_id：菜单ID
+    'admin',           -- create_by：创建人
+    GETDATE(),         -- create_time：创建时间
+    'admin',           -- update_by：更新人
+    GETDATE(),         -- update_time：更新时间
+    0                  -- deleted：删除标记
+FROM lean_menu 
+WHERE parent_id = @MenuId OR id = @MenuId; 

@@ -1,0 +1,131 @@
+/**
+ * @description {{ entity_name }}管理权限配置
+ * @author CodeGenerator
+ * @date {{ date.now | date.to_string "%Y-%m-%d" }}
+ * @version 1.0.0
+ * @copyright © 2023 Lean. All rights reserved
+ */
+
+/**
+ * {{ entity_name }}管理权限配置
+ * 
+ * 权限结构说明：
+ * 1. 菜单权限：
+ *    - list: 查看列表的权限
+ *    - 控制整个模块或页面的访问
+ *    - 类型为MENU
+ * 
+ * 2. 按钮权限：
+ *    - add: 新增记录的权限
+ *    - edit: 编辑记录的权限
+ *    - delete: 删除记录的权限
+ *    - 控制具体操作按钮的显示和使用
+ *    - 类型为BUTTON
+ * 
+ * 权限类型说明：
+ * - MENU: 菜单权限，控制整个菜单或页面的访问
+ * - BUTTON: 按钮权限，控制具体操作按钮的显示和使用
+ * 
+ * 权限状态说明：
+ * - 1: 启用，表示该权限可以使用
+ * - 0: 禁用，表示该权限暂时不可使用
+ * 
+ * 使用说明：
+ * 1. 在角色管理中为角色分配这些权限
+ * 2. 在前端根据用户拥有的权限控制界面显示
+ * 3. 在后端API中也要对应进行权限验证
+ * 
+ * @typedef {Object} Permission
+ * @property {string} id - 权限唯一标识，用于前后端权限控制
+ * @property {string} name - 权限显示名称，支持国际化配置
+ * @property {('MENU'|'BUTTON')} type - 权限类型：MENU-菜单权限，BUTTON-按钮权限
+ * @property {(0|1)} status - 权限状态：1-启用，0-禁用
+ * @property {string} [description] - 权限描述，说明权限的用途
+ * @property {string[]} [dependencies] - 依赖的其他权限编码
+ */
+export default [
+  {
+    /** 
+     * 查看列表权限
+     * @description 允许查看{{ entity_name }}列表页面
+     */
+    id: '{{ entity_name | string.downcase }}:list',
+    name: '{{ entity_name }}查看',
+    type: 'MENU',
+    status: 1,
+    description: '允许查看{{ entity_name }}列表页面和详情信息',
+    dependencies: [] // 不依赖其他权限
+  },
+  {
+    /** 
+     * 新增权限
+     * @description 允许新增{{ entity_name }}记录
+     */
+    id: '{{ entity_name | string.downcase }}:add',
+    name: '{{ entity_name }}新增',
+    type: 'BUTTON',
+    status: 1,
+    description: '允许新增{{ entity_name }}记录',
+    dependencies: ['{{ entity_name | string.downcase }}:list'] // 依赖查看权限
+  },
+  {
+    /** 
+     * 编辑权限
+     * @description 允许编辑{{ entity_name }}记录
+     */
+    id: '{{ entity_name | string.downcase }}:edit',
+    name: '{{ entity_name }}编辑',
+    type: 'BUTTON',
+    status: 1,
+    description: '允许编辑现有的{{ entity_name }}记录',
+    dependencies: ['{{ entity_name | string.downcase }}:list'] // 依赖查看权限
+  },
+  {
+    /** 
+     * 删除权限
+     * @description 允许删除{{ entity_name }}记录
+     */
+    id: '{{ entity_name | string.downcase }}:delete',
+    name: '{{ entity_name }}删除',
+    type: 'BUTTON',
+    status: 1,
+    description: '允许删除{{ entity_name }}记录',
+    dependencies: ['{{ entity_name | string.downcase }}:list'] // 依赖查看权限
+  },
+  {
+    /** 
+     * 导出权限
+     * @description 允许导出{{ entity_name }}记录
+     */
+    id: '{{ entity_name | string.downcase }}:export',
+    name: '{{ entity_name }}导出',
+    type: 'BUTTON',
+    status: 1,
+    description: '允许将{{ entity_name }}记录导出为Excel文件',
+    dependencies: ['{{ entity_name | string.downcase }}:list'] // 依赖查看权限
+  },
+  {
+    /** 
+     * 导入权限
+     * @description 允许导入{{ entity_name }}记录
+     */
+    id: '{{ entity_name | string.downcase }}:import',
+    name: '{{ entity_name }}导入',
+    type: 'BUTTON',
+    status: 1,
+    description: '允许从Excel文件导入{{ entity_name }}记录',
+    dependencies: ['{{ entity_name | string.downcase }}:add'] // 依赖新增权限
+  },
+  {
+    /** 
+     * 批量删除权限
+     * @description 允许批量删除{{ entity_name }}记录
+     */
+    id: '{{ entity_name | string.downcase }}:batch_delete',
+    name: '{{ entity_name }}批量删除',
+    type: 'BUTTON',
+    status: 1,
+    description: '允许批量删除多条{{ entity_name }}记录',
+    dependencies: ['{{ entity_name | string.downcase }}:delete'] // 依赖删除权限
+  }
+] 

@@ -1,0 +1,520 @@
+/**
+ * @description {{ entity_name }}管理页面
+ * @author CodeGenerator
+ * @date {{ date.now | date.to_string "%Y-%m-%d" }}
+ * @version 1.0.0
+ * @copyright © 2023 Lean. All rights reserved
+ */
+
+/**
+ * {{ entity_name }}管理页面组件
+ * 
+ * 组件功能说明：
+ * 1. 列表展示：
+ *    - 支持分页显示{{ entity_name }}记录
+ *    - 支持关键字搜索
+ *    - 支持排序和筛选
+ * 
+ * 2. 数据操作：
+ *    - 新增：打开新增表单弹窗
+ *    - 编辑：打开编辑表单弹窗
+ *    - 删除：支持单条删除
+ *    - 批量删除：支持多选删除
+ * 
+ * 3. 权限控制：
+ *    - list: 控制整个页面的访问
+ *    - add: 控制新增按钮的显示
+ *    - edit: 控制编辑按钮的显示
+ *    - delete: 控制删除按钮的显示
+ * 
+ * 4. 组件依赖：
+ *    - Ant Design Vue组件库
+ *    - Vue Router路由管理
+ *    - Vuex状态管理
+ *    - API接口服务
+ */
+
+<template>
+  <!-- {{ entity_name }}管理容器 -->
+  <div class="lean-{{ entity_name | string.downcase }}-container">
+    <a-card :bordered="false">
+      <!-- 搜索区域：包含关键字搜索和高级筛选 -->
+      <div class="table-page-search-wrapper">
+        <a-form layout="inline">
+          <a-row :gutter="48">
+            <!-- 关键字搜索 -->
+            <a-col :md="8" :sm="24">
+              <a-form-item :label="$t('{{ entity_name | string.downcase }}.keyword')">
+                <a-input 
+                  v-model:value="queryParam.keyword" 
+                  :placeholder="$t('common.pleaseInput')" 
+                  allow-clear 
+                  @pressEnter="handleSearch"
+                />
+              </a-form-item>
+            </a-col>
+            <!-- 搜索按钮区域 -->
+            <a-col :md="8" :sm="24">
+              <span class="table-page-search-submitButtons">
+                <a-button type="primary" @click="handleSearch">
+                  <template #icon><SearchOutlined /></template>
+                  {{ "{{" }} $t('common.search') {{ "}}" }}
+                </a-button>
+                <a-button style="margin-left: 8px" @click="handleReset">
+                  <template #icon><ReloadOutlined /></template>
+                  {{ "{{" }} $t('common.reset') {{ "}}" }}
+                </a-button>
+              </span>
+            </a-col>
+          </a-row>
+        </a-form>
+      </div>
+
+      <!-- 操作按钮区域：包含新增、批量删除等功能按钮 -->
+      <div class="table-operator">
+        <a-button type="primary" @click="handleCreate">
+          <template #icon><PlusOutlined /></template>
+          {{ "{{" }} $t('common.create') {{ "}}" }}
+        </a-button>
+        <a-button 
+          v-if="$auth('{{ entity_name | string.downcase }}:batch_delete')"
+          type="danger" 
+          :disabled="selectedRowKeys.length === 0"
+          @click="handleBatchDelete"
+        >
+          <template #icon><DeleteOutlined /></template>
+          {{ "{{" }} $t('common.batchDelete') {{ "}}" }}
+        </a-button>
+        <a-button 
+          v-if="$auth('{{ entity_name | string.downcase }}:export')"
+          @click="handleExport"
+        >
+          <template #icon><DownloadOutlined /></template>
+          {{ "{{" }} $t('common.export') {{ "}}" }}
+        </a-button>
+        <a-upload
+          v-if="$auth('{{ entity_name | string.downcase }}:import')"
+          name="file"
+          :show-upload-list="false"
+          :before-upload="handleImport"
+        >
+          <a-button>
+            <template #icon><UploadOutlined /></template>
+            {{ "{{" }} $t('common.import') {{ "}}" }}
+          </a-button>
+        </a-upload>
+      </div>
+
+      <!-- 数据表格区域：展示{{ entity_name }}列表数据 -->
+      <a-table
+        :columns="columns"
+        :data-source="dataSource"
+        :loading="loading"
+        :pagination="pagination"
+        :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
+        @change="handleTableChange"
+        rowKey="id"
+      >
+        <!-- 操作列：包含编辑、删除等操作按钮 -->
+        <template #action="{ record }">
+          <a-space>
+            <a 
+              v-if="$auth('{{ entity_name | string.downcase }}:edit')"
+              @click="handleEdit(record)"
+            >
+              {{ "{{" }} $t('common.edit') {{ "}}" }}
+            </a>
+            <a-popconfirm
+              v-if="$auth('{{ entity_name | string.downcase }}:delete')"
+              :title="$t('common.deleteConfirm')"
+              @confirm="handleDelete(record)"
+            >
+              <a class="danger-text">{{ "{{" }} $t('common.delete') {{ "}}" }}</a>
+            </a-popconfirm>
+          </a-space>
+        </template>
+      </a-table>
+
+      <!-- 新增/编辑弹窗：用于数据的创建和修改 -->
+      <a-modal
+        :title="modalTitle"
+        :visible="modalVisible"
+        :confirm-loading="modalLoading"
+        @ok="handleModalOk"
+        @cancel="handleModalCancel"
+      >
+        <a-form
+          ref="formRef"
+          :model="formData"
+          :rules="rules"
+          :label-col="{ span: 6 }"
+          :wrapper-col="{ span: 16 }"
+        >
+          {{~ for prop in properties ~}}
+          <!-- {{ prop.comment }} -->
+          <a-form-item 
+            :label="$t('{{ entity_name | string.downcase }}.{{ prop.name | string.downcase }}')" 
+            name="{{ prop.name | string.downcase }}"
+          >
+            {{~ if prop.type == "string" ~}}
+            <a-input 
+              v-model:value="formData.{{ prop.name | string.downcase }}" 
+              :placeholder="$t('common.pleaseInput')" 
+              :maxLength="50"
+            />
+            {{~ else if prop.type == "int" ~}}
+            <a-input-number 
+              v-model:value="formData.{{ prop.name | string.downcase }}" 
+              :placeholder="$t('common.pleaseInput')" 
+              style="width: 100%" 
+              :min="0"
+            />
+            {{~ else if prop.type == "bool" ~}}
+            <a-switch v-model:checked="formData.{{ prop.name | string.downcase }}" />
+            {{~ else if prop.type == "DateTime" ~}}
+            <a-date-picker 
+              v-model:value="formData.{{ prop.name | string.downcase }}" 
+              show-time 
+              style="width: 100%" 
+              :show-today="true"
+            />
+            {{~ end ~}}
+          </a-form-item>
+          {{~ end ~}}
+        </a-form>
+      </a-modal>
+    </a-card>
+  </div>
+</template>
+
+<script lang="ts" setup>
+/**
+ * {{ entity_name }}管理页面组件逻辑
+ */
+
+import { ref, onMounted, computed } from 'vue'
+import { message } from 'ant-design-vue'
+import type { TablePaginationConfig } from 'ant-design-vue'
+import { 
+  SearchOutlined, 
+  ReloadOutlined, 
+  PlusOutlined,
+  DeleteOutlined,
+  DownloadOutlined,
+  UploadOutlined 
+} from '@ant-design/icons-vue'
+import { 
+  get{{ entity_name }}List, 
+  get{{ entity_name }}, 
+  create{{ entity_name }}, 
+  update{{ entity_name }}, 
+  delete{{ entity_name }},
+  batchDelete{{ entity_name }},
+  export{{ entity_name }}List,
+  import{{ entity_name }}List
+} from '@/api/{{ entity_name | string.downcase }}'
+import { useI18n } from 'vue-i18n'
+import dayjs from 'dayjs'
+
+// 国际化
+const { t } = useI18n()
+
+/**
+ * 表格列定义
+ * @description 定义表格的列配置，包括标题、数据索引、渲染方式等
+ */
+const columns = [
+  {{~ for prop in properties ~}}
+  {
+    title: computed(() => t('{{ entity_name | string.downcase }}.{{ prop.name | string.downcase }}')),
+    dataIndex: '{{ prop.name | string.downcase }}',
+    {{~ if prop.type == "bool" ~}}
+    customRender: ({ text }) => text ? t('common.yes') : t('common.no')
+    {{~ else if prop.type == "DateTime" ~}}
+    customRender: ({ text }) => text ? dayjs(text).format('YYYY-MM-DD HH:mm:ss') : ''
+    {{~ end ~}}
+  },
+  {{~ end ~}}
+  {
+    title: computed(() => t('common.action')),
+    key: 'action',
+    width: 150,
+    slots: { customRender: 'action' }
+  }
+]
+
+/**
+ * 查询参数
+ * @description 用于列表查询的参数对象
+ */
+const queryParam = ref({
+  keyword: '',
+  pageIndex: 1,
+  pageSize: 10
+})
+
+/**
+ * 表格数据相关
+ */
+// 数据源
+const dataSource = ref([])
+// 加载状态
+const loading = ref(false)
+// 分页配置
+const pagination = ref({
+  current: 1,
+  pageSize: 10,
+  total: 0,
+  showTotal: (total: number) => t('common.total', { total }),
+  showSizeChanger: true,
+  showQuickJumper: true
+})
+// 选中的行
+const selectedRowKeys = ref<number[]>([])
+
+/**
+ * 弹窗相关
+ */
+// 弹窗可见性
+const modalVisible = ref(false)
+// 弹窗标题
+const modalTitle = ref('')
+// 弹窗加载状态
+const modalLoading = ref(false)
+// 表单引用
+const formRef = ref()
+// 表单数据
+const formData = ref({})
+// 表单验证规则
+const rules = {
+  {{~ for prop in properties ~}}
+  {{~ if !prop.is_nullable ~}}
+  {{ prop.name | string.downcase }}: [
+    { required: true, message: t('common.required') }
+    {{~ if prop.type == "string" ~}}
+    ,{ max: 50, message: t('common.maxLength', { length: 50 }) }
+    {{~ end ~}}
+    {{~ if prop.type == "int" ~}}
+    ,{ type: 'number', min: 0, message: t('common.min', { min: 0 }) }
+    {{~ end ~}}
+  ],
+  {{~ end ~}}
+  {{~ end ~}}
+}
+
+/**
+ * 生命周期钩子
+ */
+onMounted(() => {
+  loadData()
+})
+
+/**
+ * 加载表格数据
+ * @description 根据查询参数获取数据列表
+ */
+const loadData = async () => {
+  loading.value = true
+  try {
+    const res = await get{{ entity_name }}List({
+      ...queryParam.value,
+      pageIndex: pagination.value.current,
+      pageSize: pagination.value.pageSize
+    })
+    dataSource.value = res.items
+    pagination.value.total = res.total
+  } catch (error) {
+    message.error(t('common.fetchFailed'))
+  }
+  loading.value = false
+}
+
+/**
+ * 搜索处理
+ * @description 点击搜索按钮时的处理函数
+ */
+const handleSearch = () => {
+  pagination.value.current = 1
+  loadData()
+}
+
+/**
+ * 重置处理
+ * @description 点击重置按钮时的处理函数
+ */
+const handleReset = () => {
+  queryParam.value = {
+    keyword: '',
+    pageIndex: 1,
+    pageSize: 10
+  }
+  pagination.value.current = 1
+  selectedRowKeys.value = []
+  loadData()
+}
+
+/**
+ * 表格变化处理
+ * @description 处理表格分页、排序、筛选等变化
+ * @param pag 分页信息
+ */
+const handleTableChange = (pag: TablePaginationConfig) => {
+  pagination.value.current = pag.current
+  pagination.value.pageSize = pag.pageSize
+  loadData()
+}
+
+/**
+ * 选择行变化处理
+ * @description 处理表格行选择状态变化
+ * @param selectedKeys 选中的行键值
+ */
+const onSelectChange = (selectedKeys: number[]) => {
+  selectedRowKeys.value = selectedKeys
+}
+
+/**
+ * 新增处理
+ * @description 点击新增按钮时的处理函数
+ */
+const handleCreate = () => {
+  formData.value = {}
+  modalTitle.value = t('common.create')
+  modalVisible.value = true
+}
+
+/**
+ * 编辑处理
+ * @description 点击编辑按钮时的处理函数
+ * @param record 记录数据
+ */
+const handleEdit = async (record: any) => {
+  const res = await get{{ entity_name }}(record.id)
+  formData.value = res
+  modalTitle.value = t('common.edit')
+  modalVisible.value = true
+}
+
+/**
+ * 删除处理
+ * @description 点击删除按钮时的处理函数
+ * @param record 记录数据
+ */
+const handleDelete = async (record: any) => {
+  try {
+    await delete{{ entity_name }}(record.id)
+    message.success(t('common.deleteSuccess'))
+    loadData()
+  } catch (error) {
+    message.error(t('common.deleteFailed'))
+  }
+}
+
+/**
+ * 批量删除处理
+ * @description 点击批量删除按钮时的处理函数
+ */
+const handleBatchDelete = async () => {
+  try {
+    await batchDelete{{ entity_name }}(selectedRowKeys.value)
+    message.success(t('common.deleteSuccess'))
+    selectedRowKeys.value = []
+    loadData()
+  } catch (error) {
+    message.error(t('common.deleteFailed'))
+  }
+}
+
+/**
+ * 导出处理
+ * @description 点击导出按钮时的处理函数
+ */
+const handleExport = async () => {
+  try {
+    const blob = await export{{ entity_name }}List(queryParam.value)
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `{{ entity_name }}_${dayjs().format('YYYYMMDDHHmmss')}.xlsx`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(url)
+    message.success(t('common.exportSuccess'))
+  } catch (error) {
+    message.error(t('common.exportFailed'))
+  }
+}
+
+/**
+ * 导入处理
+ * @description 处理文件导入
+ * @param file 上传的文件
+ */
+const handleImport = async (file: File) => {
+  try {
+    const count = await import{{ entity_name }}List(file)
+    message.success(t('common.importSuccess', { count }))
+    loadData()
+    return false
+  } catch (error) {
+    message.error(t('common.importFailed'))
+    return false
+  }
+}
+
+/**
+ * 弹窗确认处理
+ * @description 点击弹窗确认按钮时的处理函数
+ */
+const handleModalOk = () => {
+  formRef.value.validate().then(async () => {
+    modalLoading.value = true
+    try {
+      if (formData.value.id) {
+        await update{{ entity_name }}(formData.value)
+        message.success(t('common.updateSuccess'))
+      } else {
+        await create{{ entity_name }}(formData.value)
+        message.success(t('common.createSuccess'))
+      }
+      modalVisible.value = false
+      loadData()
+    } catch (error) {
+      message.error(formData.value.id ? t('common.updateFailed') : t('common.createFailed'))
+    }
+    modalLoading.value = false
+  })
+}
+
+/**
+ * 弹窗取消处理
+ * @description 点击弹窗取消按钮时的处理函数
+ */
+const handleModalCancel = () => {
+  formRef.value?.resetFields()
+  modalVisible.value = false
+}
+</script>
+
+<style lang="less" scoped>
+.lean-{{ entity_name | string.downcase }}-container {
+  padding: 24px;
+
+  .table-page-search-wrapper {
+    margin-bottom: 16px;
+  }
+
+  .table-operator {
+    margin-bottom: 16px;
+
+    button {
+      margin-right: 8px;
+    }
+  }
+
+  .danger-text {
+    color: #ff4d4f;
+  }
+}
+</style> 

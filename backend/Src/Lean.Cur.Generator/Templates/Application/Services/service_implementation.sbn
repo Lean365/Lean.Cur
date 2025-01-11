@@ -1,0 +1,211 @@
+/**
+ * @description {{ entity_name }}服务实现
+ * @author CodeGenerator
+ * @date {{ date.now | date.to_string "%Y-%m-%d" }}
+ * @version 1.0.0
+ * @copyright © 2023 Lean. All rights reserved
+ */
+
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using Lean.Cur.Domain.Entities;
+using Lean.Cur.Domain.Repositories;
+using Lean.Cur.Domain.Exceptions;
+
+namespace Lean.Cur.Application.Services.Impl;
+
+/// <summary>
+/// {{ entity_name }}服务实现
+/// </summary>
+/// <remarks>
+/// 该服务实现了{{ entity_name }}的所有基础业务操作，包括：
+/// 1. 列表查询 - 支持关键字搜索，默认返回所有记录
+/// 2. 详情查询 - 根据ID获取单条记录，支持空值返回
+/// 3. 创建操作 - 新增记录时自动填充创建时间等基础字段
+/// 4. 更新操作 - 修改记录时自动更新修改时间等基础字段
+/// 5. 删除操作 - 支持单条记录删除，确保数据一致性
+/// </remarks>
+public class Lean{{ entity_name }}Service : ILean{{ entity_name }}Service
+{
+    /// <summary>
+    /// {{ entity_name }}仓储接口
+    /// </summary>
+    /// <remarks>
+    /// 通过依赖注入获取仓储实例，实现数据访问的解耦
+    /// </remarks>
+    private readonly ILean{{ entity_name }}Repository _{{ entity_name | string.downcase }}Repository;
+
+    /// <summary>
+    /// 构造函数
+    /// </summary>
+    /// <param name="{{ entity_name | string.downcase }}Repository">{{ entity_name }}仓储接口实例</param>
+    /// <exception cref="ArgumentNullException">当仓储接口为空时抛出</exception>
+    public Lean{{ entity_name }}Service(ILean{{ entity_name }}Repository {{ entity_name | string.downcase }}Repository)
+    {
+        _{{ entity_name | string.downcase }}Repository = {{ entity_name | string.downcase }}Repository ?? throw new ArgumentNullException(nameof({{ entity_name | string.downcase }}Repository));
+    }
+
+    /// <summary>
+    /// 获取{{ entity_name }}列表
+    /// </summary>
+    /// <param name="keyword">关键字 - 用于模糊匹配{{ entity_name }}的相关字段</param>
+    /// <returns>
+    /// 返回{{ entity_name }}列表：
+    /// - 如果存在匹配记录，返回匹配的{{ entity_name }}列表
+    /// - 如果不存在匹配记录，返回空列表
+    /// </returns>
+    /// <remarks>
+    /// 查询逻辑：
+    /// 1. 首先获取所有记录
+    /// 2. 如果提供了关键字，则进行模糊匹配过滤
+    /// 3. 返回过滤后的结果
+    /// </remarks>
+    /// <exception cref="RepositoryException">当数据访问出现异常时抛出</exception>
+    public async Task<List<Lean{{ entity_name }}>> Get{{ entity_name }}ListAsync(string? keyword)
+    {
+        var list = await _{{ entity_name | string.downcase }}Repository.GetListAsync();
+        if (!string.IsNullOrEmpty(keyword))
+        {
+            // 在此添加关键字过滤逻辑
+            {{~ if has_name_property ~}}
+            list = list.Where(x => x.Name.Contains(keyword)).ToList();
+            {{~ end ~}}
+        }
+        return list;
+    }
+
+    /// <summary>
+    /// 获取指定的{{ entity_name }}
+    /// </summary>
+    /// <param name="id">{{ entity_name }}ID - 必须大于0的有效标识符</param>
+    /// <returns>
+    /// 返回{{ entity_name }}信息：
+    /// - 如果找到指定ID的记录，返回对应的{{ entity_name }}对象
+    /// - 如果未找到指定ID的记录，返回null
+    /// </returns>
+    /// <remarks>
+    /// 查询逻辑：
+    /// 1. 验证ID的有效性
+    /// 2. 调用仓储接口查询指定记录
+    /// 3. 返回查询结果
+    /// </remarks>
+    /// <exception cref="ArgumentException">当ID小于或等于0时抛出</exception>
+    /// <exception cref="RepositoryException">当数据访问出现异常时抛出</exception>
+    public async Task<Lean{{ entity_name }}?> Get{{ entity_name }}Async(long id)
+    {
+        if (id <= 0)
+        {
+            throw new ArgumentException("ID必须大于0", nameof(id));
+        }
+        return await _{{ entity_name | string.downcase }}Repository.GetByIdAsync(id);
+    }
+
+    /// <summary>
+    /// 创建{{ entity_name }}
+    /// </summary>
+    /// <param name="{{ entity_name | string.downcase }}">
+    /// {{ entity_name }}信息 - 包含需要创建的{{ entity_name }}的完整信息
+    /// 必填字段：
+    /// {{~ for prop in properties ~}}
+    /// {{~ if !prop.is_nullable ~}}
+    /// - {{ prop.name }}: {{ prop.comment }}
+    /// {{~ end ~}}
+    /// {{~ end ~}}
+    /// </param>
+    /// <returns>
+    /// 返回创建后的{{ entity_name }}对象，包含系统生成的ID和默认字段
+    /// </returns>
+    /// <remarks>
+    /// 创建逻辑：
+    /// 1. 验证必填字段
+    /// 2. 自动填充创建时间
+    /// 3. 调用仓储接口保存数据
+    /// 4. 返回创建后的完整对象
+    /// </remarks>
+    /// <exception cref="ArgumentNullException">当必填字段为空时抛出</exception>
+    /// <exception cref="ValidationException">当字段验证失败时抛出</exception>
+    /// <exception cref="RepositoryException">当数据访问出现异常时抛出</exception>
+    public async Task<Lean{{ entity_name }}> Create{{ entity_name }}Async(Lean{{ entity_name }} {{ entity_name | string.downcase }})
+    {
+        if ({{ entity_name | string.downcase }} == null)
+        {
+            throw new ArgumentNullException(nameof({{ entity_name | string.downcase }}));
+        }
+
+        {{ entity_name | string.downcase }}.CreateTime = DateTime.Now;
+        return await _{{ entity_name | string.downcase }}Repository.CreateAsync({{ entity_name | string.downcase }});
+    }
+
+    /// <summary>
+    /// 更新{{ entity_name }}
+    /// </summary>
+    /// <param name="{{ entity_name | string.downcase }}">
+    /// {{ entity_name }}信息 - 包含需要更新的{{ entity_name }}的完整信息
+    /// 必填字段：
+    /// - Id: {{ entity_name }}ID
+    /// {{~ for prop in properties ~}}
+    /// {{~ if !prop.is_nullable ~}}
+    /// - {{ prop.name }}: {{ prop.comment }}
+    /// {{~ end ~}}
+    /// {{~ end ~}}
+    /// </param>
+    /// <returns>
+    /// 返回更新后的{{ entity_name }}对象
+    /// </returns>
+    /// <remarks>
+    /// 更新逻辑：
+    /// 1. 验证对象和ID的有效性
+    /// 2. 自动更新修改时间
+    /// 3. 调用仓储接口更新数据
+    /// 4. 返回更新后的完整对象
+    /// </remarks>
+    /// <exception cref="ArgumentNullException">当必填字段为空时抛出</exception>
+    /// <exception cref="ValidationException">当字段验证失败时抛出</exception>
+    /// <exception cref="NotFoundException">当指定ID的记录不存在时抛出</exception>
+    /// <exception cref="RepositoryException">当数据访问出现异常时抛出</exception>
+    public async Task<Lean{{ entity_name }}> Update{{ entity_name }}Async(Lean{{ entity_name }} {{ entity_name | string.downcase }})
+    {
+        if ({{ entity_name | string.downcase }} == null)
+        {
+            throw new ArgumentNullException(nameof({{ entity_name | string.downcase }}));
+        }
+
+        if ({{ entity_name | string.downcase }}.Id <= 0)
+        {
+            throw new ArgumentException("ID必须大于0", nameof({{ entity_name | string.downcase }}));
+        }
+
+        {{ entity_name | string.downcase }}.UpdateTime = DateTime.Now;
+        return await _{{ entity_name | string.downcase }}Repository.UpdateAsync({{ entity_name | string.downcase }});
+    }
+
+    /// <summary>
+    /// 删除{{ entity_name }}
+    /// </summary>
+    /// <param name="id">{{ entity_name }}ID - 必须大于0的有效标识符</param>
+    /// <returns>
+    /// 返回Task对象，表示异步操作的完成状态：
+    /// - 如果删除成功，任务正常完成
+    /// - 如果删除失败，抛出对应异常
+    /// </returns>
+    /// <remarks>
+    /// 删除逻辑：
+    /// 1. 验证ID的有效性
+    /// 2. 调用仓储接口删除数据
+    /// 3. 确保数据被正确删除
+    /// </remarks>
+    /// <exception cref="ArgumentException">当ID小于或等于0时抛出</exception>
+    /// <exception cref="NotFoundException">当指定ID的记录不存在时抛出</exception>
+    /// <exception cref="RepositoryException">当数据访问出现异常时抛出</exception>
+    public async Task Delete{{ entity_name }}Async(long id)
+    {
+        if (id <= 0)
+        {
+            throw new ArgumentException("ID必须大于0", nameof(id));
+        }
+
+        await _{{ entity_name | string.downcase }}Repository.DeleteAsync(id);
+    }
+} 

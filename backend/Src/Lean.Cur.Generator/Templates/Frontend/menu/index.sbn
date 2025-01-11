@@ -1,0 +1,173 @@
+/**
+ * @description {{ entity_name }}管理菜单配置
+ * @author CodeGenerator
+ * @date {{ date.now | date.to_string "%Y-%m-%d" }}
+ * @version 1.0.0
+ * @copyright © 2023 Lean. All rights reserved
+ */
+
+/**
+ * {{ entity_name }}管理菜单配置
+ * 
+ * 菜单结构说明：
+ * 1. 主菜单：{{ entity_name }}管理
+ *    - 作为系统管理下的子模块
+ *    - 包含列表、新增、编辑等功能
+ *    - 需要相应的操作权限
+ * 
+ * 2. 子菜单：
+ *    - 列表页面：显示所有记录
+ *    - 新增/编辑：通过路由动态显示
+ * 
+ * 权限控制：
+ * - list: 查看列表的权限
+ * - add: 新增记录的权限
+ * - edit: 编辑记录的权限
+ * - delete: 删除记录的权限
+ * 
+ * 图标说明：
+ * - list: 列表图标，用于主菜单和列表页
+ * - plus: 新增图标，用于新增操作
+ * - edit: 编辑图标，用于编辑操作
+ * - delete: 删除图标，用于删除操作
+ * 
+ * @typedef {Object} Menu
+ * @property {string} id - 菜单唯一标识，用于前端路由和权限控制
+ * @property {string} name - 菜单显示名称，支持国际化配置
+ * @property {string} path - 菜单路由路径，必须以/开头
+ * @property {string} icon - 菜单图标，使用Element Plus的图标
+ * @property {number} sort - 排序号，值越小越靠前，默认100
+ * @property {string} parentId - 父级菜单ID，用于构建菜单树
+ * @property {string[]} permissions - 访问该菜单需要的权限编码列表
+ * @property {Menu[]} children - 子菜单配置列表
+ */
+export default {
+  /** 
+   * 菜单唯一标识
+   * @description 用于前端路由和权限控制，建议使用小写字母
+   */
+  id: '{{ entity_name | string.downcase }}',
+
+  /** 
+   * 菜单显示名称
+   * @description 支持国际化配置，在locales中定义对应的翻译
+   */
+  name: '{{ entity_name }}管理',
+
+  /** 
+   * 菜单路由路径
+   * @description 必须以/开头，与路由配置保持一致
+   */
+  path: '/{{ entity_name | string.downcase }}',
+
+  /** 
+   * 菜单图标
+   * @description 使用Element Plus的图标库
+   * @see https://element-plus.org/zh-CN/component/icon.html
+   */
+  icon: 'list',
+
+  /** 
+   * 排序号
+   * @description 值越小越靠前，用于调整同级菜单的显示顺序
+   * @minimum 0
+   * @maximum 1000
+   */
+  sort: 100,
+
+  /** 
+   * 父级菜单ID
+   * @description 用于构建菜单树，system表示系统管理模块
+   */
+  parentId: 'system',
+
+  /** 
+   * 权限编码列表
+   * @description 访问该菜单需要的权限编码，支持多个权限
+   */
+  permissions: [
+    '{{ entity_name | string.downcase }}:list' // 查看列表的权限
+  ],
+
+  /** 
+   * 子菜单配置
+   * @description 定义菜单的子页面
+   */
+  children: [
+    {
+      /** 
+       * 列表页菜单
+       * @description 显示{{ entity_name }}的列表视图
+       */
+      id: '{{ entity_name | string.downcase }}_list',
+      name: '{{ entity_name }}列表',
+      path: '/{{ entity_name | string.downcase }}/list',
+      icon: 'list',
+      sort: 1,
+      permissions: ['{{ entity_name | string.downcase }}:list'],
+      /** 
+       * 页面配置
+       * @description 定义页面的特性
+       */
+      meta: {
+        /** 是否缓存组件 */
+        keepAlive: true,
+        /** 是否显示在面包屑导航 */
+        breadcrumb: true,
+        /** 页面访问权限 */
+        access: {
+          /** 是否需要登录 */
+          requiresAuth: true,
+          /** 是否需要管理员权限 */
+          requiresAdmin: true
+        }
+      }
+    },
+    {
+      /** 
+       * 新增页菜单
+       * @description 用于创建新的{{ entity_name }}记录
+       * @note 此菜单在界面上不显示，通过按钮触发
+       */
+      id: '{{ entity_name | string.downcase }}_add',
+      name: '新增{{ entity_name }}',
+      path: '/{{ entity_name | string.downcase }}/add',
+      icon: 'plus',
+      sort: 2,
+      permissions: ['{{ entity_name | string.downcase }}:add'],
+      /** 在菜单中隐藏 */
+      hidden: true,
+      meta: {
+        keepAlive: false,
+        breadcrumb: true,
+        access: {
+          requiresAuth: true,
+          requiresAdmin: true
+        }
+      }
+    },
+    {
+      /** 
+       * 编辑页菜单
+       * @description 用于编辑现有的{{ entity_name }}记录
+       * @note 此菜单在界面上不显示，通过列表页的编辑按钮触发
+       */
+      id: '{{ entity_name | string.downcase }}_edit',
+      name: '编辑{{ entity_name }}',
+      path: '/{{ entity_name | string.downcase }}/edit/:id',
+      icon: 'edit',
+      sort: 3,
+      permissions: ['{{ entity_name | string.downcase }}:edit'],
+      /** 在菜单中隐藏 */
+      hidden: true,
+      meta: {
+        keepAlive: false,
+        breadcrumb: true,
+        access: {
+          requiresAuth: true,
+          requiresAdmin: true
+        }
+      }
+    }
+  ]
+} 

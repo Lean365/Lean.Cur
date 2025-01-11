@@ -1,0 +1,206 @@
+/**
+ * @description {{ entity_name }}表单组件
+ * @author CodeGenerator
+ * @date {{ date.now | date.to_string "%Y-%m-%d" }}
+ * @version 1.0.0
+ * @copyright © 2023 Lean. All rights reserved
+ */
+
+/**
+ * {{ entity_name }}表单组件
+ * 
+ * 组件功能说明：
+ * 1. 表单展示：
+ *    - 支持新增模式
+ *    - 支持编辑模式
+ *    - 自适应布局
+ * 
+ * 2. 数据处理：
+ *    - 表单验证
+ *    - 数据格式化
+ *    - 提交处理
+ * 
+ * 3. 组件通信：
+ *    - 通过props接收数据
+ *    - 通过emit发送事件
+ * 
+ * 4. 组件依赖：
+ *    - Ant Design Vue表单组件
+ *    - Vue3 Composition API
+ *    - 日期处理工具
+ */
+
+<template>
+  <!-- {{ entity_name }}表单容器 -->
+  <div class="lean-{{ entity_name | string.downcase }}-form">
+    <a-form
+      ref="formRef"
+      :model="formData"
+      :rules="rules"
+      :label-col="{ span: 6 }"
+      :wrapper-col="{ span: 16 }"
+    >
+      {{~ for prop in properties ~}}
+      <!-- {{ prop.comment }} -->
+      <a-form-item 
+        :label="$t('{{ entity_name | string.downcase }}.{{ prop.name | string.downcase }}')" 
+        name="{{ prop.name | string.downcase }}"
+      >
+        {{~ if prop.type == "string" ~}}
+        <a-input 
+          v-model:value="formData.{{ prop.name | string.downcase }}" 
+          :placeholder="$t('common.pleaseInput')" 
+          :maxLength="50"
+          :disabled="loading"
+        />
+        {{~ else if prop.type == "int" ~}}
+        <a-input-number 
+          v-model:value="formData.{{ prop.name | string.downcase }}" 
+          :placeholder="$t('common.pleaseInput')" 
+          style="width: 100%" 
+          :min="0"
+          :disabled="loading"
+        />
+        {{~ else if prop.type == "bool" ~}}
+        <a-switch 
+          v-model:checked="formData.{{ prop.name | string.downcase }}"
+          :disabled="loading"
+        />
+        {{~ else if prop.type == "DateTime" ~}}
+        <a-date-picker 
+          v-model:value="formData.{{ prop.name | string.downcase }}" 
+          show-time 
+          style="width: 100%" 
+          :show-today="true"
+          :disabled="loading"
+        />
+        {{~ end ~}}
+      </a-form-item>
+      {{~ end ~}}
+    </a-form>
+  </div>
+</template>
+
+<script lang="ts" setup>
+/**
+ * {{ entity_name }}表单组件逻辑
+ */
+import { ref, watch, defineProps, defineEmits } from 'vue'
+import { Form } from 'ant-design-vue'
+import { useI18n } from 'vue-i18n'
+import type { Lean{{ entity_name }} } from '@/api/{{ entity_name | string.downcase }}/types'
+import dayjs from 'dayjs'
+
+// 国际化
+const { t } = useI18n()
+
+/**
+ * 组件属性定义
+ */
+const props = defineProps<{
+  // 表单数据
+  modelValue: Partial<Lean{{ entity_name }}>
+  // 加载状态
+  loading?: boolean
+}>()
+
+/**
+ * 组件事件定义
+ */
+const emit = defineEmits<{
+  // 更新表单数据
+  (e: 'update:modelValue', value: Partial<Lean{{ entity_name }}>): void
+  // 验证成功
+  (e: 'validate:success'): void
+  // 验证失败
+  (e: 'validate:error', errors: any[]): void
+}>()
+
+/**
+ * 表单相关
+ */
+// 表单引用
+const formRef = ref()
+// 表单数据
+const formData = ref<Partial<Lean{{ entity_name }>>>(props.modelValue || {})
+
+/**
+ * 表单验证规则
+ * @description 定义表单字段的验证规则
+ */
+const rules = {
+  {{~ for prop in properties ~}}
+  {{~ if !prop.is_nullable ~}}
+  {{ prop.name | string.downcase }}: [
+    { required: true, message: t('common.required') }
+    {{~ if prop.type == "string" ~}}
+    ,{ max: 50, message: t('common.maxLength', { length: 50 }) }
+    {{~ end ~}}
+    {{~ if prop.type == "int" ~}}
+    ,{ type: 'number', min: 0, message: t('common.min', { min: 0 }) }
+    {{~ end ~}}
+  ],
+  {{~ end ~}}
+  {{~ end ~}}
+}
+
+/**
+ * 监听属性变化
+ */
+watch(
+  () => props.modelValue,
+  (newValue) => {
+    formData.value = { ...newValue }
+  },
+  { deep: true }
+)
+
+/**
+ * 监听表单数据变化
+ */
+watch(
+  () => formData.value,
+  (newValue) => {
+    emit('update:modelValue', newValue)
+  },
+  { deep: true }
+)
+
+/**
+ * 表单验证
+ * @description 执行表单验证
+ * @returns Promise<boolean> 验证结果
+ */
+const validate = async () => {
+  try {
+    await formRef.value?.validate()
+    emit('validate:success')
+    return true
+  } catch (errors) {
+    emit('validate:error', errors)
+    return false
+  }
+}
+
+/**
+ * 重置表单
+ * @description 清空表单数据并重置验证状态
+ */
+const reset = () => {
+  formRef.value?.resetFields()
+}
+
+/**
+ * 对外暴露方法
+ */
+defineExpose({
+  validate,
+  reset
+})
+</script>
+
+<style lang="less" scoped>
+.lean-{{ entity_name | string.downcase }}-form {
+  padding: 24px 0;
+}
+</style> 

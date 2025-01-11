@@ -1,0 +1,175 @@
+/**
+ * @description {{ entity_name }}路由配置
+ * @author CodeGenerator
+ * @date {{ date.now | date.to_string "%Y-%m-%d" }}
+ * @version 1.0.0
+ * @copyright © 2023 Lean. All rights reserved
+ */
+
+/**
+ * {{ entity_name }}模块路由配置
+ * 
+ * 路由结构说明：
+ * 1. 主路由 /{{ entity_name | string.downcase }}
+ *    - 作为模块的入口路由
+ *    - 加载主视图组件
+ *    - 需要管理员角色和列表查看权限
+ * 
+ * 2. 子路由：
+ *    - list: 列表页面，显示所有记录
+ *    - add: 新增页面，创建新记录
+ *    - edit: 编辑页面，修改现有记录
+ * 
+ * 权限控制：
+ * - roles: 定义可访问的角色列表
+ * - permissions: 定义需要的具体权限
+ * 
+ * 组件加载：
+ * - 使用动态导入实现按需加载
+ * - 提高首屏加载速度
+ */
+export default {
+  /** 
+   * 模块根路由
+   * @description 使用小写的实体名作为路径
+   */
+  path: '/{{ entity_name | string.downcase }}',
+
+  /** 
+   * 路由名称
+   * @description 用于编程式导航和权限控制
+   */
+  name: '{{ entity_name }}',
+
+  /** 
+   * 主视图组件
+   * @description 异步加载主视图组件
+   * @returns Promise<Component>
+   */
+  component: () => import('@/views/{{ entity_name | string.downcase }}/index.vue'),
+
+  /** 
+   * 路由元信息
+   * @description 包含标题、图标、角色和权限等配置
+   */
+  meta: {
+    /** 显示在菜单和标题栏的文本 */
+    title: '{{ entity_name }}管理',
+    /** 菜单图标 */
+    icon: 'list',
+    /** 允许访问的角色列表 */
+    roles: ['admin'],
+    /** 需要的操作权限 */
+    permissions: ['{{ entity_name | string.downcase }}:list'],
+    /** 是否缓存组件 */
+    keepAlive: true,
+    /** 是否显示在面包屑导航 */
+    breadcrumb: true
+  },
+
+  /** 子路由配置 */
+  children: [
+    {
+      /** 
+       * 列表页路由
+       * @description 显示{{ entity_name }}的列表视图
+       */
+      path: 'list',
+      name: '{{ entity_name }}List',
+      component: () => import('@/views/{{ entity_name | string.downcase }}/list.vue'),
+      meta: {
+        title: '{{ entity_name }}列表',
+        icon: 'list',
+        roles: ['admin'],
+        permissions: ['{{ entity_name | string.downcase }}:list'],
+        /** 是否缓存组件 */
+        keepAlive: true,
+        /** 是否显示在面包屑导航 */
+        breadcrumb: true,
+        /** 页面访问权限 */
+        access: {
+          /** 是否需要登录 */
+          requiresAuth: true,
+          /** 是否需要管理员权限 */
+          requiresAdmin: true
+        }
+      }
+    },
+    {
+      /** 
+       * 新增页路由
+       * @description 显示{{ entity_name }}的新增表单
+       */
+      path: 'add',
+      name: '{{ entity_name }}Add',
+      component: () => import('@/views/{{ entity_name | string.downcase }}/edit.vue'),
+      meta: {
+        title: '创建{{ entity_name }}',
+        icon: 'plus',
+        roles: ['admin'],
+        permissions: ['{{ entity_name | string.downcase }}:create'],
+        /** 在菜单中隐藏 */
+        hidden: true,
+        /** 不缓存组件 */
+        keepAlive: false,
+        /** 显示在面包屑导航 */
+        breadcrumb: true,
+        /** 页面访问权限 */
+        access: {
+          /** 是否需要登录 */
+          requiresAuth: true,
+          /** 是否需要管理员权限 */
+          requiresAdmin: true
+        }
+      }
+    },
+    {
+      /** 
+       * 编辑页路由
+       * @description 显示{{ entity_name }}的编辑表单
+       * @param {number} id - 记录ID，必须大于0
+       */
+      path: 'edit/:id',
+      name: '{{ entity_name }}Edit',
+      component: () => import('@/views/{{ entity_name | string.downcase }}/edit.vue'),
+      meta: {
+        title: '编辑{{ entity_name }}',
+        icon: 'edit',
+        roles: ['admin'],
+        permissions: ['{{ entity_name | string.downcase }}:edit'],
+        /** 在菜单中隐藏 */
+        hidden: true,
+        /** 不缓存组件 */
+        keepAlive: false,
+        /** 显示在面包屑导航 */
+        breadcrumb: true,
+        /** 页面访问权限 */
+        access: {
+          /** 是否需要登录 */
+          requiresAuth: true,
+          /** 是否需要管理员权限 */
+          requiresAdmin: true
+        }
+      },
+      /** 
+       * 路由参数验证
+       * @description 验证URL参数是否符合要求
+       */
+      props: (route: any) => ({
+        id: Number(route.params.id) || 0
+      }),
+      /** 
+       * 路由守卫
+       * @description 在进入路由前进行参数验证
+       */
+      beforeEnter: (to: any, from: any, next: any) => {
+        const id = Number(to.params.id)
+        if (id <= 0) {
+          next('/404')
+        } else {
+          next()
+        }
+      }
+    }
+  ]
+} 

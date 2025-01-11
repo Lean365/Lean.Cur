@@ -1,0 +1,126 @@
+/**
+ * @description {{ entity_name }}中文语言包
+ * @author CodeGenerator
+ * @date {{ date.now | date.to_string "%Y-%m-%d" }}
+ * @version 1.0.0
+ * @copyright © 2023 Lean. All rights reserved
+ */
+
+{{~ 
+  # 生成标题
+  title = entity_name + "管理"
+
+  # 生成属性翻译
+  comments = properties | array.map do
+    prop = $0
+    result = {}
+    
+    if prop.comment != null
+      # 解析注释中的类型信息
+      if prop.comment | string.contains "：" 
+        parts = prop.comment | string.split "："
+        result["label"] = parts[0]
+        
+        # 处理选项值
+        if parts[1] != null
+          options = parts[1] | string.split "，"
+          result["options"] = options | array.map do
+            opt = $0
+            if opt | string.contains "="
+              kv = opt | string.split "="
+              { "value": kv[1], "label": kv[0] }
+            else
+              { "value": opt, "label": opt }
+            end
+          end
+        end
+      else
+        result["label"] = prop.comment
+      end
+    else
+      result["label"] = prop.name
+    end
+    
+    # 添加验证提示
+    result["validation"] = {
+      "required": result["label"] + "不能为空",
+      "format": result["label"] + "格式不正确",
+      "length": result["label"] + "长度超出限制"
+    }
+    
+    result
+  end
+~}}
+
+/**
+ * {{ entity_name }}中文语言包
+ */
+export default {
+  {{ entity_name | string.downcase }}: {
+    /** 标题 */
+    title: '{{ title }}',
+    /** 字段 */
+    field: {
+      {{~ for prop in properties ~}}
+      {{ prop.name | string.downcase }}: {
+        /** 标签 */
+        label: '{{ comments[for.index].label }}',
+        {{~ if comments[for.index].options ~}}
+        /** 选项 */
+        options: [
+          {{~ for opt in comments[for.index].options ~}}
+          { value: '{{ opt.value }}', label: '{{ opt.label }}' },
+          {{~ end ~}}
+        ],
+        {{~ end ~}}
+        /** 验证 */
+        validation: {
+          required: '{{ comments[for.index].validation.required }}',
+          format: '{{ comments[for.index].validation.format }}',
+          length: '{{ comments[for.index].validation.length }}'
+        }
+      },
+      {{~ end ~}}
+    },
+    /** 菜单 */
+    menu: {
+      list: '{{ title }}列表',
+      add: '新增{{ title }}',
+      edit: '编辑{{ title }}',
+      delete: '删除{{ title }}'
+    }
+  },
+  common: {
+    search: '搜索',
+    reset: '重置',
+    create: '创建',
+    edit: '编辑',
+    delete: '删除',
+    batchDelete: '批量删除',
+    export: '导出',
+    import: '导入',
+    pleaseInput: '请输入',
+    pleaseSelect: '请选择',
+    createSuccess: '创建成功',
+    updateSuccess: '更新成功',
+    deleteSuccess: '删除成功',
+    saveFailed: '保存失败',
+    deleteFailed: '删除失败',
+    deleteConfirm: '确定要删除吗？',
+    yes: '是',
+    no: '否',
+    enable: '启用',
+    disable: '禁用',
+    status: '状态',
+    remark: '备注',
+    createTime: '创建时间',
+    updateTime: '更新时间',
+    operation: '操作'
+  },
+  menu: {
+    list: '{{ title }}列表',
+    create: '创建{{ title }}',
+    edit: '编辑{{ title }}',
+    delete: '删除{{ title }}'
+  }
+} 

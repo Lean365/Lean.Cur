@@ -1,0 +1,187 @@
+-- 多语言翻译初始化脚本
+-- 作者：CodeGenerator
+-- 日期：{{ date.now | date.to_string "%Y-%m-%d" }}
+-- 版本：1.0.0
+-- 说明：初始化{{ entity_name }}管理的多语言翻译数据
+
+-- 清理历史数据
+DELETE FROM lean_i18n 
+WHERE lang_key LIKE 'menu.{{ entity_name | string.downcase }}%'
+   OR lang_key LIKE 'field.{{ entity_name | string.downcase }}%'
+   OR lang_key LIKE 'button.{{ entity_name | string.downcase }}%'
+   OR lang_key LIKE 'message.{{ entity_name | string.downcase }}%';
+
+{{~ # 定义支持的语言列表 ~}}
+{{~ languages = [
+    { code: "zh-CN", name: "简体中文", translations: {
+        title: "管理",
+        list: "列表",
+        add: "新增",
+        edit: "编辑",
+        delete: "删除",
+        export: "导出",
+        import: "导入",
+        required: "请输入",
+        name: "名称",
+        code: "编码",
+        description: "描述",
+        status: "状态",
+        remarks: "备注"
+    }},
+    { code: "zh-TW", name: "繁体中文", translations: {
+        title: "管理",
+        list: "列表",
+        add: "新增",
+        edit: "編輯",
+        delete: "刪除",
+        export: "導出",
+        import: "導入",
+        required: "請輸入",
+        name: "名稱",
+        code: "編碼",
+        description: "描述",
+        status: "狀態",
+        remarks: "備註"
+    }},
+    { code: "en-US", name: "English", translations: {
+        title: "Management",
+        list: "List",
+        add: "Add",
+        edit: "Edit",
+        delete: "Delete",
+        export: "Export",
+        import: "Import",
+        required: "Please input",
+        name: "Name",
+        code: "Code",
+        description: "Description",
+        status: "Status",
+        remarks: "Remarks"
+    }},
+    { code: "ja-JP", name: "日本語", translations: {
+        title: "管理",
+        list: "一覧",
+        add: "追加",
+        edit: "編集",
+        delete: "削除",
+        export: "エクスポート",
+        import: "インポート",
+        required: "を入力してください",
+        name: "名称",
+        code: "コード",
+        description: "説明",
+        status: "状態",
+        remarks: "備考"
+    }},
+    { code: "ko-KR", name: "한국어", translations: {
+        title: "관리",
+        list: "목록",
+        add: "추가",
+        edit: "수정",
+        delete: "삭제",
+        export: "내보내기",
+        import: "가져오기",
+        required: "을(를) 입력하세요",
+        name: "이름",
+        code: "코드",
+        description: "설명",
+        status: "상태",
+        remarks: "비고"
+    }},
+    { code: "fr-FR", name: "Français", translations: {
+        title: "Gestion de",
+        list: "Liste de",
+        add: "Ajouter",
+        edit: "Modifier",
+        delete: "Supprimer",
+        export: "Exporter",
+        import: "Importer",
+        required: "Veuillez saisir",
+        name: "Nom",
+        code: "Code",
+        description: "Description",
+        status: "Statut",
+        remarks: "Remarques"
+    }},
+    { code: "es-ES", name: "Español", translations: {
+        title: "Gestión de",
+        list: "Lista de",
+        add: "Agregar",
+        edit: "Editar",
+        delete: "Eliminar",
+        export: "Exportar",
+        import: "Importar",
+        required: "Por favor ingrese",
+        name: "Nombre",
+        code: "Código",
+        description: "Descripción",
+        status: "Estado",
+        remarks: "Notas"
+    }},
+    { code: "ar-SA", name: "العربية", translations: {
+        title: "إدارة",
+        list: "قائمة",
+        add: "إضافة",
+        edit: "تعديل",
+        delete: "حذف",
+        export: "تصدير",
+        import: "استيراد",
+        required: "الرجاء إدخال",
+        name: "اسم",
+        code: "رمز",
+        description: "وصف",
+        status: "حالة",
+        remarks: "ملاحظات"
+    }}
+] ~}}
+
+-- 生成多语言数据
+{{~ for lang in languages ~}}
+-- {{ lang.name }}菜单翻译
+INSERT INTO lean_i18n (lang_key, lang_code, lang_text, create_by, create_time, update_by, update_time, deleted) VALUES
+('menu.{{ entity_name | string.downcase }}.title', '{{ lang.code }}', 
+ '{{ entity_name }}{{ lang.translations.title }}', 
+ 'admin', GETDATE(), 'admin', GETDATE(), 0);
+
+-- {{ lang.name }}按钮翻译
+INSERT INTO lean_i18n (lang_key, lang_code, lang_text, create_by, create_time, update_by, update_time, deleted) VALUES
+{{~ for action in entity.actions ~}}
+('button.{{ entity_name | string.downcase }}.{{ action.code }}', '{{ lang.code }}', 
+ '{{ entity_name }}{{ lang.translations[action.code] }}', 
+ 'admin', GETDATE(), 'admin', GETDATE(), 0){{ if !for.last }},{{ end }}
+{{~ end ~}};
+
+-- {{ lang.name }}字段翻译
+INSERT INTO lean_i18n (lang_key, lang_code, lang_text, create_by, create_time, update_by, update_time, deleted) VALUES
+{{~ for prop in properties ~}}
+('field.{{ entity_name | string.downcase }}.{{ prop.name | string.downcase }}', '{{ lang.code }}',
+ '{{ prop.comment | string.replace "名称" lang.translations.name | string.replace "编码" lang.translations.code | string.replace "描述" lang.translations.description | string.replace "状态" lang.translations.status | string.replace "备注" lang.translations.remarks }}',
+ 'admin', GETDATE(), 'admin', GETDATE(), 0){{ if !for.last }},{{ end }}
+{{~ end ~}};
+
+-- {{ lang.name }}验证消息翻译
+INSERT INTO lean_i18n (lang_key, lang_code, lang_text, create_by, create_time, update_by, update_time, deleted) VALUES
+{{~ for prop in properties ~}}
+{{~ if !prop.is_nullable ~}}
+('message.validation.{{ entity_name | string.downcase }}.{{ prop.name | string.downcase }}.required', '{{ lang.code }}',
+ '{{ lang.translations.required }}{{ prop.comment | string.replace "名称" lang.translations.name | string.replace "编码" lang.translations.code | string.replace "描述" lang.translations.description | string.replace "状态" lang.translations.status | string.replace "备注" lang.translations.remarks }}',
+ 'admin', GETDATE(), 'admin', GETDATE(), 0){{ if !for.last }},{{ end }}
+{{~ end ~}}
+{{~ end ~}};
+
+-- {{ lang.name }}表格列标题翻译
+INSERT INTO lean_i18n (lang_key, lang_code, lang_text, create_by, create_time, update_by, update_time, deleted) VALUES
+{{~ for prop in properties ~}}
+('table.{{ entity_name | string.downcase }}.column.{{ prop.name | string.downcase }}', '{{ lang.code }}',
+ '{{ prop.comment | string.replace "名称" lang.translations.name | string.replace "编码" lang.translations.code | string.replace "描述" lang.translations.description | string.replace "状态" lang.translations.status | string.replace "备注" lang.translations.remarks }}',
+ 'admin', GETDATE(), 'admin', GETDATE(), 0){{ if !for.last }},{{ end }}
+{{~ end ~}};
+
+-- {{ lang.name }}表单标签翻译
+INSERT INTO lean_i18n (lang_key, lang_code, lang_text, create_by, create_time, update_by, update_time, deleted) VALUES
+{{~ for prop in properties ~}}
+('form.{{ entity_name | string.downcase }}.label.{{ prop.name | string.downcase }}', '{{ lang.code }}',
+ '{{ prop.comment | string.replace "名称" lang.translations.name | string.replace "编码" lang.translations.code | string.replace "描述" lang.translations.description | string.replace "状态" lang.translations.status | string.replace "备注" lang.translations.remarks }}',
+ 'admin', GETDATE(), 'admin', GETDATE(), 0){{ if !for.last }},{{ end }}
+{{~ end ~}};
+{{~ end ~}} 

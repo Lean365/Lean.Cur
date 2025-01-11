@@ -1,0 +1,189 @@
+/**
+ * @description {{ entity_name }}接口
+ * @author CodeGenerator
+ * @date {{ date.now | date.to_string "%Y-%m-%d" }}
+ * @version 1.0.0
+ * @copyright © 2023 Lean. All rights reserved
+ */
+
+import { http } from '@/utils/http'
+import type { Lean{{ entity_name }}, Lean{{ entity_name }}Query, Lean{{ entity_name }}Create, Lean{{ entity_name }}Update } from './types'
+import type { PageResult } from '@/types/global'
+
+/**
+ * {{ entity_name }}模块接口
+ * 
+ * 该模块提供{{ entity_name }}的CRUD操作接口，包括：
+ * 1. 列表查询 - 支持分页和关键字搜索
+ * 2. 详情查询 - 根据ID获取单条记录
+ * 3. 创建操作 - 新增{{ entity_name }}记录
+ * 4. 更新操作 - 修改现有{{ entity_name }}记录
+ * 5. 删除操作 - 删除指定{{ entity_name }}记录
+ */
+
+/** API基础路径 */
+const baseUrl = '/api/lean{{ entity_name }}'
+
+/**
+ * 获取{{ entity_name }}列表
+ * @description 查询{{ entity_name }}列表，支持分页和关键字搜索
+ * @param params 查询参数
+ * @param params.pageIndex 页码，从1开始
+ * @param params.pageSize 每页记录数
+ * @param params.keyword 关键字，用于模糊匹配
+ * @returns 返回分页结果：
+ * - items: {{ entity_name }}列表
+ * - total: 总记录数
+ * @throws 可能抛出的错误：
+ * - 400: 请求参数错误
+ * - 401: 未登录
+ * - 403: 无权限
+ * - 500: 服务器错误
+ */
+export const get{{ entity_name }}List = (params?: Lean{{ entity_name }}Query) => {
+  return http.get<PageResult<Lean{{ entity_name }}>>(baseUrl, { params })
+}
+
+/**
+ * 获取指定的{{ entity_name }}
+ * @description 根据ID获取单条{{ entity_name }}记录
+ * @param id {{ entity_name }}ID - 必须大于0的有效标识符
+ * @returns 返回{{ entity_name }}信息：
+ * - 如果找到记录，返回{{ entity_name }}对象
+ * - 如果未找到记录，返回null
+ * @throws 可能抛出的错误：
+ * - 400: ID格式错误
+ * - 401: 未登录
+ * - 403: 无权限
+ * - 404: 记录不存在
+ * - 500: 服务器错误
+ */
+export const get{{ entity_name }} = (id: number) => {
+  return http.get<Lean{{ entity_name }}>(`${baseUrl}/${id}`)
+}
+
+/**
+ * 创建{{ entity_name }}
+ * @description 创建新的{{ entity_name }}记录
+ * @param data {{ entity_name }}信息 - 包含需要创建的{{ entity_name }}的完整信息
+ * 必填字段：
+ * {{~ for prop in properties ~}}
+ * {{~ if !prop.is_nullable && !prop.is_key ~}}
+ * - {{ prop.name }}: {{ prop.comment }}
+ * {{~ end ~}}
+ * {{~ end ~}}
+ * @returns 返回创建结果：
+ * - 如果创建成功，返回创建后的{{ entity_name }}对象
+ * - 如果创建失败，抛出对应错误
+ * @throws 可能抛出的错误：
+ * - 400: 请求数据格式错误或验证失败
+ * - 401: 未登录
+ * - 403: 无权限
+ * - 500: 服务器错误
+ */
+export const create{{ entity_name }} = (data: Lean{{ entity_name }}Create) => {
+  return http.post<Lean{{ entity_name }}>(baseUrl, data)
+}
+
+/**
+ * 更新{{ entity_name }}
+ * @description 更新现有的{{ entity_name }}记录
+ * @param data {{ entity_name }}信息 - 包含需要更新的{{ entity_name }}的完整信息
+ * 必填字段：
+ * - id: {{ entity_name }}ID
+ * {{~ for prop in properties ~}}
+ * {{~ if !prop.is_nullable && !prop.is_key ~}}
+ * - {{ prop.name }}: {{ prop.comment }}
+ * {{~ end ~}}
+ * {{~ end ~}}
+ * @returns 返回更新结果：
+ * - 如果更新成功，返回更新后的{{ entity_name }}对象
+ * - 如果更新失败，抛出对应错误
+ * @throws 可能抛出的错误：
+ * - 400: 请求数据格式错误或验证失败
+ * - 401: 未登录
+ * - 403: 无权限
+ * - 404: 记录不存在
+ * - 500: 服务器错误
+ */
+export const update{{ entity_name }} = (data: Lean{{ entity_name }}Update) => {
+  return http.put<Lean{{ entity_name }}>(baseUrl, data)
+}
+
+/**
+ * 删除{{ entity_name }}
+ * @description 删除指定的{{ entity_name }}记录
+ * @param id {{ entity_name }}ID - 必须大于0的有效标识符
+ * @returns 返回删除结果：
+ * - 如果删除成功，返回true
+ * - 如果删除失败，抛出对应错误
+ * @throws 可能抛出的错误：
+ * - 400: ID格式错误
+ * - 401: 未登录
+ * - 403: 无权限
+ * - 404: 记录不存在
+ * - 500: 服务器错误
+ */
+export const delete{{ entity_name }} = (id: number) => {
+  return http.delete<boolean>(`${baseUrl}/${id}`)
+}
+
+/**
+ * 批量删除{{ entity_name }}
+ * @description 批量删除指定的{{ entity_name }}记录
+ * @param ids {{ entity_name }}ID列表 - 每个ID必须大于0
+ * @returns 返回删除结果：
+ * - 如果删除成功，返回true
+ * - 如果删除失败，抛出对应错误
+ * @throws 可能抛出的错误：
+ * - 400: ID列表格式错误
+ * - 401: 未登录
+ * - 403: 无权限
+ * - 404: 部分记录不存在
+ * - 500: 服务器错误
+ */
+export const batchDelete{{ entity_name }} = (ids: number[]) => {
+  return http.delete<boolean>(`${baseUrl}/batch`, { data: ids })
+}
+
+/**
+ * 导出{{ entity_name }}列表
+ * @description 导出{{ entity_name }}列表为Excel文件
+ * @param params 查询参数
+ * @param params.keyword 关键字，用于模糊匹配
+ * @returns 返回文件流
+ * @throws 可能抛出的错误：
+ * - 400: 请求参数错误
+ * - 401: 未登录
+ * - 403: 无权限
+ * - 500: 服务器错误
+ */
+export const export{{ entity_name }}List = (params?: Lean{{ entity_name }}Query) => {
+  return http.get<Blob>(`${baseUrl}/export`, { 
+    params,
+    responseType: 'blob'
+  })
+}
+
+/**
+ * 导入{{ entity_name }}列表
+ * @description 从Excel文件导入{{ entity_name }}列表
+ * @param file Excel文件
+ * @returns 返回导入结果：
+ * - 如果导入成功，返回导入的记录数
+ * - 如果导入失败，抛出对应错误
+ * @throws 可能抛出的错误：
+ * - 400: 文件格式错误或数据验证失败
+ * - 401: 未登录
+ * - 403: 无权限
+ * - 500: 服务器错误
+ */
+export const import{{ entity_name }}List = (file: File) => {
+  const formData = new FormData()
+  formData.append('file', file)
+  return http.post<number>(`${baseUrl}/import`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+} 

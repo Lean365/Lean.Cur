@@ -1,0 +1,110 @@
+/**
+ * @description {{ entity_name }}数据传输对象
+ * @author CodeGenerator
+ * @date {{ date.now | date.to_string "%Y-%m-%d" }}
+ * @version 1.0.0
+ * @copyright © 2023 Lean. All rights reserved
+ */
+
+using System;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+
+namespace Lean.Cur.Application.DTOs;
+
+/// <summary>
+/// {{ entity_name }}数据传输对象
+/// </summary>
+public class Lean{{ entity_name }}Dto
+{
+    /// <summary>
+    /// 主键ID
+    /// </summary>
+    [Description("主键ID")]
+    public long Id { get; set; }
+
+    {{~ for prop in properties ~}}
+    /// <summary>
+    /// {{ prop.comment }}
+    /// </summary>
+    [Description("{{ prop.comment }}")]
+    public {{ prop.type }}{{ if prop.is_nullable && prop.type != "string" }}?{{ end }} {{ prop.name }} { get; set; }{{ if prop.type == "string" && !prop.is_nullable }} = null!;{{ end }}
+
+    {{~ end ~}}
+    /// <summary>
+    /// 创建时间
+    /// </summary>
+    [Description("创建时间")]
+    public DateTime CreateTime { get; set; }
+
+    /// <summary>
+    /// 创建人ID
+    /// </summary>
+    [Description("创建人ID")]
+    public long CreateBy { get; set; }
+
+    /// <summary>
+    /// 更新时间
+    /// </summary>
+    [Description("更新时间")]
+    public DateTime? UpdateTime { get; set; }
+
+    /// <summary>
+    /// 更新人ID
+    /// </summary>
+    [Description("更新人ID")]
+    public long? UpdateBy { get; set; }
+
+    /// <summary>
+    /// 备注
+    /// </summary>
+    [Description("备注")]
+    public string? Remark { get; set; }
+}
+
+/// <summary>
+/// {{ entity_name }}创建数据传输对象
+/// </summary>
+public class Lean{{ entity_name }}CreateDto
+{
+    {{~ for prop in properties ~}}
+    {{~ if !prop.is_key ~}}
+    /// <summary>
+    /// {{ prop.comment }}
+    /// </summary>
+    [Description("{{ prop.comment }}")]
+    {{~ if !prop.is_nullable ~}}
+    [Required(ErrorMessage = "{{ prop.comment }}不能为空")]
+    {{~ end ~}}
+    public {{ prop.type }}{{ if prop.is_nullable && prop.type != "string" }}?{{ end }} {{ prop.name }} { get; set; }{{ if prop.type == "string" && !prop.is_nullable }} = null!;{{ end }}
+
+    {{~ end ~}}
+    {{~ end ~}}
+}
+
+/// <summary>
+/// {{ entity_name }}更新数据传输对象
+/// </summary>
+public class Lean{{ entity_name }}UpdateDto
+{
+    /// <summary>
+    /// 主键ID
+    /// </summary>
+    [Description("主键ID")]
+    [Required(ErrorMessage = "主键ID不能为空")]
+    public long Id { get; set; }
+
+    {{~ for prop in properties ~}}
+    {{~ if !prop.is_key ~}}
+    /// <summary>
+    /// {{ prop.comment }}
+    /// </summary>
+    [Description("{{ prop.comment }}")]
+    {{~ if !prop.is_nullable ~}}
+    [Required(ErrorMessage = "{{ prop.comment }}不能为空")]
+    {{~ end ~}}
+    public {{ prop.type }}{{ if prop.is_nullable && prop.type != "string" }}?{{ end }} {{ prop.name }} { get; set; }{{ if prop.type == "string" && !prop.is_nullable }} = null!;{{ end }}
+
+    {{~ end ~}}
+    {{~ end ~}}
+} 
