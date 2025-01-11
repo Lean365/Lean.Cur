@@ -3,12 +3,15 @@ global using System;
 global using System.Collections.Generic;
 global using System.ComponentModel;
 global using System.ComponentModel.DataAnnotations;
+global using System.ComponentModel.DataAnnotations.Schema;
 global using System.Linq;
 global using System.Text;
 global using System.Threading.Tasks;
 
-// Microsoft AspNetCore
+// Microsoft AspNetCore & EF Core
 global using Microsoft.AspNetCore.Mvc;
+global using Microsoft.EntityFrameworkCore;
+global using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 // 项目命名空间
 global using Lean.Cur.Common.Attributes;
