@@ -6,6 +6,7 @@ using Lean.Cur.Infrastructure.Database;
 using Lean.Cur.Infrastructure.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Lean.Cur.Domain.Cache;
 
 namespace Lean.Cur.Infrastructure.Extensions;
 
@@ -13,8 +14,7 @@ public static class ServiceCollectionExtensions
 {
   public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
   {
-    services.AddSingleton<LeanDbContext>();
-    services.AddScoped(sp => sp.GetRequiredService<LeanDbContext>().GetDatabase());
+    services.AddScoped<LeanDbContext>();
 
     services.AddScoped(typeof(ILeanBaseRepository<>), typeof(LeanBaseRepository<>));
     services.AddScoped<ILeanUserRepository, LeanUserRepository>();
@@ -22,7 +22,7 @@ public static class ServiceCollectionExtensions
     services.AddScoped<ILeanPermissionRepository, LeanPermissionRepository>();
 
     services.AddMemoryCache();
-    services.AddSingleton<ILeanCache, LeanMemoryCache>();
+    services.AddScoped<ILeanCache, LeanMemoryCache>();
 
     services.AddScoped<ILeanAuthService, LeanAuthService>();
     services.AddScoped<ILeanPermissionService, LeanPermissionService>();
