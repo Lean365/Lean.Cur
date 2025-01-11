@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景圆形 -->
+  <circle cx="64" cy="64" r="64" fill="#001529"/>
+  
+  <!-- L字母 -->
+  <path d="M32 32V96H96" stroke="#1890FF" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- C字母 -->
+  <path d="M96 48C96 48 80 32 64 32C48 32 32 48 32 64C32 80 48 96 64 96C80 96 96 80 96 80" 
+        stroke="#1890FF" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+</svg> 

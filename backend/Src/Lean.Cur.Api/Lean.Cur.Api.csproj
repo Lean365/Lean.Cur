@@ -11,6 +11,7 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
     <ProjectReference Include="..\Lean.Cur.Application\Lean.Cur.Application.csproj" />
     <ProjectReference Include="..\Lean.Cur.Infrastructure\Lean.Cur.Infrastructure.csproj" />
+    <ProjectReference Include="..\Lean.Cur.Common\Lean.Cur.Common.csproj" />
   </ItemGroup>
 
 </Project>

@@ -14,6 +14,11 @@ namespace Lean.Cur.Common.Configs;
 public class LeanSecuritySettings
 {
   /// <summary>
+  /// CORS配置
+  /// </summary>
+  public LeanCorsSettings Cors { get; set; } = new();
+
+  /// <summary>
   /// 限流配置
   /// </summary>
   public LeanRateLimitSettings RateLimit { get; set; } = new();
@@ -37,6 +42,37 @@ public class LeanSecuritySettings
   /// 权限配置
   /// </summary>
   public LeanPermissionSettings Permission { get; set; } = new();
+}
+
+/// <summary>
+/// CORS配置
+/// </summary>
+public class LeanCorsSettings
+{
+  /// <summary>
+  /// 是否启用
+  /// </summary>
+  public bool Enabled { get; set; } = true;
+
+  /// <summary>
+  /// 允许的来源
+  /// </summary>
+  public string[] Origins { get; set; } = Array.Empty<string>();
+
+  /// <summary>
+  /// 允许的HTTP方法
+  /// </summary>
+  public string[] Methods { get; set; } = Array.Empty<string>();
+
+  /// <summary>
+  /// 允许的请求头
+  /// </summary>
+  public string[] Headers { get; set; } = Array.Empty<string>();
+
+  /// <summary>
+  /// 是否允许携带凭证
+  /// </summary>
+  public bool AllowCredentials { get; set; } = true;
 }
 
 /// <summary>

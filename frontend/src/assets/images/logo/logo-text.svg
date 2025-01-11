@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="256" height="64" viewBox="0 0 256 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Logo图标 -->
+  <g transform="translate(0,0) scale(0.5,0.5)">
+    <circle cx="64" cy="64" r="64" fill="#1890FF"/>
+    <path d="M32 32V96H96" stroke="white" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M96 48C96 48 80 32 64 32C48 32 32 48 32 64C32 80 48 96 64 96C80 96 96 80 96 80" 
+          stroke="white" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  
+  <!-- 文字部分 -->
+  <text x="140" y="40" font-family="Arial" font-size="32" font-weight="bold" fill="#1890FF">
+    Lean.Cur
+  </text>
+</svg> 

@@ -5,11 +5,42 @@ using Lean.Cur.Infrastructure.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Lean.Cur.Common.Configs;
+using Lean.Cur.Api.Filters;
+using LeanPermissionAttribute = Lean.Cur.Application.Authorization.LeanPermissionAttribute;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddInfrastructure(builder.Configuration);
+
+// 添加配置
+var securitySettings = builder.Configuration.GetSection("SecuritySettings").Get<LeanSecuritySettings>();
+builder.Services.Configure<LeanSecuritySettings>(builder.Configuration.GetSection("SecuritySettings"));
+
+// 添加 CORS 服务
+if (securitySettings?.Cors?.Enabled == true)
+{
+  builder.Services.AddCors(options =>
+  {
+    options.AddPolicy("CorsPolicy", policy =>
+    {
+      var corsSettings = securitySettings.Cors;
+      policy.WithOrigins(corsSettings.Origins)
+            .WithMethods(corsSettings.Methods)
+            .WithHeaders(corsSettings.Headers);
+
+      if (corsSettings.AllowCredentials)
+      {
+        policy.AllowCredentials();
+      }
+      else
+      {
+        policy.DisallowCredentials();
+      }
+    });
+  });
+}
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -35,10 +66,6 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-// 添加配置
-var securitySettings = builder.Configuration.GetSection("SecuritySettings").Get<LeanSecuritySettings>();
-builder.Services.Configure<LeanSecuritySettings>(builder.Configuration.GetSection("SecuritySettings"));
 
 // 添加内存缓存
 builder.Services.AddMemoryCache();
@@ -86,6 +113,9 @@ if (app.Environment.IsDevelopment())
 // 添加全局异常处理中间件
 app.UseMiddleware<LeanGlobalExceptionMiddleware>();
 
+// 启用 CORS
+app.UseCors("CorsPolicy");
+
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
@@ -95,17 +125,17 @@ app.UseAuthorization();
 app.UseMiddleware<LeanOperationLogMiddleware>();
 
 // 添加安全中间件
-if (securitySettings?.RateLimit.Enabled == true)
+if (securitySettings?.RateLimit?.IpRateLimit != null || securitySettings?.RateLimit?.UserRateLimit != null)
 {
   app.UseLeanRateLimit();
 }
 
-if (securitySettings?.AntiForgery.Enabled == true)
+if (securitySettings?.AntiForgery?.Enabled == true)
 {
   app.UseLeanAntiForgeryMiddleware();
 }
 
-if (securitySettings?.SqlInjection.Enabled == true)
+if (securitySettings?.SqlInjection?.Enabled == true)
 {
   app.UseMiddleware<LeanSqlInjectionMiddleware>();
 }
