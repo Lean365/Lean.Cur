@@ -1,0 +1,19 @@
+{
+  "Jwt": {
+    "SecretKey": "your-super-secret-key-with-at-least-32-characters",
+    "Issuer": "Lean.Cur",
+    "Audience": "Lean.Cur",
+    "AccessTokenExpiryMinutes": 120,
+    "RefreshTokenExpiryDays": 7
+  },
+  "SlideVerify": {
+    "BackgroundDirectory": "Resources/SlideVerify/Backgrounds",
+    "SliderDirectory": "Resources/SlideVerify/Sliders",
+    "BackgroundWidth": 280,
+    "BackgroundHeight": 155,
+    "SliderWidth": 55,
+    "SliderHeight": 55,
+    "ExpirySeconds": 300,
+    "AllowedDeviation": 5
+  }
+}

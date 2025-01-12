@@ -2,12 +2,18 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Lean.Cur.Application.Authorization;
 
-[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true)]
+/// <summary>
+/// 权限特性
+/// </summary>
+[AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = true)]
 public class LeanPermissionAttribute : AuthorizeAttribute
 {
-  public const string POLICY_PREFIX = "Permission";
-
-  public LeanPermissionAttribute(string permissionCode) : base($"{POLICY_PREFIX}:{permissionCode}")
-  {
-  }
-}
+    /// <summary>
+    /// 构造函数
+    /// </summary>
+    /// <param name="permission">权限标识</param>
+    public LeanPermissionAttribute(string permission)
+    {
+        Policy = permission;
+    }
+} 

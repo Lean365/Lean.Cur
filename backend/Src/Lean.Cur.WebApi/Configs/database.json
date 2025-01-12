@@ -1,0 +1,5 @@
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=localhost;Database=LeanCur_Deb;User Id=sa;Password=Tac26901333.;Encrypt=True;TrustServerCertificate=True;"
+  }
+}

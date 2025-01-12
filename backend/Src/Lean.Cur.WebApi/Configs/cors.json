@@ -1,0 +1,23 @@
+{
+  "LeanCorsSettings": {
+    "Enabled": true,
+    "Origins": [
+      "http://localhost:5173"
+    ],
+    "Methods": [
+      "GET",
+      "POST",
+      "PUT",
+      "DELETE",
+      "OPTIONS",
+      "PATCH"
+    ],
+    "Headers": [
+      "*"
+    ],
+    "AllowCredentials": true,
+    "ExposedHeaders": [
+      "Content-Disposition"
+    ]
+  }
+}

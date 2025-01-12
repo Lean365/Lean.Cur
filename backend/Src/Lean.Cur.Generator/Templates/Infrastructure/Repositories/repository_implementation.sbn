@@ -21,7 +21,7 @@ namespace Lean.Cur.Infrastructure.Repositories;
 /// {{ entity_name }}仓储实现
 /// </summary>
 /// <remarks>
-/// 该类实现了ILean{{ entity_name }}Repository接口，继承自LeanBaseRepository基类
+/// 该类实现了ILean{{ entity_name }}Repository接口，继承自LeanLeanRepository基类
 /// 提供{{ entity_name }}实体的数据访问实现，包括：
 /// 
 /// 1. 基础功能实现（继承自基类）：
@@ -39,7 +39,7 @@ namespace Lean.Cur.Infrastructure.Repositories;
 ///    - 数据一致性检查
 ///    - 数据库异常转换
 /// </remarks>
-public class Lean{{ entity_name }}Repository : LeanBaseRepository<Lean{{ entity_name }}>, ILean{{ entity_name }}Repository
+public class Lean{{ entity_name }}Repository : LeanLeanRepository<Lean{{ entity_name }}>, ILean{{ entity_name }}Repository
 {
     /// <summary>
     /// 构造函数

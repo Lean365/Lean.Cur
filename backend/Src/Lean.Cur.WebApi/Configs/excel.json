@@ -1,0 +1,52 @@
+{
+  "Excel": {
+    "LicenseContext": "NonCommercial",
+    "Export": {
+      "MaxRowsPerSheet": 100000,
+      "DefaultSheetNamePrefix": "Sheet",
+      "DefaultDateFormat": "yyyy-MM-dd HH:mm:ss",
+      "NumberFormat": {
+        "Integer": "#,##0",
+        "Decimal": "#,##0.00",
+        "Percentage": "0.00%",
+        "Currency": "¥#,##0.00",
+        "Scientific": "0.00E+00"
+      },
+      "DefaultHeaderStyle": {
+        "FontSize": 11,
+        "IsBold": true,
+        "BackgroundColor": "#E0E6F1",
+        "FontColor": "#000000",
+        "HorizontalAlignment": "Center",
+        "VerticalAlignment": "Center"
+      }
+    },
+    "Import": {
+      "MaxFileSize": 10485760,
+      "AllowedExtensions": [
+        ".xlsx",
+        ".xls"
+      ],
+      "SkipEmptyRows": true,
+      "SkipHeaderRow": true,
+      "DateFormats": [
+        "yyyy-MM-dd HH:mm:ss",
+        "yyyy-MM-dd",
+        "yyyy/MM/dd HH:mm:ss",
+        "yyyy/MM/dd"
+      ]
+    },
+    "Office": {
+      "Creator": "Lean.Cur",
+      "Company": "Lean.Cur",
+      "Manager": "Admin",
+      "Title": "",
+      "Subject": "",
+      "Category": "",
+      "Keywords": "",
+      "Comments": "",
+      "Application": "Lean.Cur",
+      "AppVersion": "1.0.0"
+    }
+  }
+}

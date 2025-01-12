@@ -8,10 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="SqlSugarCore" Version="5.1.4.173" />
     <ProjectReference Include="..\Lean.Cur.Domain\Lean.Cur.Domain.csproj" />
     <ProjectReference Include="..\Lean.Cur.Application\Lean.Cur.Application.csproj" />
     <ProjectReference Include="..\Lean.Cur.Infrastructure\Lean.Cur.Infrastructure.csproj" />
-    <ProjectReference Include="..\Lean.Cur.Api\Lean.Cur.Api.csproj" />
+    <ProjectReference Include="..\Lean.Cur.WebApi\Lean.Cur.WebApi.csproj" />
     <PackageReference Include="Scriban" Version="5.9.0" />
   </ItemGroup>
 

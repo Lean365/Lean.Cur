@@ -2,12 +2,22 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Lean.Cur.Application.Authorization;
 
+/// <summary>
+/// 权限要求
+/// </summary>
 public class LeanPermissionRequirement : IAuthorizationRequirement
 {
-  public string PermissionCode { get; }
+  /// <summary>
+  /// 权限标识
+  /// </summary>
+  public string Permission { get; }
 
-  public LeanPermissionRequirement(string permissionCode)
+  /// <summary>
+  /// 构造函数
+  /// </summary>
+  /// <param name="permission">权限标识</param>
+  public LeanPermissionRequirement(string permission)
   {
-    PermissionCode = permissionCode;
+    Permission = permission;
   }
 }

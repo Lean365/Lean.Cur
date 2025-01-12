@@ -1,31 +1,33 @@
-using Lean.Cur.Application.Services;
-using Lean.Cur.Application.Services.Impl;
-using Lean.Cur.Domain.Repositories;
-using Lean.Cur.Infrastructure.Cache;
-using Lean.Cur.Infrastructure.Database;
-using Lean.Cur.Infrastructure.Repositories;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Lean.Cur.Domain.Cache;
+using Lean.Cur.Application.Services.Admin;
+using Lean.Cur.Application.Services.Auth;
+using Lean.Cur.Application.Services.Logging;
+using Lean.Cur.Infrastructure.Services.Admin;
+using Lean.Cur.Infrastructure.Services.Auth;
+using Lean.Cur.Infrastructure.Services.Logging;
 
 namespace Lean.Cur.Infrastructure.Extensions;
 
+/// <summary>
+/// 服务集合扩展方法
+/// </summary>
 public static class ServiceCollectionExtensions
 {
-  public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
+  /// <summary>
+  /// 注册所有业务服务
+  /// </summary>
+  /// <param name="services">服务集合</param>
+  /// <returns>服务集合</returns>
+  public static IServiceCollection RegisterServices(this IServiceCollection services)
   {
-    services.AddScoped<LeanDbContext>();
+    // 认证服务
+    services.AddScoped<IAuthService, AuthService>();
 
-    services.AddScoped(typeof(ILeanBaseRepository<>), typeof(LeanBaseRepository<>));
-    services.AddScoped<ILeanUserRepository, LeanUserRepository>();
-    services.AddScoped<ILeanRoleRepository, LeanRoleRepository>();
-    services.AddScoped<ILeanPermissionRepository, LeanPermissionRepository>();
+    // 用户服务
+    services.AddScoped<ILeanUserService, LeanUserService>();
 
-    services.AddMemoryCache();
-    services.AddScoped<ILeanCache, LeanMemoryCache>();
-
-    services.AddScoped<ILeanAuthService, LeanAuthService>();
-    services.AddScoped<ILeanPermissionService, LeanPermissionService>();
+    // 日志服务
+    services.AddScoped<ILoginLogService, LoginLogService>();
 
     return services;
   }

@@ -17,7 +17,7 @@ namespace Lean.Cur.Domain.Repositories;
 /// {{ entity_name }}仓储接口
 /// </summary>
 /// <remarks>
-/// 该接口继承自ILeanBaseRepository，提供{{ entity_name }}实体的基础数据访问功能
+/// 该接口继承自ILeanLeanRepository，提供{{ entity_name }}实体的基础数据访问功能
 /// 
 /// 基础功能包括：
 /// 1. 查询操作
@@ -43,7 +43,7 @@ namespace Lean.Cur.Domain.Repositories;
 /// 2. 可以添加批量操作方法
 /// 3. 可以添加复杂查询方法
 /// </remarks>
-public interface ILean{{ entity_name }}Repository : ILeanBaseRepository<Lean{{ entity_name }}>
+public interface ILean{{ entity_name }}Repository : ILeanLeanRepository<Lean{{ entity_name }}>
 {
     /// <summary>
     /// 根据条件获取{{ entity_name }}列表

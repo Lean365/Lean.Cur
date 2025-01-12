@@ -1,0 +1,49 @@
+{
+  "LeanSecuritySettings": {
+    "RateLimit": {
+      "DefaultSeconds": 1,
+      "DefaultMaxRequests": 10,
+      "IpRateLimit": {
+        "Seconds": 60,
+        "MaxRequests": 1000
+      },
+      "UserRateLimit": {
+        "Seconds": 60,
+        "MaxRequests": 100
+      }
+    },
+    "SqlInjection": {
+      "Enabled": true,
+      "LogLevel": "Warning",
+      "ExcludePaths": [
+        "/api/health",
+        "/swagger"
+      ],
+      "CustomPatterns": []
+    },
+    "AntiForgery": {
+      "Enabled": true,
+      "HeaderName": "X-XSRF-TOKEN",
+      "CookieName": "XSRF-TOKEN",
+      "ExcludePaths": [
+        "/api/auth/login",
+        "/api/auth/logout"
+      ]
+    },
+    "DataScope": {
+      "Enabled": true,
+      "DefaultScopeType": "Self",
+      "ExcludePaths": []
+    },
+    "Permission": {
+      "Enabled": true,
+      "SuperAdminRoleCode": "superadmin",
+      "IgnorePaths": [
+        "/api/auth/login",
+        "/api/auth/logout",
+        "/api/common"
+      ],
+      "CacheExpiration": 3600
+    }
+  }
+}

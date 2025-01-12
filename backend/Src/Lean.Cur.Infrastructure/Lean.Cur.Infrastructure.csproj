@@ -7,10 +7,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="SqlSugarCore" Version="5.1.4.173" />
     <ProjectReference Include="..\Lean.Cur.Domain\Lean.Cur.Domain.csproj" />
     <ProjectReference Include="..\Lean.Cur.Application\Lean.Cur.Application.csproj" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="8.0.0" />
-    <PackageReference Include="StackExchange.Redis" Version="2.7.10" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="8.0.1" />
+    <PackageReference Include="StackExchange.Redis" Version="2.8.24" />
+    <PackageReference Include="Mapster" Version="7.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Database\" />
+    <Folder Include="Extensions\" />
   </ItemGroup>
 
 </Project>

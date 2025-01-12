@@ -1,0 +1,12 @@
+{
+  "LeanCacheSettings": {
+    "UseRedis": false,
+    "Redis": {
+      "ConnectionString": "localhost:6379",
+      "DefaultDatabase": 0,
+      "Password": null,
+      "Ssl": false,
+      "ConnectTimeout": 5000
+    }
+  }
+}

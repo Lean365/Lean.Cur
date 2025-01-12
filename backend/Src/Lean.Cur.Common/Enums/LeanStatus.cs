@@ -16,20 +16,17 @@ namespace Lean.Cur.Common.Enums;
 public enum LeanStatus
 {
   /// <summary>
-  /// 禁用
-  /// </summary>
-  [Description("禁用")]
-  Disabled = 0,
-
-  /// <summary>
   /// 正常
   /// </summary>
-  [Description("正常")]
-  Normal = 1,
+  Normal = 0,
 
   /// <summary>
-  /// 已删除
+  /// 禁用
   /// </summary>
-  [Description("已删除")]
+  Disabled = 1,
+
+  /// <summary>
+  /// 删除
+  /// </summary>
   Deleted = 2
 }

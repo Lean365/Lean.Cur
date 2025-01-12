@@ -14,65 +14,29 @@ namespace Lean.Cur.Common.Configs;
 public class LeanSecuritySettings
 {
   /// <summary>
-  /// CORS配置
-  /// </summary>
-  public LeanCorsSettings Cors { get; set; } = new();
-
-  /// <summary>
   /// 限流配置
   /// </summary>
-  public LeanRateLimitSettings RateLimit { get; set; } = new();
+  public LeanRateLimitSettings? RateLimit { get; set; }
 
   /// <summary>
   /// SQL注入配置
   /// </summary>
-  public LeanSqlInjectionSettings SqlInjection { get; set; } = new();
+  public LeanSqlInjectionSettings? SqlInjection { get; set; }
 
   /// <summary>
   /// CSRF防护配置
   /// </summary>
-  public LeanAntiForgerySettings AntiForgery { get; set; } = new();
+  public LeanAntiForgerySettings? AntiForgery { get; set; }
 
   /// <summary>
   /// 数据范围配置
   /// </summary>
-  public LeanDataScopeSettings DataScope { get; set; } = new();
+  public LeanDataScopeSettings? DataScope { get; set; }
 
   /// <summary>
   /// 权限配置
   /// </summary>
-  public LeanPermissionSettings Permission { get; set; } = new();
-}
-
-/// <summary>
-/// CORS配置
-/// </summary>
-public class LeanCorsSettings
-{
-  /// <summary>
-  /// 是否启用
-  /// </summary>
-  public bool Enabled { get; set; } = true;
-
-  /// <summary>
-  /// 允许的来源
-  /// </summary>
-  public string[] Origins { get; set; } = Array.Empty<string>();
-
-  /// <summary>
-  /// 允许的HTTP方法
-  /// </summary>
-  public string[] Methods { get; set; } = Array.Empty<string>();
-
-  /// <summary>
-  /// 允许的请求头
-  /// </summary>
-  public string[] Headers { get; set; } = Array.Empty<string>();
-
-  /// <summary>
-  /// 是否允许携带凭证
-  /// </summary>
-  public bool AllowCredentials { get; set; } = true;
+  public LeanPermissionSettings? Permission { get; set; }
 }
 
 /// <summary>
@@ -83,22 +47,22 @@ public class LeanRateLimitSettings
   /// <summary>
   /// 默认时间窗口（秒）
   /// </summary>
-  public int DefaultSeconds { get; set; } = 1;
+  public int DefaultSeconds { get; set; }
 
   /// <summary>
   /// 默认最大请求次数
   /// </summary>
-  public int DefaultMaxRequests { get; set; } = 10;
+  public int DefaultMaxRequests { get; set; }
 
   /// <summary>
   /// IP限流配置
   /// </summary>
-  public LeanRateLimitRule IpRateLimit { get; set; } = new();
+  public LeanRateLimitRule? IpRateLimit { get; set; }
 
   /// <summary>
   /// 用户限流配置
   /// </summary>
-  public LeanRateLimitRule UserRateLimit { get; set; } = new();
+  public LeanRateLimitRule? UserRateLimit { get; set; }
 }
 
 /// <summary>
@@ -109,12 +73,12 @@ public class LeanRateLimitRule
   /// <summary>
   /// 时间窗口（秒）
   /// </summary>
-  public int Seconds { get; set; } = 60;
+  public int Seconds { get; set; }
 
   /// <summary>
   /// 最大请求次数
   /// </summary>
-  public int MaxRequests { get; set; } = 100;
+  public int MaxRequests { get; set; }
 }
 
 /// <summary>
@@ -125,7 +89,7 @@ public class LeanSqlInjectionSettings
   /// <summary>
   /// 是否启用
   /// </summary>
-  public bool Enabled { get; set; } = true;
+  public bool Enabled { get; set; }
 
   /// <summary>
   /// 日志级别
@@ -135,12 +99,12 @@ public class LeanSqlInjectionSettings
   /// <summary>
   /// 排除路径
   /// </summary>
-  public string[] ExcludePaths { get; set; } = Array.Empty<string>();
+  public List<string> ExcludePaths { get; set; } = new();
 
   /// <summary>
   /// 自定义检测模式
   /// </summary>
-  public string[] CustomPatterns { get; set; } = Array.Empty<string>();
+  public List<string> CustomPatterns { get; set; } = new();
 }
 
 /// <summary>
@@ -151,7 +115,7 @@ public class LeanAntiForgerySettings
   /// <summary>
   /// 是否启用
   /// </summary>
-  public bool Enabled { get; set; } = true;
+  public bool Enabled { get; set; }
 
   /// <summary>
   /// 请求头名称
@@ -166,7 +130,7 @@ public class LeanAntiForgerySettings
   /// <summary>
   /// 排除路径
   /// </summary>
-  public string[] ExcludePaths { get; set; } = Array.Empty<string>();
+  public List<string> ExcludePaths { get; set; } = new();
 }
 
 /// <summary>
@@ -177,7 +141,7 @@ public class LeanDataScopeSettings
   /// <summary>
   /// 是否启用
   /// </summary>
-  public bool Enabled { get; set; } = true;
+  public bool Enabled { get; set; }
 
   /// <summary>
   /// 默认数据范围类型
@@ -187,7 +151,7 @@ public class LeanDataScopeSettings
   /// <summary>
   /// 排除路径
   /// </summary>
-  public string[] ExcludePaths { get; set; } = Array.Empty<string>();
+  public List<string> ExcludePaths { get; set; } = new();
 }
 
 /// <summary>
@@ -198,7 +162,7 @@ public class LeanPermissionSettings
   /// <summary>
   /// 是否启用
   /// </summary>
-  public bool Enabled { get; set; } = true;
+  public bool Enabled { get; set; }
 
   /// <summary>
   /// 超级管理员角色编码
@@ -208,10 +172,10 @@ public class LeanPermissionSettings
   /// <summary>
   /// 忽略路径
   /// </summary>
-  public string[] IgnorePaths { get; set; } = Array.Empty<string>();
+  public List<string> IgnorePaths { get; set; } = new();
 
   /// <summary>
   /// 缓存过期时间（秒）
   /// </summary>
-  public int CacheExpiration { get; set; } = 3600;
+  public int CacheExpiration { get; set; }
 }

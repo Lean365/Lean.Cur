@@ -13,7 +13,7 @@ public class LeanCacheSettings
   /// <summary>
   /// Redis配置
   /// </summary>
-  public LeanRedisSettings Redis { get; set; } = new();
+  public LeanRedisSettings? Redis { get; set; } = new();
 }
 
 /// <summary>
@@ -24,7 +24,7 @@ public class LeanRedisSettings
   /// <summary>
   /// 连接字符串
   /// </summary>
-  public string ConnectionString { get; set; } = "localhost:6379";
+  public string ConnectionString { get; set; } = string.Empty;
 
   /// <summary>
   /// 默认数据库

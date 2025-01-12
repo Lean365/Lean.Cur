@@ -7,6 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Mapster" Version="7.4.0" />
+    <PackageReference Include="SqlSugarCore" Version="5.1.4.173" />
     <ProjectReference Include="..\Lean.Cur.Domain\Lean.Cur.Domain.csproj" />
     <ProjectReference Include="..\Lean.Cur.Common\Lean.Cur.Common.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.1" />
