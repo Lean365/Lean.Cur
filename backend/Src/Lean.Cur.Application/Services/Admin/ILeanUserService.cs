@@ -73,9 +73,11 @@ public interface ILeanUserService
   Task<bool> UpdatePasswordAsync(long userId, LeanUserUpdatePasswordDto updateDto);
 
   /// <summary>
-  /// 导入用户数据
+  /// 导入用户
   /// </summary>
-  Task<(int total, int success, List<string> errors)> ImportAsync(IFormFile file);
+  /// <param name="file">Excel文件</param>
+  /// <returns>导入结果</returns>
+  Task<LeanUserImportResultDto> ImportAsync(IFormFile file);
 
   /// <summary>
   /// 导出用户数据
@@ -100,4 +102,11 @@ public interface ILeanUserService
   /// <param name="userId">用户ID</param>
   /// <returns>权限列表</returns>
   Task<List<string>> GetUserPermissionsAsync(long userId);
+
+  /// <summary>
+  /// 获取用户菜单权限列表
+  /// </summary>
+  /// <param name="userId">用户ID</param>
+  /// <returns>权限标识列表</returns>
+  Task<List<string>> GetUserMenuPermissionsAsync(long userId);
 }

@@ -4,59 +4,51 @@ using Microsoft.Extensions.Options;
 namespace Lean.Cur.Application.Authorization;
 
 /// <summary>
-/// 权限策略提供者
+/// 权限策略提供器
 /// </summary>
+/// <remarks>
+/// 根据权限特性创建权限策略
+/// 支持动态添加权限策略
+/// </remarks>
 public class LeanPermissionPolicyProvider : IAuthorizationPolicyProvider
 {
-  private readonly AuthorizationOptions _options;
+    private readonly DefaultAuthorizationPolicyProvider _fallbackPolicyProvider;
 
-  /// <summary>
-  /// 构造函数
-  /// </summary>
-  /// <param name="options">授权选项</param>
-  public LeanPermissionPolicyProvider(IOptions<AuthorizationOptions> options)
-  {
-    _options = options.Value;
-  }
-
-  /// <summary>
-  /// 获取默认策略
-  /// </summary>
-  public Task<AuthorizationPolicy> GetDefaultPolicyAsync()
-  {
-    return Task.FromResult(_options.DefaultPolicy);
-  }
-
-  /// <summary>
-  /// 获取回退策略
-  /// </summary>
-  public Task<AuthorizationPolicy?> GetFallbackPolicyAsync()
-  {
-    return Task.FromResult<AuthorizationPolicy?>(_options.FallbackPolicy);
-  }
-
-  /// <summary>
-  /// 根据策略名称获取策略
-  /// </summary>
-  /// <param name="policyName">策略名称</param>
-  public Task<AuthorizationPolicy?> GetPolicyAsync(string policyName)
-  {
-    // 如果策略已经存在，直接返回
-    var policy = _options.GetPolicy(policyName);
-    if (policy != null)
+    /// <summary>
+    /// 构造函数
+    /// </summary>
+    /// <param name="options">授权选项</param>
+    public LeanPermissionPolicyProvider(IOptions<AuthorizationOptions> options)
     {
-      return Task.FromResult<AuthorizationPolicy?>(policy);
+        _fallbackPolicyProvider = new DefaultAuthorizationPolicyProvider(options);
     }
 
-    // 创建新的策略
-    policy = new AuthorizationPolicyBuilder()
-        .RequireAuthenticatedUser()
-        .AddRequirements(new LeanPermissionRequirement(policyName))
-        .Build();
+    /// <summary>
+    /// 获取默认策略
+    /// </summary>
+    /// <returns>默认策略</returns>
+    public Task<AuthorizationPolicy> GetDefaultPolicyAsync() => _fallbackPolicyProvider.GetDefaultPolicyAsync();
 
-    // 添加到选项中
-    _options.AddPolicy(policyName, policy);
+    /// <summary>
+    /// 获取回退策略
+    /// </summary>
+    /// <returns>回退策略</returns>
+    public Task<AuthorizationPolicy?> GetFallbackPolicyAsync() => _fallbackPolicyProvider.GetFallbackPolicyAsync();
 
-    return Task.FromResult<AuthorizationPolicy?>(policy);
-  }
-}
+    /// <summary>
+    /// 根据策略名称获取策略
+    /// </summary>
+    /// <param name="policyName">策略名称，对应菜单的Perms字段</param>
+    /// <returns>权限策略</returns>
+    public Task<AuthorizationPolicy?> GetPolicyAsync(string policyName)
+    {
+        // 创建权限要求
+        var requirement = new LeanPermissionRequirement(policyName);
+
+        // 创建权限策略
+        var policy = new AuthorizationPolicyBuilder();
+        policy.AddRequirements(requirement);
+
+        return Task.FromResult<AuthorizationPolicy?>(policy.Build());
+    }
+} 

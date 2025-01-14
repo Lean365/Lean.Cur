@@ -135,10 +135,6 @@ try
         policy.RequireAuthenticatedUser());
   });
 
-  // 注册权限处理服务和策略提供者
-  builder.Services.AddScoped<IAuthorizationHandler, LeanPermissionHandler>();
-  builder.Services.AddSingleton<IAuthorizationPolicyProvider, LeanPermissionPolicyProvider>();
-
   #endregion 认证和授权配置
 
   #region 缓存配置

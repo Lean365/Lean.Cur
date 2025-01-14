@@ -466,6 +466,11 @@ public class LeanUserImportDto
     /// </summary>
     [StringLength(500, ErrorMessage = "备注长度不能超过500个字符")]
     public string? Remark { get; set; }
+
+    /// <summary>
+    /// 错误信息
+    /// </summary>
+    public string? ErrorMessage { get; set; }
 }
 
 /// <summary>
@@ -527,6 +532,37 @@ public class LeanUserExportDto
     /// 更新时间
     /// </summary>
     public string? UpdateTime { get; set; }
+}
+
+/// <summary>
+/// 用户导入结果DTO
+/// </summary>
+/// <remarks>
+/// 用于返回导入结果，包含以下特点：
+/// 1. 包含导入的统计信息
+/// 2. 包含详细的错误信息
+/// </remarks>
+public class LeanUserImportResultDto
+{
+    /// <summary>
+    /// 总记录数
+    /// </summary>
+    public int TotalCount { get; set; }
+
+    /// <summary>
+    /// 成功记录数
+    /// </summary>
+    public int SuccessCount { get; set; }
+
+    /// <summary>
+    /// 失败记录数
+    /// </summary>
+    public int FailureCount { get; set; }
+
+    /// <summary>
+    /// 失败记录列表
+    /// </summary>
+    public List<LeanUserImportDto> FailureItems { get; set; } = new();
 }
 
 #endregion 导入导出

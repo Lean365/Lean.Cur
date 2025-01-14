@@ -1,6 +1,7 @@
 using Lean.Cur.Application.Dtos.Logging;
 using Lean.Cur.Application.Services.Logging;
 using Lean.Cur.Common.Excel;
+using Lean.Cur.Common.Exceptions;
 using Lean.Cur.Common.Pagination;
 using Lean.Cur.Domain.Entities.Admin;
 using Lean.Cur.Domain.Entities.Logging;
@@ -54,21 +55,18 @@ namespace Lean.Cur.Infrastructure.Services.Logging
       }
     }
 
-    /// <inheritdoc/>
-    public async Task<LoginLogDto?> GetAsync(long id)
+    /// <summary>
+    /// 获取登录日志
+    /// </summary>
+    /// <param name="id">日志ID</param>
+    /// <returns>登录日志</returns>
+    public async Task<LoginLogDto> GetAsync(long id)
     {
-      try
-      {
-        return await _db.Queryable<LeanLoginLog>()
-            .Where(x => x.Id == id)
-            .Select<LoginLogDto>()
-            .FirstAsync();
-      }
-      catch (Exception ex)
-      {
-        _logger.LogError(ex, "获取登录日志详情失败, ID: {Id}", id);
-        throw;
-      }
+      var log = await _db.Queryable<LeanLoginLog>()
+          .Where(l => l.Id == id)
+          .Select<LoginLogDto>()
+          .FirstAsync() ?? throw new BusinessException("登录日志不存在");
+      return log;
     }
 
     /// <inheritdoc/>

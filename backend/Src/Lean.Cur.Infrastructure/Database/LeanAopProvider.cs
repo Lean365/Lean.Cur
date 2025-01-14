@@ -75,9 +75,10 @@ namespace Lean.Cur.Infrastructure.Database
     /// <summary>
     /// 对敏感信息进行脱敏
     /// </summary>
-    private string MaskSensitiveInfo(string input)
+    private string MaskSensitiveInfo(string? input)
     {
-      if (string.IsNullOrEmpty(input)) return input;
+      if (string.IsNullOrEmpty(input))
+        return string.Empty;
 
       // 密码脱敏
       input = Regex.Replace(input, @"Password=([^;]*)", "Password=******", RegexOptions.IgnoreCase);
@@ -104,9 +105,10 @@ namespace Lean.Cur.Infrastructure.Database
     /// <summary>
     /// 对敏感参数值进行脱敏
     /// </summary>
-    private string MaskSensitiveParamValue(string paramName, string paramValue)
+    private string MaskSensitiveParamValue(string paramName, string? paramValue)
     {
-      if (string.IsNullOrEmpty(paramValue)) return "null";
+      if (string.IsNullOrEmpty(paramValue))
+        return string.Empty;
 
       var lowerParamName = paramName.ToLower();
 

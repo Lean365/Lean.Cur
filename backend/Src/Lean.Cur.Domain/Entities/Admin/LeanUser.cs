@@ -203,6 +203,36 @@ public class LeanUser : LeanBaseEntity
   public List<LeanUserDevice>? UserDevices { get; set; }
 
   /// <summary>
+  /// 部门ID
+  /// </summary>
+  [SugarColumn(ColumnName = "dept_id", ColumnDescription = "部门ID")]
+  public long? DeptId { get; set; }
+
+  /// <summary>
+  /// 岗位ID
+  /// </summary>
+  [SugarColumn(ColumnName = "post_id", ColumnDescription = "岗位ID")]
+  public long? PostId { get; set; }
+
+  /// <summary>
+  /// 部门信息
+  /// </summary>
+  [Navigate(NavigateType.OneToOne, nameof(DeptId))]
+  public LeanDept? Dept { get; set; }
+
+  /// <summary>
+  /// 岗位信息
+  /// </summary>
+  [Navigate(NavigateType.OneToOne, nameof(PostId))]
+  public LeanPost? Post { get; set; }
+
+  /// <summary>
+  /// 用户角色关联
+  /// </summary>
+  [Navigate(NavigateType.OneToMany, nameof(LeanUserRole.UserId))]
+  public List<LeanUserRole>? UserRoles { get; set; }
+
+  /// <summary>
   /// 构造函数
   /// </summary>
   public LeanUser()

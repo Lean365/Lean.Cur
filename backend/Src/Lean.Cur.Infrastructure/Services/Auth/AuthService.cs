@@ -226,42 +226,26 @@ public class AuthService : IAuthService
   /// <returns>是否成功</returns>
   public async Task<bool> LogoutAsync(long userId)
   {
-    try
+    var user = await _db.Queryable<LeanUser>()
+        .Where(u => u.Id == userId)
+        .FirstAsync() ?? throw new BusinessException("用户不存在");
+
+    // 更新用户扩展信息
+    var userExtend = await _db.Queryable<LeanUserExtend>()
+        .Where(ue => ue.UserId == userId)
+        .FirstAsync();
+
+    if (userExtend != null)
     {
-      // 移除刷新令牌缓存
-      var cacheKey = $"refresh_token:{userId}";
-      _cache.Remove(cacheKey);
-
-      // 更新用户扩展信息
-      var userExtend = await _db.Queryable<LeanUserExtend>()
-          .Where(ue => ue.UserId == userId)
-          .FirstAsync();
-
-      if (userExtend != null)
-      {
-        userExtend.LastLogoutTime = DateTime.Now;
-        userExtend.OnlineStatus = 0; // 设置为离线状态
-
-        // 计算本次在线时长（分钟）
-        if (userExtend.LastLoginTime.HasValue)
-        {
-          var onlineMinutes = (int)(DateTime.Now - userExtend.LastLoginTime.Value).TotalMinutes;
-          userExtend.TotalOnlineTime += onlineMinutes;
-        }
-
+        userExtend.OnlineStatus = 0;
+        userExtend.LastActiveTime = DateTime.Now;
         await _db.Updateable(userExtend).ExecuteCommandAsync();
-      }
-
-      // 记录登出日志
-      await RecordLoginLogAsync(userId, null, 2, true);
-
-      return true;
     }
-    catch (Exception ex)
-    {
-      _logger.LogError(ex, "退出登录时发生错误: {UserId}", userId);
-      return false;
-    }
+
+    // 记录登出日志
+    await RecordLoginLogAsync(userId, string.Empty, 2, true);
+
+    return true;
   }
 
   /// <summary>
@@ -453,32 +437,32 @@ public class AuthService : IAuthService
   {
     try
     {
-      var httpContext = _httpContextAccessor.HttpContext;
-      var userAgent = httpContext?.Request.Headers["User-Agent"].ToString();
-      var ip = httpContext?.Connection.RemoteIpAddress?.ToString();
+        var httpContext = _httpContextAccessor.HttpContext;
+        var userAgent = httpContext?.Request.Headers["User-Agent"].ToString();
+        var ip = httpContext?.Connection.RemoteIpAddress?.ToString();
 
-      // 解析User-Agent获取浏览器和操作系统信息
-      var (browser, os) = ParseUserAgent(userAgent);
+        // 解析User-Agent获取浏览器和操作系统信息
+        var (browser, os) = ParseUserAgent(userAgent);
 
-      var log = new LeanLoginLog
-      {
-        UserId = userId,
-        UserName = userName,
-        LoginType = loginType,
-        Status = success ? 1 : 2,
-        LoginTime = DateTime.Now,
-        IpAddress = ip,
-        Browser = browser,
-        Os = os,
-        Device = userAgent,
-        Message = message
-      };
+        var log = new LeanLoginLog
+        {
+            UserId = userId,
+            UserName = userName,
+            LoginType = loginType,
+            Status = success ? 1 : 2,
+            LoginTime = DateTime.Now,
+            IpAddress = ip,
+            Browser = browser,
+            Os = os,
+            Device = userAgent,
+            Message = message
+        };
 
-      await _db.Insertable(log).ExecuteCommandAsync();
+        await _db.Insertable(log).ExecuteCommandAsync();
     }
     catch (Exception ex)
     {
-      _logger.LogError(ex, "记录登录日志时发生错误");
+        _logger.LogError(ex, "记录登录日志时发生错误");
     }
   }
 

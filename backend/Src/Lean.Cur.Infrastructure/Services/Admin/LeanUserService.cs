@@ -6,11 +6,10 @@ using Lean.Cur.Common.Exceptions;
 using Lean.Cur.Common.Extensions;
 using Lean.Cur.Common.Pagination;
 using Lean.Cur.Common.Security;
+using Lean.Cur.Domain.Cache;
 using Lean.Cur.Domain.Entities.Admin;
-using Lean.Cur.Domain.Entities.Authorization;
 using Mapster;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Caching.Memory;
 using SqlSugar;
 
 namespace Lean.Cur.Infrastructure.Services.Admin;
@@ -21,10 +20,10 @@ namespace Lean.Cur.Infrastructure.Services.Admin;
 public class LeanUserService : ILeanUserService
 {
   private readonly ISqlSugarClient _db;
-  private readonly IMemoryCache _cache;
+  private readonly ILeanCache _cache;
   private readonly LeanExcelHelper _excel;
 
-  public LeanUserService(ISqlSugarClient db, IMemoryCache cache, LeanExcelHelper excel)
+  public LeanUserService(ISqlSugarClient db, ILeanCache cache, LeanExcelHelper excel)
   {
     _db = db;
     _cache = cache;
@@ -257,72 +256,74 @@ public class LeanUserService : ILeanUserService
   }
 
   /// <inheritdoc/>
-  public async Task<(int total, int success, List<string> errors)> ImportAsync(IFormFile file)
+  public async Task<LeanUserImportResultDto> ImportAsync(IFormFile file)
   {
     if (file == null || file.Length == 0)
     {
-      throw new LeanUserFriendlyException("请选择要导入的文件");
+        throw new LeanUserFriendlyException("请选择要导入的文件");
     }
 
     var result = await _excel.Import<LeanUserImportDto>(file.OpenReadStream(), "import.xlsx");
     if (result?.Data == null || !result.Data.Any())
     {
-      throw new LeanUserFriendlyException("导入的数据为空");
+        throw new LeanUserFriendlyException("导入的数据为空");
     }
 
-    var errors = new List<string>();
-    var success = 0;
-    var total = result.Data.Count;
+    var importResult = new LeanUserImportResultDto
+    {
+        TotalCount = result.Data.Count,
+        SuccessCount = 0,
+        FailureCount = 0,
+        FailureItems = new List<LeanUserImportDto>()
+    };
 
     foreach (var importDto in result.Data)
     {
-      try
-      {
-        // 检查用户名是否已存在
-        var existUser = await _db.Queryable<LeanUser>()
-            .Where(u => u.UserName == importDto.UserName && u.IsDeleted == 0)
-            .FirstAsync();
-        if (existUser != null)
+        try
         {
-          errors.Add($"用户名 {importDto.UserName} 已存在");
-          continue;
-        }
+            // 检查用户名是否已存在
+            var existUser = await _db.Queryable<LeanUser>()
+                .Where(u => u.UserName == importDto.UserName && u.IsDeleted == 0)
+                .FirstAsync();
+            if (existUser != null)
+            {
+                importDto.ErrorMessage = "用户名已存在";
+                importResult.FailureItems.Add(importDto);
+                importResult.FailureCount++;
+                continue;
+            }
 
-        // 检查手机号是否已存在
-        existUser = await _db.Queryable<LeanUser>()
-            .Where(u => u.Phone == importDto.Phone && u.IsDeleted == 0)
-            .FirstAsync();
-        if (existUser != null)
+            // 创建用户
+            var salt = LeanPassword.GenerateSalt();
+            var password = LeanPassword.HashPassword("123456", salt);
+
+            var user = new LeanUser
+            {
+                UserName = importDto.UserName,
+                NickName = importDto.NickName,
+                EnglishName = importDto.EnglishName,
+                Gender = importDto.Gender,
+                Email = importDto.Email,
+                Phone = importDto.Phone,
+                UserType = importDto.UserType,
+                Status = LeanStatus.Normal,
+                Remark = importDto.Remark,
+                Password = password,
+                PasswordSalt = salt
+            };
+
+            await _db.Insertable(user).ExecuteCommandAsync();
+            importResult.SuccessCount++;
+        }
+        catch (Exception)
         {
-          errors.Add($"手机号 {importDto.Phone} 已存在");
-          continue;
+            importDto.ErrorMessage = "导入失败";
+            importResult.FailureItems.Add(importDto);
+            importResult.FailureCount++;
         }
-
-        // 检查邮箱是否已存在
-        existUser = await _db.Queryable<LeanUser>()
-            .Where(u => u.Email == importDto.Email && u.IsDeleted == 0)
-            .FirstAsync();
-        if (existUser != null)
-        {
-          errors.Add($"邮箱 {importDto.Email} 已存在");
-          continue;
-        }
-
-        var user = importDto.Adapt<LeanUser>();
-        user.Status = LeanStatus.Normal;
-        user.PasswordSalt = LeanPassword.GenerateSalt();
-        user.Password = LeanPassword.HashPassword(user.Phone, user.PasswordSalt); // 默认使用手机号作为密码
-
-        await _db.Insertable(user).ExecuteCommandAsync();
-        success++;
-      }
-      catch (Exception ex)
-      {
-        errors.Add($"导入用户 {importDto.UserName} 失败：{ex.Message}");
-      }
     }
 
-    return (total, success, errors);
+    return importResult;
   }
 
   /// <inheritdoc/>
@@ -377,30 +378,54 @@ public class LeanUserService : ILeanUserService
   /// <inheritdoc/>
   public async Task<List<string>> GetUserPermissionsAsync(long userId)
   {
-    // 从缓存获取权限列表
-    var cacheKey = $"user_permissions_{userId}";
-    if (_cache.TryGetValue<List<string>>(cacheKey, out var permissions))
-    {
-      return permissions ?? new List<string>();
-    }
-
-    // 查询用户的所有权限
-    permissions = await _db.Queryable<LeanUserRole>()
-        .LeftJoin<LeanRole>((ur, r) => ur.RoleId == r.Id)
-        .LeftJoin<LeanRolePermission>((ur, r, rp) => r.Id == rp.RoleId)
-        .LeftJoin<LeanPermission>((ur, r, rp, p) => rp.PermissionId == p.Id)
-        .Where((ur, r, rp, p) => ur.UserId == userId
-            && ur.IsDeleted == 0
-            && r.Status == 1
-            && r.IsDeleted == 0
-            && p.Status == 1
-            && p.IsDeleted == 0)
-        .Select((ur, r, rp, p) => p.PermissionCode)
+    var permissions = await _db.Queryable<LeanUserRole>()
+        .InnerJoin<LeanRoleMenu>((ur, rm) => ur.RoleId == rm.RoleId)
+        .Where(ur => ur.UserId == userId)
+        .Select((ur, rm) => rm.Permission)
+        .Where(p => !string.IsNullOrEmpty(p))
         .ToListAsync();
 
-    // 缓存权限列表（1小时过期）
-    _cache.Set(cacheKey, permissions, TimeSpan.FromHours(1));
+    return permissions.Where(p => p != null).Select(p => p!).Distinct().ToList();
+  }
+
+  /// <summary>
+  /// 获取用户菜单权限列表
+  /// </summary>
+  /// <param name="userId">用户ID</param>
+  /// <returns>权限标识列表</returns>
+  public async Task<List<string>> GetUserMenuPermissionsAsync(long userId)
+  {
+    // 从缓存中获取权限列表
+    var cacheKey = $"user_menu_permissions:{userId}";
+    var permissions = await _cache.GetAsync<List<string>>(cacheKey);
+    if (permissions != null)
+    {
+      return permissions;
+    }
+
+    // 查询用户的菜单权限
+    permissions = await _db.Queryable<LeanUserRole>()
+        .LeftJoin<LeanRole>((ur, r) => ur.RoleId == r.Id)
+        .LeftJoin<LeanRoleMenu>((ur, r, rm) => r.Id == rm.RoleId)
+        .Where(ur => ur.UserId == userId)
+        .Where(ur => ur.IsDeleted == 0)
+        .Where((ur, r) => r.Status == LeanStatus.Normal)
+        .Where((ur, r) => r.IsDeleted == 0)
+        .Where((ur, r, rm) => !string.IsNullOrEmpty(rm.Permission))
+        .Select((ur, r, rm) => rm.Permission)
+        .ToListAsync();
+
+    // 缓存权限列表
+    if (permissions != null)
+    {
+      await _cache.SetAsync(cacheKey, permissions, TimeSpan.FromMinutes(30));
+    }
 
     return permissions ?? new List<string>();
+  }
+
+  private void HandleImportError(LeanUserImportDto importDto, string message)
+  {
+    importDto.ErrorMessage = message;
   }
 }

@@ -3,6 +3,7 @@ using OfficeOpenXml.Style;
 using System.Drawing;
 using System.ComponentModel;
 using System.Reflection;
+using Microsoft.AspNetCore.Http;
 
 namespace Lean.Cur.Common.Excel
 {
@@ -375,6 +376,141 @@ namespace Lean.Cur.Common.Excel
       worksheet.Cells[worksheet.Dimension.Address].AutoFitColumns();
 
       // 返回字节数组
+      return await package.GetAsByteArrayAsync();
+    }
+
+    /// <summary>
+    /// 生成导入模板
+    /// </summary>
+    public async Task<byte[]> GenerateTemplateAsync(Dictionary<string, string> headers)
+    {
+      using var package = new ExcelPackage();
+      var worksheet = package.Workbook.Worksheets.Add("Template");
+
+      // 写入表头
+      var col = 1;
+      foreach (var header in headers)
+      {
+        var cell = worksheet.Cells[1, col];
+        cell.Value = header.Value;
+        cell.Style.Font.Bold = true;
+        cell.Style.Fill.PatternType = ExcelFillStyle.Solid;
+        cell.Style.Fill.BackgroundColor.SetColor(Color.LightGray);
+        cell.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+        worksheet.Column(col).Width = 20;
+        col++;
+      }
+
+      return await package.GetAsByteArrayAsync();
+    }
+
+    /// <summary>
+    /// 导入Excel文件
+    /// </summary>
+    public async Task<List<T>> ImportAsync<T>(IFormFile file) where T : class, new()
+    {
+      using var stream = file.OpenReadStream();
+      using var package = new ExcelPackage(stream);
+      var worksheet = package.Workbook.Worksheets[0];
+      var rowCount = worksheet.Dimension?.End.Row ?? 0;
+      var colCount = worksheet.Dimension?.End.Column ?? 0;
+
+      var data = new List<T>();
+      var properties = typeof(T).GetProperties();
+      var propertyNames = properties.Select(p => p.Name).ToList();
+
+      // 获取表头映射
+      var headerRow = 1;
+      var headerMap = new Dictionary<string, int>();
+      for (int col = 1; col <= colCount; col++)
+      {
+        var headerCell = worksheet.Cells[headerRow, col].Value?.ToString();
+        if (!string.IsNullOrEmpty(headerCell))
+        {
+          headerMap[headerCell] = col;
+        }
+      }
+
+      // 读取数据
+      for (int row = headerRow + 1; row <= rowCount; row++)
+      {
+        var item = new T();
+        var hasValue = false;
+
+        foreach (var property in properties)
+        {
+          var columnName = property.Name;
+          if (headerMap.TryGetValue(columnName, out int col))
+          {
+            var cell = worksheet.Cells[row, col].Value;
+            if (cell != null)
+            {
+              hasValue = true;
+              var value = ConvertValue(cell, property.PropertyType, _options.Import.DateFormats);
+              property.SetValue(item, value);
+            }
+          }
+        }
+
+        if (hasValue)
+        {
+          data.Add(item);
+        }
+      }
+
+      return data;
+    }
+
+    /// <summary>
+    /// 导出Excel文件
+    /// </summary>
+    public async Task<byte[]> ExportAsync<T>(Dictionary<string, string> headers, List<T> data) where T : class
+    {
+      using var package = new ExcelPackage();
+      var worksheet = package.Workbook.Worksheets.Add("Sheet1");
+
+      // 写入表头
+      var col = 1;
+      foreach (var header in headers)
+      {
+        var cell = worksheet.Cells[1, col];
+        cell.Value = header.Value;
+        cell.Style.Font.Bold = true;
+        cell.Style.Fill.PatternType = ExcelFillStyle.Solid;
+        cell.Style.Fill.BackgroundColor.SetColor(Color.LightGray);
+        cell.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+        worksheet.Column(col).Width = 20;
+        col++;
+      }
+
+      // 写入数据
+      if (data.Any())
+      {
+        var properties = typeof(T).GetProperties();
+        var row = 2;
+        foreach (var item in data)
+        {
+          col = 1;
+          foreach (var header in headers)
+          {
+            var property = properties.FirstOrDefault(p => p.Name == header.Key);
+            if (property != null)
+            {
+              var value = property.GetValue(item);
+              worksheet.Cells[row, col].Value = value;
+
+              // 设置日期格式
+              if (value is DateTime)
+              {
+                worksheet.Cells[row, col].Style.Numberformat.Format = "yyyy-MM-dd HH:mm:ss";
+              }
+            }
+            col++;
+          }
+          row++;
+        }
+      }
+
       return await package.GetAsByteArrayAsync();
     }
   }

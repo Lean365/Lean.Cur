@@ -1,84 +1,60 @@
-using Microsoft.AspNetCore.Authorization;
-using Lean.Cur.Common.Configs;
 using Lean.Cur.Application.Services.Admin;
-using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 namespace Lean.Cur.Application.Authorization;
 
 /// <summary>
-/// 权限处理器
+/// 权限验证处理器
 /// </summary>
-public class LeanPermissionHandler : IAuthorizationHandler
+/// <remarks>
+/// 实现具体的权限验证逻辑
+/// 通过用户服务获取用户的菜单权限列表
+/// 判断用户是否拥有指定的权限
+/// </remarks>
+public class LeanPermissionHandler : AuthorizationHandler<LeanPermissionRequirement>
 {
-  private readonly ILeanUserService _userService;
-  private readonly LeanSecuritySettings _securitySettings;
+    private readonly ILeanUserService _userService;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
-  /// <summary>
-  /// 构造函数
-  /// </summary>
-  /// <param name="userService">用户服务</param>
-  /// <param name="securitySettings">安全配置</param>
-  public LeanPermissionHandler(ILeanUserService userService, IOptions<LeanSecuritySettings> securitySettings)
-  {
-    _userService = userService;
-    _securitySettings = securitySettings.Value;
-  }
-
-  /// <summary>
-  /// 处理权限验证
-  /// </summary>
-  /// <param name="context">授权处理上下文</param>
-  public async Task HandleAsync(AuthorizationHandlerContext context)
-  {
-    // 获取当前用户ID
-    var userId = context.User.FindFirst("UserId")?.Value;
-    if (string.IsNullOrEmpty(userId))
+    /// <summary>
+    /// 构造函数
+    /// </summary>
+    /// <param name="userService">用户服务</param>
+    /// <param name="httpContextAccessor">HTTP上下文访问器</param>
+    public LeanPermissionHandler(ILeanUserService userService, IHttpContextAccessor httpContextAccessor)
     {
-      return;
+        _userService = userService;
+        _httpContextAccessor = httpContextAccessor;
     }
 
-    // 获取用户角色编码
-    var roleCode = await _userService.GetUserRoleCodeAsync(long.Parse(userId));
-    if (string.IsNullOrEmpty(roleCode))
+    /// <summary>
+    /// 处理权限验证
+    /// </summary>
+    /// <param name="context">授权上下文</param>
+    /// <param name="requirement">权限要求</param>
+    /// <returns>验证结果</returns>
+    protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, LeanPermissionRequirement requirement)
     {
-      return;
-    }
-
-    // 如果是超级管理员，直接通过所有权限验证
-    if (roleCode == _securitySettings.Permission?.SuperAdminRoleCode)
-    {
-      foreach (var requirement in context.PendingRequirements)
-      {
-        context.Succeed(requirement);
-      }
-      return;
-    }
-
-    // 获取用户权限列表
-    var permissions = await _userService.GetUserPermissionsAsync(long.Parse(userId));
-    if (permissions == null || !permissions.Any())
-    {
-      return;
-    }
-
-    // 验证每个权限要求
-    foreach (var requirement in context.PendingRequirements)
-    {
-      if (requirement is IAuthorizationRequirement)
-      {
-        // 获取权限策略名称（即权限标识）
-        var policy = context.Resource as string;
-        if (string.IsNullOrEmpty(policy))
+        // 获取当前用户ID
+        var userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(userId))
         {
-          continue;
+            return;
         }
 
-        // 检查用户是否拥有该权限
-        if (permissions.Contains(policy))
+        // 获取用户菜单权限列表
+        var permissions = await _userService.GetUserMenuPermissionsAsync(long.Parse(userId));
+        if (permissions == null || !permissions.Any())
         {
-          context.Succeed(requirement);
+            return;
         }
-      }
+
+        // 判断用户是否拥有指定权限
+        if (permissions.Contains(requirement.Permission))
+        {
+            context.Succeed(requirement);
+        }
     }
-  }
-}
+} 
