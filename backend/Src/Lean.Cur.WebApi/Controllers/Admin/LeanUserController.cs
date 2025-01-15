@@ -62,6 +62,7 @@ public class LeanUserController : LeanBaseController
   /// <param name="createDto">创建参数</param>
   /// <returns>用户ID</returns>
   [HttpPost]
+  [AuditLog("创建用户", "创建新用户")]
   public async Task<LeanApiResponse<long>> CreateAsync(LeanUserCreateDto createDto)
   {
     if (string.IsNullOrEmpty(createDto.UserName))

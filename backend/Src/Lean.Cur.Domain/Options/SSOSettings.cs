@@ -50,6 +50,11 @@ namespace Lean.Cur.Domain.Options
     /// 安全策略配置
     /// </summary>
     public SecurityPolicyOptions SecurityPolicies { get; set; }
+
+    /// <summary>
+    /// 会话管理配置
+    /// </summary>
+    public SessionManagementOptions SessionManagement { get; set; }
   }
 
   /// <summary>
@@ -97,5 +102,41 @@ namespace Lean.Cur.Domain.Options
     /// 是否阻止并发登录
     /// </summary>
     public bool PreventConcurrentLogin { get; set; } = true;
+  }
+
+  /// <summary>
+  /// 会话管理配置
+  /// </summary>
+  public class SessionManagementOptions
+  {
+    /// <summary>
+    /// 会话超时时间(分钟)
+    /// </summary>
+    public int SessionTimeoutMinutes { get; set; } = 30;
+
+    /// <summary>
+    /// 最大并发会话数
+    /// </summary>
+    public int MaxConcurrentSessions { get; set; } = 1;
+
+    /// <summary>
+    /// 是否启用会话固定保护
+    /// </summary>
+    public bool EnableSessionFixation { get; set; } = true;
+
+    /// <summary>
+    /// 是否在认证后重新生成会话ID
+    /// </summary>
+    public bool RegenerateSessionId { get; set; } = true;
+
+    /// <summary>
+    /// 是否记住登录状态
+    /// </summary>
+    public bool AllowRememberMe { get; set; } = true;
+
+    /// <summary>
+    /// 记住登录状态的过期时间(天)
+    /// </summary>
+    public int RememberMeDays { get; set; } = 7;
   }
 }

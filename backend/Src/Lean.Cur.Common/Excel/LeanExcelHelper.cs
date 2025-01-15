@@ -122,35 +122,28 @@ namespace Lean.Cur.Common.Excel
     /// <summary>
     /// 导入Excel
     /// </summary>
-    public async Task<LeanExcelResult<T>> Import<T>(Stream stream, string fileName, LeanExcelImportSettings? importSettings = null) where T : class, new()
+    public List<T> Import<T>(Stream stream, string fileName, LeanExcelImportSettings? importSettings = null) where T : class, new()
     {
       var settings = importSettings ?? _options.Import;
-      var result = new LeanExcelResult<T>();
 
       // 验证文件扩展名
       var extension = Path.GetExtension(fileName).ToLowerInvariant();
       if (!settings.AllowedExtensions.Contains(extension))
       {
-        result.Success = false;
-        result.ErrorMessage = $"不支持的文件类型：{extension}，仅支持：{string.Join(", ", settings.AllowedExtensions)}";
-        return result;
+        throw new InvalidOperationException($"不支持的文件类型：{extension}，仅支持：{string.Join(", ", settings.AllowedExtensions)}");
       }
 
       // 验证文件大小
       if (stream.Length > settings.MaxFileSize)
       {
-        result.Success = false;
-        result.ErrorMessage = $"文件大小超过限制：{stream.Length}字节，最大允许：{settings.MaxFileSize}字节";
-        return result;
+        throw new InvalidOperationException($"文件大小超过限制：{stream.Length}字节，最大允许：{settings.MaxFileSize}字节");
       }
 
       using var package = new ExcelPackage(stream);
       var worksheet = package.Workbook.Worksheets[0];
       if (worksheet == null)
       {
-        result.Success = false;
-        result.ErrorMessage = "Excel文件中没有工作表";
-        return result;
+        throw new InvalidOperationException("Excel文件中没有工作表");
       }
 
       // 获取类型的所有属性
@@ -166,7 +159,6 @@ namespace Lean.Cur.Common.Excel
           .ToList();
 
       var data = new List<T>();
-      var errorRows = new List<LeanExcelErrorRow>();
       var startRow = settings.SkipHeaderRow ? 2 : 1;
       var endRow = worksheet.Dimension?.End.Row ?? 0;
 
@@ -175,7 +167,6 @@ namespace Lean.Cur.Common.Excel
         var item = new T();
         var hasValue = false;
         var hasError = false;
-        var errorMessages = new List<string>();
 
         for (int col = 1; col <= properties.Count; col++)
         {
@@ -195,37 +186,23 @@ namespace Lean.Cur.Common.Excel
             catch (Exception ex)
             {
               hasError = true;
-              errorMessages.Add($"列 {column.Name}: {ex.Message}");
+              throw new InvalidOperationException($"第{row}行，列 {column.Name}: {ex.Message}");
             }
           }
           else if (column.Required)
           {
             hasError = true;
-            errorMessages.Add($"列 {column.Name} 不能为空");
+            throw new InvalidOperationException($"第{row}行，列 {column.Name} 不能为空");
           }
         }
 
-        if (hasValue || !settings.SkipEmptyRows)
+        if ((hasValue || !settings.SkipEmptyRows) && !hasError)
         {
-          if (hasError)
-          {
-            errorRows.Add(new LeanExcelErrorRow
-            {
-              RowIndex = row,
-              ErrorMessage = string.Join("; ", errorMessages)
-            });
-          }
-          else
-          {
-            data.Add(item);
-          }
+          data.Add(item);
         }
       }
 
-      result.Success = !errorRows.Any();
-      result.Data = data;
-      result.ErrorRows = errorRows;
-      return result;
+      return data;
     }
 
     /// <summary>
@@ -309,7 +286,7 @@ namespace Lean.Cur.Common.Excel
     /// <param name="data">数据列表</param>
     /// <param name="headers">表头(可选)</param>
     /// <returns>Excel 文件字节数组</returns>
-    public static async Task<byte[]> ExportAsync<T>(IEnumerable<T> data, Dictionary<string, string>? headers = null)
+    public static byte[] Export<T>(IEnumerable<T> data, Dictionary<string, string>? headers = null)
     {
       using var package = new ExcelPackage();
       var worksheet = package.Workbook.Worksheets.Add("Sheet1");
@@ -376,7 +353,7 @@ namespace Lean.Cur.Common.Excel
       worksheet.Cells[worksheet.Dimension.Address].AutoFitColumns();
 
       // 返回字节数组
-      return await package.GetAsByteArrayAsync();
+      return package.GetAsByteArray();
     }
 
     /// <summary>
@@ -407,7 +384,7 @@ namespace Lean.Cur.Common.Excel
     /// <summary>
     /// 导入Excel文件
     /// </summary>
-    public async Task<List<T>> ImportAsync<T>(IFormFile file) where T : class, new()
+    public List<T> Import<T>(IFormFile file) where T : class, new()
     {
       using var stream = file.OpenReadStream();
       using var package = new ExcelPackage(stream);

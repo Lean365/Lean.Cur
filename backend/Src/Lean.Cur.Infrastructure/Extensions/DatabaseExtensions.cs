@@ -3,9 +3,17 @@ using SqlSugar;
 using Lean.Cur.Domain.Entities.Admin;
 using Lean.Cur.Domain.Entities.Logging;
 using Lean.Cur.Infrastructure.Database;
+using Lean.Cur.Infrastructure.Interceptors;
 using Microsoft.Extensions.Configuration;
 using Lean.Cur.Common.Enums;
 using Microsoft.Extensions.Logging;
+using Lean.Cur.Domain.Entities;
+using Lean.Cur.Domain.Entities.Logging;
+using Lean.Cur.Infrastructure.Database;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using SqlSugar;
 
 namespace Lean.Cur.Infrastructure.Extensions
 {
@@ -61,6 +69,10 @@ namespace Lean.Cur.Infrastructure.Extensions
         // 配置 AOP
         var aop = sp.GetRequiredService<LeanAopProvider>();
         aop.ConfigureAop(db);
+
+        // 配置SQL差异日志拦截器
+        var sqlLogInterceptor = sp.GetRequiredService<SqlLogInterceptor>();
+        db.Aop.DataExecuting = sqlLogInterceptor.OnExecutingChanging;
 
         // 配置全局过滤器
         ConfigureGlobalFilter(db);
@@ -128,93 +140,51 @@ namespace Lean.Cur.Infrastructure.Extensions
       logger.LogInformation("- LeanRoleMenu (角色菜单关联表)");
       logger.LogInformation("- LeanUser (用户表)");
       logger.LogInformation("- LeanUserRole (用户角色关联表)");
+      logger.LogInformation("- LeanMenu (菜单表)");
+      logger.LogInformation("- LeanDept (部门表)");
+      logger.LogInformation("- LeanPost (岗位表)");
+      logger.LogInformation("- LeanNotice (通知表)");
+      logger.LogInformation("- LeanSqlLog (SQL差异日志表)");
+      logger.LogInformation("- LeanOperationLog (操作日志表)");
+      logger.LogInformation("- LeanLoginLog (登录日志表)");
+      logger.LogInformation("- LeanAuditLog (审计日志表)");
 
       // 获取所有需要初始化的表
       var tables = new[]
       {
-        typeof(LeanUser),
-        typeof(LeanUserExtend),
-        typeof(LeanUserDevice),
-        typeof(LeanRole),
-        typeof(LeanRoleMenu),
-        typeof(LeanUserRole)
-      };
+            typeof(LeanUser),
+            typeof(LeanUserExtend),
+            typeof(LeanUserDevice),
+            typeof(LeanRole),
+            typeof(LeanRoleMenu),
+            typeof(LeanUserRole),
+            typeof(LeanMenu),
+            typeof(LeanDept),
+            typeof(LeanPost),
+            typeof(LeanNotice),
+            typeof(LeanSqlLog),
+            typeof(LeanOperationLog),
+            typeof(LeanLoginLog),
+            typeof(LeanAuditLog)
+        };
 
+      // 使用CodeFirst初始化所有表
       foreach (var table in tables)
       {
         var tableName = db.EntityMaintenance.GetTableName(table);
-        if (db.DbMaintenance.IsAnyTable(tableName))
+        logger.LogInformation($"正在初始化表{tableName}...");
+
+        // 如果表不存在，直接创建
+        if (!db.DbMaintenance.IsAnyTable(tableName))
         {
-          // 检查表中是否有数据
-          var hasData = false;
-          if (table == typeof(LeanRole))
-          {
-            hasData = db.Queryable<LeanRole>().Any();
-          }
-          else if (table == typeof(LeanUser))
-          {
-            hasData = db.Queryable<LeanUser>().Any();
-          }
-          else if (table == typeof(LeanUserExtend))
-          {
-            hasData = db.Queryable<LeanUserExtend>().Any();
-          }
-          else if (table == typeof(LeanUserDevice))
-          {
-            hasData = db.Queryable<LeanUserDevice>().Any();
-          }
-          else if (table == typeof(LeanRoleMenu))
-          {
-            hasData = db.Queryable<LeanRoleMenu>().Any();
-          }
-          else if (table == typeof(LeanUserRole))
-          {
-            hasData = db.Queryable<LeanUserRole>().Any();
-          }
-
-          if (hasData)
-          {
-            // 如果有数据,先备份数据
-            var tempTableName = $"{tableName}_temp_{DateTime.Now:yyyyMMddHHmmss}";
-            logger.LogInformation($"表{tableName}中存在数据,正在备份到{tempTableName}...");
-            db.DbMaintenance.BackupTable(tableName, tempTableName);
-
-            // 删除原表
-            logger.LogInformation($"正在删除表{tableName}...");
-            db.DbMaintenance.DropTable(tableName);
-
-            // 创建新表
-            logger.LogInformation($"正在创建表{tableName}...");
-            db.CodeFirst.InitTables(table);
-
-            // 恢复数据
-            logger.LogInformation($"正在从{tempTableName}恢复数据到{tableName}...");
-            try 
-            {
-              var columns = db.DbMaintenance.GetColumnInfosByTableName(tableName);
-              var columnNames = string.Join(",", columns.Select(c => c.DbColumnName));
-              var sql = $"INSERT INTO {tableName}({columnNames}) SELECT {columnNames} FROM {tempTableName}";
-              db.Ado.ExecuteCommand(sql);
-            }
-            catch (Exception ex)
-            {
-              logger.LogWarning($"恢复{tableName}数据时出现错误: {ex.Message}");
-              logger.LogInformation($"请手动检查{tempTableName}中的数据并迁移");
-            }
-          }
-          else
-          {
-            // 如果没有数据,直接删除重建
-            logger.LogInformation($"表{tableName}中无数据,正在重建...");
-            db.DbMaintenance.DropTable(tableName);
-            db.CodeFirst.InitTables(table);
-          }
+          db.CodeFirst.InitTables(table);
+          logger.LogInformation($"表{tableName}创建成功");
         }
         else
         {
-          // 如果表不存在,直接创建
-          logger.LogInformation($"正在创建表{tableName}...");
+          // 如果表存在，则更新表结构
           db.CodeFirst.InitTables(table);
+          logger.LogInformation($"表{tableName}结构已更新");
         }
       }
     }
@@ -224,77 +194,36 @@ namespace Lean.Cur.Infrastructure.Extensions
     /// </summary>
     private static void InitBaseData(ISqlSugarClient db, ILogger logger)
     {
-      // 检查是否已经初始化
-      if (db.Queryable<LeanUser>().Any())
+      try
       {
-        logger.LogInformation("检测到已存在基础数据,跳过初始化");
-        return;
+        // 检查是否已经初始化
+        logger.LogInformation("正在检查是否需要初始化基础数据...");
+        if (db.Queryable<LeanUser>().Any())
+        {
+          logger.LogInformation("检测到已存在基础数据,跳过初始化");
+          return;
+        }
+
+        // 调用种子数据初始化
+        logger.LogInformation("开始初始化种子数据...");
+        try
+        {
+          LeanDbSeed.Initialize(db);
+          logger.LogInformation("种子数据初始化完成");
+        }
+        catch (Exception ex)
+        {
+          logger.LogError(ex, "初始化种子数据时发生错误");
+          throw;
+        }
+
+        logger.LogInformation("基础数据初始化完成");
       }
-
-      logger.LogInformation("开始创建管理员用户...");
-      // 创建管理员用户
-      var admin = new LeanUser
+      catch (Exception ex)
       {
-        UserName = "admin",
-        Password = "123456", // TODO: 需要加密
-        NickName = "管理员",
-        EnglishName = "Administrator",
-        Email = "admin@lean.com",
-        Phone = "13800138000",
-        Status = (LeanStatus)1,
-        UserType = (int)UserType.Admin,
-        CreateTime = DateTime.Now,
-        CreateBy = 0
-      };
-      db.Insertable(admin).ExecuteCommand();
-      logger.LogInformation("管理员用户创建成功: {UserName}", admin.UserName);
-
-      logger.LogInformation("开始创建管理员用户扩展信息...");
-      // 创建管理员用户扩展信息
-      var adminExtend = new LeanUserExtend
-      {
-        UserId = admin.Id,
-        FirstLoginTime = DateTime.Now,
-        LastLoginTime = DateTime.Now,
-        LoginCount = 0,
-        ErrorCount = 0,
-        TotalErrorCount = 0,
-        OnlineStatus = 0,
-        LastHeartbeatTime = DateTime.Now,
-        LastActiveTime = DateTime.Now,
-        CreateTime = DateTime.Now,
-        CreateBy = 0
-      };
-      db.Insertable(adminExtend).ExecuteCommand();
-      logger.LogInformation("管理员用户扩展信息创建成功");
-
-      logger.LogInformation("开始创建管理员角色...");
-      // 创建管理员角色
-      var adminRole = new LeanRole
-      {
-        RoleName = "超级管理员",
-        RoleCode = "admin",
-        RoleType = (LeanRoleType)1,
-        DataScope = (LeanDataScope)1,
-        OrderNum = 1,
-        Status = (LeanStatus)1,
-        Remark = "系统超级管理员",
-        CreateTime = DateTime.Now
-      };
-      db.Insertable(adminRole).ExecuteCommand();
-      logger.LogInformation("管理员角色创建成功: {RoleName}", adminRole.RoleName);
-
-      logger.LogInformation("开始创建用户角色关联...");
-      // 创建用户角色关联
-      var userRole = new LeanUserRole
-      {
-        UserId = admin.Id,
-        RoleId = adminRole.Id,
-        CreateTime = DateTime.Now,
-        CreateBy = 0
-      };
-      db.Insertable(userRole).ExecuteCommand();
-      logger.LogInformation("用户角色关联创建成功");
+        logger.LogError(ex, "初始化基础数据失败");
+        throw;
+      }
     }
   }
 }

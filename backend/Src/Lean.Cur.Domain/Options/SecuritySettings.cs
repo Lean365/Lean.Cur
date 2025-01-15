@@ -42,4 +42,45 @@ namespace Lean.Cur.Domain.Options
     /// </remarks>
     public TimeSpan LockoutDuration { get; set; } = TimeSpan.MaxValue;
   }
+
+  /// <summary>
+  /// 密码策略配置
+  /// </summary>
+  public class PasswordPolicyOptions
+  {
+    /// <summary>
+    /// 最小长度
+    /// </summary>
+    public int MinLength { get; set; } = 8;
+
+    /// <summary>
+    /// 是否要求大写字母
+    /// </summary>
+    public bool RequireUppercase { get; set; } = true;
+
+    /// <summary>
+    /// 是否要求小写字母
+    /// </summary>
+    public bool RequireLowercase { get; set; } = true;
+
+    /// <summary>
+    /// 是否要求数字
+    /// </summary>
+    public bool RequireDigit { get; set; } = true;
+
+    /// <summary>
+    /// 是否要求特殊字符
+    /// </summary>
+    public bool RequireSpecialChar { get; set; } = true;
+
+    /// <summary>
+    /// 密码历史记录数
+    /// </summary>
+    public int PasswordHistory { get; set; } = 3;
+
+    /// <summary>
+    /// 密码有效期(天)
+    /// </summary>
+    public int PasswordExpirationDays { get; set; } = 90;
+  }
 }

@@ -23,7 +23,7 @@ public class SlideVerifyHelper
   /// <summary>
   /// 生成滑块验证码
   /// </summary>
-  public async Task<SlideVerifyResult> GenerateAsync()
+  public SlideVerifyResult Generate()
   {
     // 获取随机背景图和滑块图
     var backgroundPath = GetRandomImage(_options.BackgroundDirectory);

@@ -37,6 +37,16 @@ public class LeanSecuritySettings
   /// 权限配置
   /// </summary>
   public LeanPermissionSettings? Permission { get; set; }
+
+  /// <summary>
+  /// 安全审计配置
+  /// </summary>
+  public LeanAuditSettings? Audit { get; set; }
+
+  /// <summary>
+  /// 文件上传安全配置
+  /// </summary>
+  public LeanFileUploadSettings? FileUpload { get; set; }
 }
 
 /// <summary>
@@ -178,4 +188,114 @@ public class LeanPermissionSettings
   /// 缓存过期时间（秒）
   /// </summary>
   public int CacheExpiration { get; set; }
+}
+
+/// <summary>
+/// 安全审计配置
+/// </summary>
+public class LeanAuditSettings
+{
+    /// <summary>
+    /// 是否启用
+    /// </summary>
+    public bool Enabled { get; set; } = true;
+
+    /// <summary>
+    /// 是否记录操作日志
+    /// </summary>
+    public bool LogOperations { get; set; } = true;
+
+    /// <summary>
+    /// 是否记录敏感数据访问
+    /// </summary>
+    public bool LogSensitiveAccess { get; set; } = true;
+
+    /// <summary>
+    /// 是否记录系统异常
+    /// </summary>
+    public bool LogExceptions { get; set; } = true;
+
+    /// <summary>
+    /// 日志保留天数
+    /// </summary>
+    public int LogRetentionDays { get; set; } = 180;
+
+    /// <summary>
+    /// 敏感操作类型
+    /// </summary>
+    public List<string> SensitiveOperations { get; set; } = new()
+    {
+        "DELETE",
+        "UPDATE",
+        "EXPORT",
+        "UPLOAD"
+    };
+
+    /// <summary>
+    /// 敏感数据类型
+    /// </summary>
+    public List<string> SensitiveDataTypes { get; set; } = new()
+    {
+        "Password",
+        "PhoneNumber", 
+        "IdCard",
+        "BankCard"
+    };
+}
+
+/// <summary>
+/// 文件上传安全配置
+/// </summary>
+public class LeanFileUploadSettings
+{
+    /// <summary>
+    /// 允许的文件类型
+    /// </summary>
+    public List<string> AllowedFileTypes { get; set; } = new()
+    {
+        ".jpg",
+        ".jpeg",
+        ".png",
+        ".gif",
+        ".pdf",
+        ".doc",
+        ".docx",
+        ".xls",
+        ".xlsx"
+    };
+
+    /// <summary>
+    /// 最大文件大小(MB)
+    /// </summary>
+    public int MaxFileSizeMB { get; set; } = 10;
+
+    /// <summary>
+    /// 是否扫描病毒
+    /// </summary>
+    public bool ScanVirus { get; set; } = true;
+
+    /// <summary>
+    /// 是否验证文件签名
+    /// </summary>
+    public bool ValidateSignature { get; set; } = true;
+
+    /// <summary>
+    /// 上传目录白名单
+    /// </summary>
+    public List<string> AllowedUploadPaths { get; set; } = new()
+    {
+        "uploads/images",
+        "uploads/documents",
+        "uploads/temp"
+    };
+
+    /// <summary>
+    /// 是否重命名文件
+    /// </summary>
+    public bool RenameFiles { get; set; } = true;
+
+    /// <summary>
+    /// 重命名规则
+    /// </summary>
+    public string RenamePattern { get; set; } = "{yyyy}{MM}{dd}{HH}{mm}{ss}{rand:6}";
 }

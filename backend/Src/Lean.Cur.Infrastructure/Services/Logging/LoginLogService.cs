@@ -18,11 +18,13 @@ namespace Lean.Cur.Infrastructure.Services.Logging
   {
     private readonly ISqlSugarClient _db;
     private readonly ILogger<LoginLogService> _logger;
+    private readonly LeanExcelHelper _excel;
 
-    public LoginLogService(ISqlSugarClient db, ILogger<LoginLogService> logger)
+    public LoginLogService(ISqlSugarClient db, ILogger<LoginLogService> logger, LeanExcelHelper excel)
     {
       _db = db;
       _logger = logger;
+      _excel = excel;
     }
 
     /// <inheritdoc/>
@@ -116,7 +118,7 @@ namespace Lean.Cur.Infrastructure.Services.Logging
           { "Message", "消息" }
         };
 
-        return await LeanExcelHelper.ExportAsync(list, headers);
+        return await _excel.ExportAsync<LoginLogDto>(headers, list);
       }
       catch (Exception ex)
       {

@@ -260,67 +260,67 @@ public class LeanUserService : ILeanUserService
   {
     if (file == null || file.Length == 0)
     {
-        throw new LeanUserFriendlyException("请选择要导入的文件");
+      throw new LeanUserFriendlyException("请选择要导入的文件");
     }
 
-    var result = await _excel.Import<LeanUserImportDto>(file.OpenReadStream(), "import.xlsx");
-    if (result?.Data == null || !result.Data.Any())
+    var result = _excel.Import<LeanUserImportDto>(file.OpenReadStream(), "import.xlsx");
+    if (result == null || !result.Any())
     {
-        throw new LeanUserFriendlyException("导入的数据为空");
+      throw new LeanUserFriendlyException("导入的数据为空");
     }
 
     var importResult = new LeanUserImportResultDto
     {
-        TotalCount = result.Data.Count,
-        SuccessCount = 0,
-        FailureCount = 0,
-        FailureItems = new List<LeanUserImportDto>()
+      TotalCount = result.Count,
+      SuccessCount = 0,
+      FailureCount = 0,
+      FailureItems = new List<LeanUserImportDto>()
     };
 
-    foreach (var importDto in result.Data)
+    foreach (var importDto in result)
     {
-        try
+      try
+      {
+        // 检查用户名是否已存在
+        var existUser = await _db.Queryable<LeanUser>()
+            .Where(u => u.UserName == importDto.UserName && u.IsDeleted == 0)
+            .FirstAsync();
+        if (existUser != null)
         {
-            // 检查用户名是否已存在
-            var existUser = await _db.Queryable<LeanUser>()
-                .Where(u => u.UserName == importDto.UserName && u.IsDeleted == 0)
-                .FirstAsync();
-            if (existUser != null)
-            {
-                importDto.ErrorMessage = "用户名已存在";
-                importResult.FailureItems.Add(importDto);
-                importResult.FailureCount++;
-                continue;
-            }
-
-            // 创建用户
-            var salt = LeanPassword.GenerateSalt();
-            var password = LeanPassword.HashPassword("123456", salt);
-
-            var user = new LeanUser
-            {
-                UserName = importDto.UserName,
-                NickName = importDto.NickName,
-                EnglishName = importDto.EnglishName,
-                Gender = importDto.Gender,
-                Email = importDto.Email,
-                Phone = importDto.Phone,
-                UserType = importDto.UserType,
-                Status = LeanStatus.Normal,
-                Remark = importDto.Remark,
-                Password = password,
-                PasswordSalt = salt
-            };
-
-            await _db.Insertable(user).ExecuteCommandAsync();
-            importResult.SuccessCount++;
+          importDto.ErrorMessage = "用户名已存在";
+          importResult.FailureItems.Add(importDto);
+          importResult.FailureCount++;
+          continue;
         }
-        catch (Exception)
+
+        // 创建用户
+        var salt = LeanPassword.GenerateSalt();
+        var password = LeanPassword.HashPassword("123456", salt);
+
+        var user = new LeanUser
         {
-            importDto.ErrorMessage = "导入失败";
-            importResult.FailureItems.Add(importDto);
-            importResult.FailureCount++;
-        }
+          UserName = importDto.UserName,
+          NickName = importDto.NickName,
+          EnglishName = importDto.EnglishName,
+          Gender = importDto.Gender,
+          Email = importDto.Email,
+          Phone = importDto.Phone,
+          UserType = importDto.UserType,
+          Status = LeanStatus.Normal,
+          Remark = importDto.Remark,
+          Password = password,
+          PasswordSalt = salt
+        };
+
+        await _db.Insertable(user).ExecuteCommandAsync();
+        importResult.SuccessCount++;
+      }
+      catch (Exception)
+      {
+        importDto.ErrorMessage = "导入失败";
+        importResult.FailureItems.Add(importDto);
+        importResult.FailureCount++;
+      }
     }
 
     return importResult;

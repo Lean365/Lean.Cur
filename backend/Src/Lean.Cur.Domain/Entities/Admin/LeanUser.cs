@@ -56,23 +56,23 @@ public class LeanUser : LeanBaseEntity
   /// 4. 不允许明文传输
   /// 5. 必填字段
   /// </remarks>
-  [SugarColumn(ColumnName = "password", ColumnDescription = "密码", ColumnDataType = "varchar", Length = 100, IsNullable = false)]
+  [SugarColumn(ColumnName = "password", ColumnDescription = "密码", ColumnDataType = "varchar", Length = 64, IsNullable = false)]
   [Description("密码")]
-  public string Password { get; set; }
+  public string Password { get; set; } = string.Empty;
 
   /// <summary>
   /// 密码盐值
   /// </summary>
   /// <remarks>
-  /// 1. 长度固定：32个字符
+  /// 1. 长度固定：64个字符
   /// 2. 用于密码加密
   /// 3. 创建用户时随机生成
   /// 4. 每个用户唯一
   /// 5. 必填字段
   /// </remarks>
-  [SugarColumn(ColumnName = "password_salt", ColumnDescription = "密码盐值", ColumnDataType = "char", Length = 32, IsNullable = false)]
+  [SugarColumn(ColumnName = "password_salt", ColumnDescription = "密码盐值", ColumnDataType = "char", Length = 64, IsNullable = false)]
   [Description("密码盐值")]
-  public string PasswordSalt { get; set; }
+  public string PasswordSalt { get; set; } = string.Empty;
 
   /// <summary>
   /// 昵称

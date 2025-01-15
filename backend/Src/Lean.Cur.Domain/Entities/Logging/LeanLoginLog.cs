@@ -23,7 +23,7 @@ namespace Lean.Cur.Domain.Entities.Logging;
 /// 3. 支持查询和统计分析
 /// 4. 保留历史记录，不做物理删除
 /// </remarks>
-[SugarTable("lean_login_log", "登录日志表")]
+[SugarTable("lean_mon_login_log", "登录日志表")]
 public class LeanLoginLog : LeanBaseEntity
 {
   /// <summary>

@@ -1,5 +1,8 @@
 using NLog;
 using NLog.Web;
+using Lean.Cur.Application.Services.Logging;
+using Lean.Cur.Infrastructure.Interceptors;
+using Lean.Cur.Infrastructure.Services.Logging;
 
 // 初始化NLog
 var logger = LogManager.Setup()
@@ -88,6 +91,10 @@ try
 
   // 配置SqlSugar数据库服务
   builder.Services.AddDatabase(builder.Configuration);
+
+  // 注册SQL差异日志服务
+  builder.Services.AddSingleton<SqlLogInterceptor>();
+  builder.Services.AddScoped<ISqlLogService, SqlLogService>();
 
   #endregion 数据库配置
 
@@ -196,8 +203,17 @@ try
 
   #endregion 依赖注入服务注册
 
+  // 注册审计日志服务
+  builder.Services.AddScoped<IAuditLogService, AuditLogService>();
+
   // 构建应用程序
   var app = builder.Build();
+
+  // 初始化数据库
+  using (var scope = app.Services.CreateScope())
+  {
+    scope.ServiceProvider.InitializeDatabase();
+  }
 
   #region 中间件配置
 
@@ -246,10 +262,24 @@ try
   // 配置路由
   app.MapControllers();
 
-  #endregion 中间件配置
+  // 配置安全头
+  app.Use(async (context, next) =>
+  {
+    context.Response.Headers["X-XSS-Protection"] = "1; mode=block";
+    context.Response.Headers["X-Content-Type-Options"] = "nosniff";
+    context.Response.Headers["X-Frame-Options"] = "SAMEORIGIN";
+    context.Response.Headers["Content-Security-Policy"] =
+        "default-src 'self'; " +
+        "script-src 'self' 'unsafe-inline' 'unsafe-eval'; " +
+        "style-src 'self' 'unsafe-inline'; " +
+        "img-src 'self' data: https:; " +
+        "font-src 'self' data:; " +
+        "connect-src 'self'";
 
-  // 初始化数据库
-  app.Services.InitializeDatabase();
+    await next();
+  });
+
+  #endregion 中间件配置
 
   // 启动应用程序
   app.Run();

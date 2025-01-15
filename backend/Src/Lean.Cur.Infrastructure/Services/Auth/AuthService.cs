@@ -47,7 +47,7 @@ public class AuthService : IAuthService
   /// </summary>
   public async Task<SlideVerifyResult> GenerateVerifyCodeAsync()
   {
-    var result = await _verifyHelper.GenerateAsync();
+    var result = _verifyHelper.Generate();
     return result;
   }
 

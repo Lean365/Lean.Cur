@@ -138,21 +138,21 @@ public class LeanRoleService : ILeanRoleService
     /// <inheritdoc/>
     public async Task<LeanRoleImportResultDto> ImportAsync(IFormFile file)
     {
-        var data = await _excel.ImportAsync<LeanRoleImportDto>(file);
-        if (data == null || !data.Any())
+        var importResult = _excel.Import<LeanRoleImportDto>(file.OpenReadStream(), file.FileName);
+        if (importResult == null || !importResult.Any())
         {
             throw new BusinessException("导入数据为空");
         }
 
         var result = new LeanRoleImportResultDto
         {
-            TotalCount = data.Count,
+            TotalCount = importResult.Count(),
             SuccessCount = 0,
             FailureCount = 0,
             FailureItems = new List<LeanRoleImportDto>()
         };
 
-        foreach (var item in data)
+        foreach (var item in importResult)
         {
             try
             {
