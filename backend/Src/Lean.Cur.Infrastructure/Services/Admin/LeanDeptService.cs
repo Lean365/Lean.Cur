@@ -18,10 +18,10 @@ namespace Lean.Cur.Infrastructure.Services.Admin
   /// </summary>
   public class LeanDeptService : ILeanDeptService
   {
-    private readonly ISqlSugarClient _db;
+    private readonly SqlSugarClient _db;
     private readonly LeanExcelHelper _excel;
 
-    public LeanDeptService(ISqlSugarClient db, LeanExcelHelper excel)
+    public LeanDeptService(SqlSugarClient db, LeanExcelHelper excel)
     {
       _db = db;
       _excel = excel;

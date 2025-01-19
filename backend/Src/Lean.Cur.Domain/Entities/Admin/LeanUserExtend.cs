@@ -40,7 +40,7 @@ public class LeanUserExtend : LeanBaseEntity
   /// 2. 必填字段
   /// 3. 建立索引提高查询性能
   /// </remarks>
-  [SugarColumn(ColumnName = "user_id", ColumnDescription = "用户ID", IsNullable = false)]
+  [SugarColumn(ColumnName = "user_id", ColumnDescription = "用户ID", ColumnDataType = "bigint", IsNullable = false)]
   public long UserId { get; set; }
 
   /// <summary>
@@ -51,7 +51,7 @@ public class LeanUserExtend : LeanBaseEntity
   /// 2. 可选字段
   /// 3. 一旦设置不再更改
   /// </remarks>
-  [SugarColumn(ColumnName = "first_login_time", ColumnDescription = "首次登录时间", IsNullable = true)]
+  [SugarColumn(ColumnName = "first_login_time", ColumnDescription = "首次登录时间", ColumnDataType = "datetime", IsNullable = true)]
   public DateTime? FirstLoginTime { get; set; }
 
   /// <summary>
@@ -62,7 +62,7 @@ public class LeanUserExtend : LeanBaseEntity
   /// 2. 可选字段
   /// 3. 最大长度：50个字符
   /// </remarks>
-  [SugarColumn(ColumnName = "first_login_ip", ColumnDescription = "首次登录IP", Length = 50, IsNullable = true)]
+  [SugarColumn(ColumnName = "first_login_ip", ColumnDescription = "首次登录IP", ColumnDataType = "varchar", Length = 50, IsNullable = true)]
   public string? FirstLoginIp { get; set; }
 
   /// <summary>
@@ -74,7 +74,7 @@ public class LeanUserExtend : LeanBaseEntity
   /// 3. 最大长度：100个字符
   /// 4. 格式：省份-城市-区县
   /// </remarks>
-  [SugarColumn(ColumnName = "first_login_location", ColumnDescription = "首次登录地点", Length = 100, IsNullable = true)]
+  [SugarColumn(ColumnName = "first_login_location", ColumnDescription = "首次登录地点", ColumnDataType = "nvarchar", Length = 100, IsNullable = true)]
   public string? FirstLoginLocation { get; set; }
 
   /// <summary>
@@ -86,7 +86,7 @@ public class LeanUserExtend : LeanBaseEntity
   /// 3. 最大长度：200个字符
   /// 4. 包含设备类型、型号等信息
   /// </remarks>
-  [SugarColumn(ColumnName = "first_login_device", ColumnDescription = "首次登录设备", Length = 200, IsNullable = true)]
+  [SugarColumn(ColumnName = "first_login_device", ColumnDescription = "首次登录设备", ColumnDataType = "nvarchar", Length = 200, IsNullable = true)]
   public string? FirstLoginDevice { get; set; }
 
   /// <summary>
@@ -98,7 +98,7 @@ public class LeanUserExtend : LeanBaseEntity
   /// 3. 最大长度：100个字符
   /// 4. 包含浏览器名称和版本
   /// </remarks>
-  [SugarColumn(ColumnName = "first_login_browser", ColumnDescription = "首次登录浏览器", Length = 100, IsNullable = true)]
+  [SugarColumn(ColumnName = "first_login_browser", ColumnDescription = "首次登录浏览器", ColumnDataType = "nvarchar", Length = 100, IsNullable = true)]
   public string? FirstLoginBrowser { get; set; }
 
   /// <summary>
@@ -110,7 +110,7 @@ public class LeanUserExtend : LeanBaseEntity
   /// 3. 最大长度：100个字符
   /// 4. 包含操作系统名称和版本
   /// </remarks>
-  [SugarColumn(ColumnName = "first_login_os", ColumnDescription = "首次登录操作系统", Length = 100, IsNullable = true)]
+  [SugarColumn(ColumnName = "first_login_os", ColumnDescription = "首次登录操作系统", ColumnDataType = "nvarchar", Length = 100, IsNullable = true)]
   public string? FirstLoginOs { get; set; }
 
   /// <summary>
@@ -122,7 +122,7 @@ public class LeanUserExtend : LeanBaseEntity
   /// 3. 每次登录时更新
   /// 4. 建立索引提高查询性能
   /// </remarks>
-  [SugarColumn(ColumnName = "last_login_time", ColumnDescription = "末次登录时间", IsNullable = true)]
+  [SugarColumn(ColumnName = "last_login_time", ColumnDescription = "末次登录时间", ColumnDataType = "datetime", IsNullable = true)]
   public DateTime? LastLoginTime { get; set; }
 
   /// <summary>
@@ -133,7 +133,7 @@ public class LeanUserExtend : LeanBaseEntity
   /// 2. 可选字段
   /// 3. 最大长度：50个字符
   /// </remarks>
-  [SugarColumn(ColumnName = "last_login_ip", ColumnDescription = "末次登录IP", Length = 50, IsNullable = true)]
+  [SugarColumn(ColumnName = "last_login_ip", ColumnDescription = "末次登录IP", ColumnDataType = "varchar", Length = 50, IsNullable = true)]
   public string? LastLoginIp { get; set; }
 
   /// <summary>
@@ -145,7 +145,7 @@ public class LeanUserExtend : LeanBaseEntity
   /// 3. 最大长度：100个字符
   /// 4. 格式：省份-城市-区县
   /// </remarks>
-  [SugarColumn(ColumnName = "last_login_location", ColumnDescription = "末次登录地点", Length = 100, IsNullable = true)]
+  [SugarColumn(ColumnName = "last_login_location", ColumnDescription = "末次登录地点", ColumnDataType = "nvarchar", Length = 100, IsNullable = true)]
   public string? LastLoginLocation { get; set; }
 
   /// <summary>
@@ -157,7 +157,7 @@ public class LeanUserExtend : LeanBaseEntity
   /// 3. 最大长度：200个字符
   /// 4. 包含设备类型、型号等信息
   /// </remarks>
-  [SugarColumn(ColumnName = "last_login_device", ColumnDescription = "末次登录设备", Length = 200, IsNullable = true)]
+  [SugarColumn(ColumnName = "last_login_device", ColumnDescription = "末次登录设备", ColumnDataType = "nvarchar", Length = 200, IsNullable = true)]
   public string? LastLoginDevice { get; set; }
 
   /// <summary>
@@ -169,7 +169,7 @@ public class LeanUserExtend : LeanBaseEntity
   /// 3. 最大长度：100个字符
   /// 4. 包含浏览器名称和版本
   /// </remarks>
-  [SugarColumn(ColumnName = "last_login_browser", ColumnDescription = "末次登录浏览器", Length = 100, IsNullable = true)]
+  [SugarColumn(ColumnName = "last_login_browser", ColumnDescription = "末次登录浏览器", ColumnDataType = "nvarchar", Length = 100, IsNullable = true)]
   public string? LastLoginBrowser { get; set; }
 
   /// <summary>
@@ -181,7 +181,7 @@ public class LeanUserExtend : LeanBaseEntity
   /// 3. 最大长度：100个字符
   /// 4. 包含操作系统名称和版本
   /// </remarks>
-  [SugarColumn(ColumnName = "last_login_os", ColumnDescription = "末次登录操作系统", Length = 100, IsNullable = true)]
+  [SugarColumn(ColumnName = "last_login_os", ColumnDescription = "末次登录操作系统", ColumnDataType = "nvarchar", Length = 100, IsNullable = true)]
   public string? LastLoginOs { get; set; }
 
   /// <summary>
@@ -192,7 +192,7 @@ public class LeanUserExtend : LeanBaseEntity
   /// 2. 可选字段
   /// 3. 用户主动登出或会话过期时更新
   /// </remarks>
-  [SugarColumn(ColumnName = "last_logout_time", ColumnDescription = "末次登出时间", IsNullable = true)]
+  [SugarColumn(ColumnName = "last_logout_time", ColumnDescription = "末次登出时间", ColumnDataType = "datetime", IsNullable = true)]
   public DateTime? LastLogoutTime { get; set; }
 
   /// <summary>
@@ -204,7 +204,7 @@ public class LeanUserExtend : LeanBaseEntity
   /// 3. 默认值：0
   /// 4. 每次登录时自动加1
   /// </remarks>
-  [SugarColumn(ColumnName = "login_count", ColumnDescription = "登录次数", IsNullable = false)]
+  [SugarColumn(ColumnName = "login_count", ColumnDescription = "登录次数", ColumnDataType = "int", IsNullable = false)]
   public int LoginCount { get; set; }
 
   /// <summary>
@@ -217,7 +217,7 @@ public class LeanUserExtend : LeanBaseEntity
   /// 4. 登录失败时自动加1
   /// 5. 登录成功时重置为0
   /// </remarks>
-  [SugarColumn(ColumnName = "error_count", ColumnDescription = "登录错误次数", IsNullable = false)]
+  [SugarColumn(ColumnName = "error_count", ColumnDescription = "登录错误次数", ColumnDataType = "int", IsNullable = false)]
   public int ErrorCount { get; set; }
 
   /// <summary>
@@ -229,7 +229,7 @@ public class LeanUserExtend : LeanBaseEntity
   /// 3. 登录失败时更新
   /// 4. 用于判断是否需要显示验证码或锁定账户
   /// </remarks>
-  [SugarColumn(ColumnName = "last_error_time", ColumnDescription = "末次错误时间", IsNullable = true)]
+  [SugarColumn(ColumnName = "last_error_time", ColumnDescription = "末次错误时间", ColumnDataType = "datetime", IsNullable = true)]
   public DateTime? LastErrorTime { get; set; }
 
   /// <summary>
@@ -241,7 +241,7 @@ public class LeanUserExtend : LeanBaseEntity
   /// 3. 当错误次数超过限制时设置
   /// 4. 为空表示未锁定
   /// </remarks>
-  [SugarColumn(ColumnName = "lock_end_time", ColumnDescription = "锁定结束时间", IsNullable = true)]
+  [SugarColumn(ColumnName = "lock_end_time", ColumnDescription = "锁定结束时间", ColumnDataType = "datetime", IsNullable = true)]
   public DateTime? LockEndTime { get; set; }
 
   /// <summary>
@@ -254,7 +254,7 @@ public class LeanUserExtend : LeanBaseEntity
   /// 4. 登录失败时自动加1
   /// 5. 用于统计分析
   /// </remarks>
-  [SugarColumn(ColumnName = "total_error_count", ColumnDescription = "累计错误次数", IsNullable = false)]
+  [SugarColumn(ColumnName = "total_error_count", ColumnDescription = "累计错误次数", ColumnDataType = "int", IsNullable = false)]
   public int TotalErrorCount { get; set; }
 
   /// <summary>
@@ -266,7 +266,7 @@ public class LeanUserExtend : LeanBaseEntity
   /// 3. 默认值：0（离线）
   /// 4. 用于即时通讯和在线状态显示
   /// </remarks>
-  [SugarColumn(ColumnName = "online_status", ColumnDescription = "在线状态", IsNullable = false)]
+  [SugarColumn(ColumnName = "online_status", ColumnDescription = "在线状态", ColumnDataType = "int", IsNullable = false)]
   public int OnlineStatus { get; set; }
 
   /// <summary>
@@ -278,7 +278,7 @@ public class LeanUserExtend : LeanBaseEntity
   /// 3. 用于判断用户是否真实在线
   /// 4. 超过指定时间未更新则自动设置为离线
   /// </remarks>
-  [SugarColumn(ColumnName = "last_heartbeat_time", ColumnDescription = "最后心跳时间", IsNullable = true)]
+  [SugarColumn(ColumnName = "last_heartbeat_time", ColumnDescription = "最后心跳时间", ColumnDataType = "datetime", IsNullable = true)]
   public DateTime? LastHeartbeatTime { get; set; }
 
   /// <summary>
@@ -290,7 +290,7 @@ public class LeanUserExtend : LeanBaseEntity
   /// 3. 最大长度：50个字符
   /// 4. 用于判断是否多地登录
   /// </remarks>
-  [SugarColumn(ColumnName = "session_id", ColumnDescription = "当前会话ID", Length = 50, IsNullable = true)]
+  [SugarColumn(ColumnName = "session_id", ColumnDescription = "当前会话ID", ColumnDataType = "varchar", Length = 50, IsNullable = true)]
   public string? SessionId { get; set; }
 
   /// <summary>
@@ -302,7 +302,7 @@ public class LeanUserExtend : LeanBaseEntity
   /// 3. 用于统计用户活跃度
   /// 4. 每次请求时更新
   /// </remarks>
-  [SugarColumn(ColumnName = "last_active_time", ColumnDescription = "最后活跃时间", IsNullable = true)]
+  [SugarColumn(ColumnName = "last_active_time", ColumnDescription = "最后活跃时间", ColumnDataType = "datetime", IsNullable = true)]
   public DateTime? LastActiveTime { get; set; }
 
   /// <summary>
@@ -314,7 +314,7 @@ public class LeanUserExtend : LeanBaseEntity
   /// 3. 最大长度：50个字符
   /// 4. 用于安全审计
   /// </remarks>
-  [SugarColumn(ColumnName = "last_active_ip", ColumnDescription = "最后活跃IP", Length = 50, IsNullable = true)]
+  [SugarColumn(ColumnName = "last_active_ip", ColumnDescription = "最后活跃IP", ColumnDataType = "varchar", Length = 50, IsNullable = true)]
   public string? LastActiveIp { get; set; }
 
   /// <summary>
@@ -326,6 +326,24 @@ public class LeanUserExtend : LeanBaseEntity
   /// 3. 默认值：0
   /// 4. 用于统计用户使用情况
   /// </remarks>
-  [SugarColumn(ColumnName = "total_online_time", ColumnDescription = "累计在线时长", IsNullable = false)]
-  public int TotalOnlineTime { get; set; }
+  [SugarColumn(ColumnName = "total_online_time", ColumnDescription = "累计在线时长", ColumnDataType = "bigint", IsNullable = false)]
+  public long TotalOnlineTime { get; set; }
+
+  /// <summary>
+  /// 用户信息
+  /// </summary>
+  [Navigate(NavigateType.OneToOne, nameof(UserId))]
+  public LeanUser? User { get; set; }
+
+  /// <summary>
+  /// 构造函数
+  /// </summary>
+  public LeanUserExtend()
+  {
+    LoginCount = 0;
+    TotalOnlineTime = 0;
+    OnlineStatus = 0;
+    ErrorCount = 0;
+    TotalErrorCount = 0;
+  }
 }

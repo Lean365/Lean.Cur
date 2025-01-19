@@ -15,11 +15,11 @@ namespace Lean.Cur.Infrastructure.Services.Logging;
 /// </summary>
 public class SqlLogService : ISqlLogService
 {
-  private readonly ISqlSugarClient _db;
+  private readonly SqlSugarClient _db;
   private readonly ILogger<SqlLogService> _logger;
   private readonly LeanExcelHelper _excel;
 
-  public SqlLogService(ISqlSugarClient db, ILogger<SqlLogService> logger, LeanExcelHelper excel)
+  public SqlLogService(SqlSugarClient db, ILogger<SqlLogService> logger, LeanExcelHelper excel)
   {
     _db = db;
     _logger = logger;

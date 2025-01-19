@@ -19,7 +19,7 @@ namespace Lean.Cur.Infrastructure.Database
     /// <summary>
     /// 配置AOP
     /// </summary>
-    public void ConfigureAop(ISqlSugarClient db)
+    public void ConfigureAop(SqlSugarClient db)
     {
       // SQL执行前
       db.Aop.OnLogExecuting = (sql, parameters) =>

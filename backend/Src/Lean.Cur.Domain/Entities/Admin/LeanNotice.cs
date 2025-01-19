@@ -7,7 +7,7 @@ namespace Lean.Cur.Domain.Entities.Admin;
 /// </summary>
 /// <remarks>
 /// 记录系统的通知和公告信息
-/// 
+///
 /// 数据库映射说明：
 /// 1. 表名：lean_notice
 /// 2. 主键：Id (自增长)
@@ -16,7 +16,7 @@ namespace Lean.Cur.Domain.Entities.Admin;
 ///    - IX_Type (通知类型)
 ///    - IX_Status (状态)
 ///    - IX_PublishTime (发布时间)
-/// 
+///
 /// 业务规则：
 /// 1. 通知标题和内容为必填项
 /// 2. 通知类型分为系统通知和待办通知
@@ -34,8 +34,8 @@ public class LeanNotice : LeanBaseEntity
   /// 2. 最大长度：100个字符
   /// 3. 建立索引提高查询性能
   /// </remarks>
-  [SugarColumn(ColumnName = "title", ColumnDescription = "通知标题", ColumnDataType = "nvarchar", Length = 100, IsNullable = false)]
-  public string Title { get; set; } = null!;
+  [SugarColumn(ColumnName = "notice_title", ColumnDescription = "通知标题", ColumnDataType = "varchar", Length = 100, IsNullable = false)]
+  public string NoticeTitle { get; set; } = null!;
 
   /// <summary>
   /// 通知内容
@@ -44,8 +44,8 @@ public class LeanNotice : LeanBaseEntity
   /// 1. 必填字段
   /// 2. 支持富文本格式
   /// </remarks>
-  [SugarColumn(ColumnName = "content", ColumnDescription = "通知内容", ColumnDataType = "nvarchar(max)", IsNullable = false)]
-  public string Content { get; set; } = null!;
+  [SugarColumn(ColumnName = "notice_content", ColumnDescription = "通知内容", ColumnDataType = "nvarchar(max)", IsNullable = false)]
+  public string NoticeContent { get; set; } = null!;
 
   /// <summary>
   /// 通知类型：1=系统通知，2=待办通知

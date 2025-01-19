@@ -1,0 +1,20 @@
+<Project>
+  <PropertyGroup>
+    <Version>0.0.1</Version>
+    <Authors>lean365</Authors>
+    <Company>lean365</Company>
+    <Product>Lean.Cur</Product>
+    <Copyright>© $([System.DateTime]::Now.Year) lean365. All rights reserved.</Copyright>
+  </PropertyGroup>
+
+  <!-- 编译后更新前端版本号 -->
+  <Target Name="UpdateFrontendVersion" AfterTargets="Build">
+    <PropertyGroup>
+      <FrontendEnvFile>$(MSBuildThisFileDirectory)../../frontend/.env</FrontendEnvFile>
+    </PropertyGroup>
+    <WriteLinesToFile
+      File="$(FrontendEnvFile)"
+      Lines="VITE_APP_VERSION=$(Version)"
+      Overwrite="true"/>
+  </Target>
+</Project> 

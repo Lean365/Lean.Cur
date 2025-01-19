@@ -1,18 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="SqlSugarCore" Version="5.1.4.173" />
+    <PackageReference Include="SqlSugarCore" Version="5.1.4.172" />
     <ProjectReference Include="..\Lean.Cur.Domain\Lean.Cur.Domain.csproj" />
     <ProjectReference Include="..\Lean.Cur.Application\Lean.Cur.Application.csproj" />
     <ProjectReference Include="..\Lean.Cur.Infrastructure\Lean.Cur.Infrastructure.csproj" />
-    <ProjectReference Include="..\Lean.Cur.WebApi\Lean.Cur.WebApi.csproj" />
     <PackageReference Include="Scriban" Version="5.9.0" />
   </ItemGroup>
 

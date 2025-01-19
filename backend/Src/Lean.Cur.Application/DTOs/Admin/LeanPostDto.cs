@@ -31,45 +31,55 @@ namespace Lean.Cur.Application.Dtos.Admin;
 /// </remarks>
 public class LeanPostDto
 {
-    /// <summary>
-    /// 岗位ID
-    /// </summary>
-    public long Id { get; set; }
+  /// <summary>
+  /// 岗位ID
+  /// </summary>
+  public long Id { get; set; }
 
-    /// <summary>
-    /// 岗位名称
-    /// </summary>
-    public string PostName { get; set; } = string.Empty;
+  /// <summary>
+  /// 岗位名称
+  /// </summary>
+  public string PostName { get; set; } = string.Empty;
 
-    /// <summary>
-    /// 岗位编码
-    /// </summary>
-    public string PostCode { get; set; } = string.Empty;
+  /// <summary>
+  /// 岗位编码
+  /// </summary>
+  public string PostCode { get; set; } = string.Empty;
 
-    /// <summary>
-    /// 显示顺序
-    /// </summary>
-    public int OrderNum { get; set; }
+  /// <summary>
+  /// 排序号
+  /// </summary>
+  public int OrderNum { get; set; }
 
-    /// <summary>
-    /// 状态
-    /// </summary>
-    public LeanStatus Status { get; set; }
+  /// <summary>
+  /// 状态
+  /// </summary>
+  public LeanStatus Status { get; set; }
 
-    /// <summary>
-    /// 备注
-    /// </summary>
-    public string? Remark { get; set; }
+  /// <summary>
+  /// 备注
+  /// </summary>
+  public string? Remark { get; set; }
 
-    /// <summary>
-    /// 创建时间
-    /// </summary>
-    public DateTime CreateTime { get; set; }
+  /// <summary>
+  /// 创建时间
+  /// </summary>
+  public DateTime CreateTime { get; set; }
 
-    /// <summary>
-    /// 更新时间
-    /// </summary>
-    public DateTime? UpdateTime { get; set; }
+  /// <summary>
+  /// 创建人
+  /// </summary>
+  public string? CreateBy { get; set; }
+
+  /// <summary>
+  /// 更新时间
+  /// </summary>
+  public DateTime? UpdateTime { get; set; }
+
+  /// <summary>
+  /// 更新人
+  /// </summary>
+  public string? UpdateBy { get; set; }
 }
 
 /// <summary>
@@ -77,36 +87,38 @@ public class LeanPostDto
 /// </summary>
 /// <remarks>
 /// 用于岗位列表的查询条件，包含以下特点：
-/// 1. 继承自PagedRequest，支持分页查询
+/// 1. 继承自LeanPagedQuery，支持分页查询
 /// 2. 所有查询条件都是可选的
 /// 3. 支持按时间范围查询
 /// </remarks>
 public class LeanPostQueryDto : PagedRequest
 {
-    /// <summary>
-    /// 岗位名称
-    /// </summary>
-    public string? PostName { get; set; }
+  /// <summary>
+  /// 岗位名称
+  /// </summary>
+  [StringLength(50, ErrorMessage = "岗位名称长度不能超过50个字符")]
+  public string? PostName { get; set; }
 
-    /// <summary>
-    /// 岗位编码
-    /// </summary>
-    public string? PostCode { get; set; }
+  /// <summary>
+  /// 岗位编码
+  /// </summary>
+  [StringLength(50, ErrorMessage = "岗位编码长度不能超过50个字符")]
+  public string? PostCode { get; set; }
 
-    /// <summary>
-    /// 状态
-    /// </summary>
-    public LeanStatus? Status { get; set; }
+  /// <summary>
+  /// 状态
+  /// </summary>
+  public LeanStatus? Status { get; set; }
 
-    /// <summary>
-    /// 开始时间
-    /// </summary>
-    public DateTime? StartTime { get; set; }
+  /// <summary>
+  /// 开始时间
+  /// </summary>
+  public DateTime? StartTime { get; set; }
 
-    /// <summary>
-    /// 结束时间
-    /// </summary>
-    public DateTime? EndTime { get; set; }
+  /// <summary>
+  /// 结束时间
+  /// </summary>
+  public DateTime? EndTime { get; set; }
 }
 
 /// <summary>
@@ -120,63 +132,63 @@ public class LeanPostQueryDto : PagedRequest
 /// </remarks>
 public class LeanPostCreateDto
 {
-    /// <summary>
-    /// 岗位名称
-    /// </summary>
-    /// <remarks>
-    /// 1. 必填字段
-    /// 2. 长度限制：2-50个字符
-    /// 3. 同一租户下唯一
-    /// </remarks>
-    [Required(ErrorMessage = "岗位名称不能为空")]
-    [StringLength(50, MinimumLength = 2, ErrorMessage = "岗位名称长度必须在2-50个字符之间")]
-    public string PostName { get; set; } = string.Empty;
+  /// <summary>
+  /// 岗位名称
+  /// </summary>
+  /// <remarks>
+  /// 1. 必填字段
+  /// 2. 长度限制：2-50个字符
+  /// 3. 同一租户下唯一
+  /// </remarks>
+  [Required(ErrorMessage = "岗位名称不能为空")]
+  [StringLength(50, MinimumLength = 2, ErrorMessage = "岗位名称长度必须在2-50个字符之间")]
+  public string PostName { get; set; } = string.Empty;
 
-    /// <summary>
-    /// 岗位编码
-    /// </summary>
-    /// <remarks>
-    /// 1. 必填字段
-    /// 2. 长度限制：2-50个字符
-    /// 3. 只能包含字母、数字和下划线
-    /// 4. 全局唯一，不区分大小写
-    /// 5. 创建后不可修改
-    /// </remarks>
-    [Required(ErrorMessage = "岗位编码不能为空")]
-    [StringLength(50, MinimumLength = 2, ErrorMessage = "岗位编码长度必须在2-50个字符之间")]
-    [RegularExpression(@"^[a-zA-Z0-9_]+$", ErrorMessage = "岗位编码只能包含字母、数字和下划线")]
-    public string PostCode { get; set; } = string.Empty;
+  /// <summary>
+  /// 岗位编码
+  /// </summary>
+  /// <remarks>
+  /// 1. 必填字段
+  /// 2. 长度限制：2-50个字符
+  /// 3. 只能包含字母、数字和下划线
+  /// 4. 全局唯一，不区分大小写
+  /// 5. 创建后不可修改
+  /// </remarks>
+  [Required(ErrorMessage = "岗位编码不能为空")]
+  [StringLength(50, MinimumLength = 2, ErrorMessage = "岗位编码长度必须在2-50个字符之间")]
+  [RegularExpression(@"^[a-zA-Z0-9_]+$", ErrorMessage = "岗位编码只能包含字母、数字和下划线")]
+  public string PostCode { get; set; } = string.Empty;
 
-    /// <summary>
-    /// 显示顺序
-    /// </summary>
-    /// <remarks>
-    /// 1. 必填字段
-    /// 2. 值越小越靠前
-    /// 3. 默认值：0
-    /// </remarks>
-    [Required(ErrorMessage = "显示顺序不能为空")]
-    public int OrderNum { get; set; }
+  /// <summary>
+  /// 排序号
+  /// </summary>
+  /// <remarks>
+  /// 1. 必填字段
+  /// 2. 值越小越靠前
+  /// 3. 默认值：0
+  /// </remarks>
+  [Required(ErrorMessage = "排序号不能为空")]
+  public int OrderNum { get; set; }
 
-    /// <summary>
-    /// 状态
-    /// </summary>
-    /// <remarks>
-    /// 1. 必填字段
-    /// 2. 默认值：正常
-    /// </remarks>
-    [Required(ErrorMessage = "状态不能为空")]
-    public LeanStatus Status { get; set; }
+  /// <summary>
+  /// 状态
+  /// </summary>
+  /// <remarks>
+  /// 1. 必填字段
+  /// 2. 默认值：正常
+  /// </remarks>
+  [Required(ErrorMessage = "状态不能为空")]
+  public LeanStatus Status { get; set; } = LeanStatus.Normal;
 
-    /// <summary>
-    /// 备注
-    /// </summary>
-    /// <remarks>
-    /// 1. 选填字段
-    /// 2. 长度限制：最大500个字符
-    /// </remarks>
-    [StringLength(500, ErrorMessage = "备注长度不能超过500个字符")]
-    public string? Remark { get; set; }
+  /// <summary>
+  /// 备注
+  /// </summary>
+  /// <remarks>
+  /// 1. 选填字段
+  /// 2. 长度限制：最大500个字符
+  /// </remarks>
+  [StringLength(500, ErrorMessage = "备注长度不能超过500个字符")]
+  public string? Remark { get; set; }
 }
 
 /// <summary>
@@ -189,72 +201,17 @@ public class LeanPostCreateDto
 /// 3. 包含详细的错误提示信息
 /// 4. 不允许修改岗位编码
 /// </remarks>
-public class LeanPostUpdateDto
+public class LeanPostUpdateDto : LeanPostCreateDto
 {
-    /// <summary>
-    /// 岗位ID
-    /// </summary>
-    /// <remarks>
-    /// 1. 必填字段
-    /// 2. 必须大于0
-    /// </remarks>
-    [Required(ErrorMessage = "岗位ID不能为空")]
-    public long Id { get; set; }
-
-    /// <summary>
-    /// 岗位名称
-    /// </summary>
-    /// <remarks>
-    /// 1. 必填字段
-    /// 2. 长度限制：2-50个字符
-    /// 3. 同一租户下唯一
-    /// </remarks>
-    [Required(ErrorMessage = "岗位名称不能为空")]
-    [StringLength(50, MinimumLength = 2, ErrorMessage = "岗位名称长度必须在2-50个字符之间")]
-    public string PostName { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 岗位编码
-    /// </summary>
-    /// <remarks>
-    /// 1. 必填字段
-    /// 2. 长度限制：2-50个字符
-    /// 3. 只能包含字母、数字和下划线
-    /// 4. 全局唯一，不区分大小写
-    /// </remarks>
-    [Required(ErrorMessage = "岗位编码不能为空")]
-    [StringLength(50, MinimumLength = 2, ErrorMessage = "岗位编码长度必须在2-50个字符之间")]
-    [RegularExpression(@"^[a-zA-Z0-9_]+$", ErrorMessage = "岗位编码只能包含字母、数字和下划线")]
-    public string PostCode { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 显示顺序
-    /// </summary>
-    /// <remarks>
-    /// 1. 必填字段
-    /// 2. 值越小越靠前
-    /// </remarks>
-    [Required(ErrorMessage = "显示顺序不能为空")]
-    public int OrderNum { get; set; }
-
-    /// <summary>
-    /// 状态
-    /// </summary>
-    /// <remarks>
-    /// 1. 必填字段
-    /// </remarks>
-    [Required(ErrorMessage = "状态不能为空")]
-    public LeanStatus Status { get; set; }
-
-    /// <summary>
-    /// 备注
-    /// </summary>
-    /// <remarks>
-    /// 1. 选填字段
-    /// 2. 长度限制：最大500个字符
-    /// </remarks>
-    [StringLength(500, ErrorMessage = "备注长度不能超过500个字符")]
-    public string? Remark { get; set; }
+  /// <summary>
+  /// 岗位ID
+  /// </summary>
+  /// <remarks>
+  /// 1. 必填字段
+  /// 2. 必须大于0
+  /// </remarks>
+  [Required(ErrorMessage = "岗位ID不能为空")]
+  public long Id { get; set; }
 }
 
 /// <summary>
@@ -267,24 +224,24 @@ public class LeanPostUpdateDto
 /// </remarks>
 public class LeanPostStatusDto
 {
-    /// <summary>
-    /// 岗位ID
-    /// </summary>
-    /// <remarks>
-    /// 1. 必填字段
-    /// 2. 必须大于0
-    /// </remarks>
-    [Required(ErrorMessage = "岗位ID不能为空")]
-    public long Id { get; set; }
+  /// <summary>
+  /// 岗位ID
+  /// </summary>
+  /// <remarks>
+  /// 1. 必填字段
+  /// 2. 必须大于0
+  /// </remarks>
+  [Required(ErrorMessage = "岗位ID不能为空")]
+  public long Id { get; set; }
 
-    /// <summary>
-    /// 状态
-    /// </summary>
-    /// <remarks>
-    /// 1. 必填字段
-    /// </remarks>
-    [Required(ErrorMessage = "状态不能为空")]
-    public LeanStatus Status { get; set; }
+  /// <summary>
+  /// 状态
+  /// </summary>
+  /// <remarks>
+  /// 1. 必填字段
+  /// </remarks>
+  [Required(ErrorMessage = "状态不能为空")]
+  public LeanStatus Status { get; set; }
 }
 
 /// <summary>
@@ -297,20 +254,73 @@ public class LeanPostStatusDto
 /// </remarks>
 public class LeanPostBatchDeleteDto
 {
-    /// <summary>
-    /// 岗位ID列表
-    /// </summary>
-    /// <remarks>
-    /// 1. 必填字段
-    /// 2. 不能为空列表
-    /// </remarks>
-    [Required(ErrorMessage = "岗位ID列表不能为空")]
-    public List<long> Ids { get; set; } = new();
+  /// <summary>
+  /// 岗位ID列表
+  /// </summary>
+  /// <remarks>
+  /// 1. 必填字段
+  /// 2. 不能为空列表
+  /// </remarks>
+  [Required(ErrorMessage = "岗位ID列表不能为空")]
+  public List<long> Ids { get; set; } = new();
 }
 
 #endregion
 
 #region 导入导出
+
+/// <summary>
+/// 岗位导入模板DTO
+/// </summary>
+/// <remarks>
+/// 用于生成导入模板，包含以下特点：
+/// 1. 包含所有可导入字段的示例值
+/// 2. 包含字段说明和验证规则
+/// </remarks>
+public class LeanPostTempleteDto
+{
+  /// <summary>
+  /// 岗位名称
+  /// </summary>
+  /// <remarks>
+  /// 示例值：技术总监
+  /// 必填，2-50个字符
+  /// </remarks>
+  [Required(ErrorMessage = "岗位名称不能为空")]
+  [StringLength(50, MinimumLength = 2, ErrorMessage = "岗位名称长度必须在2-50个字符之间")]
+  public string PostName { get; set; } = "技术总监";
+
+  /// <summary>
+  /// 岗位编码
+  /// </summary>
+  /// <remarks>
+  /// 示例值：tech_director
+  /// 必填，2-50个字符，只能包含字母、数字和下划线
+  /// </remarks>
+  [Required(ErrorMessage = "岗位编码不能为空")]
+  [StringLength(50, MinimumLength = 2, ErrorMessage = "岗位编码长度必须在2-50个字符之间")]
+  [RegularExpression(@"^[a-zA-Z0-9_]+$", ErrorMessage = "岗位编码只能包含字母、数字和下划线")]
+  public string PostCode { get; set; } = "tech_director";
+
+  /// <summary>
+  /// 显示顺序
+  /// </summary>
+  /// <remarks>
+  /// 示例值：1
+  /// 必填，数字，值越小越靠前
+  /// </remarks>
+  public int OrderNum { get; set; } = 1;
+
+  /// <summary>
+  /// 备注
+  /// </summary>
+  /// <remarks>
+  /// 示例值：负责技术团队管理
+  /// 选填，最多500个字符
+  /// </remarks>
+  [StringLength(500, ErrorMessage = "备注长度不能超过500个字符")]
+  public string? Remark { get; set; } = "负责技术团队管理";
+}
 
 /// <summary>
 /// 岗位导入DTO
@@ -323,66 +333,56 @@ public class LeanPostBatchDeleteDto
 /// </remarks>
 public class LeanPostImportDto
 {
-    /// <summary>
-    /// 岗位名称
-    /// </summary>
-    /// <remarks>
-    /// 1. 必填字段
-    /// 2. 长度限制：2-50个字符
-    /// 3. 同一租户下唯一
-    /// </remarks>
-    [Required(ErrorMessage = "岗位名称不能为空")]
-    [StringLength(50, MinimumLength = 2, ErrorMessage = "岗位名称长度必须在2-50个字符之间")]
-    public string PostName { get; set; } = string.Empty;
+  /// <summary>
+  /// 岗位名称
+  /// </summary>
+  /// <remarks>
+  /// 1. 必填字段
+  /// 2. 长度限制：2-50个字符
+  /// 3. 同一租户下唯一
+  /// </remarks>
+  [Required(ErrorMessage = "岗位名称不能为空")]
+  [StringLength(50, MinimumLength = 2, ErrorMessage = "岗位名称长度必须在2-50个字符之间")]
+  public string PostName { get; set; } = string.Empty;
 
-    /// <summary>
-    /// 岗位编码
-    /// </summary>
-    /// <remarks>
-    /// 1. 必填字段
-    /// 2. 长度限制：2-50个字符
-    /// 3. 只能包含字母、数字和下划线
-    /// 4. 全局唯一，不区分大小写
-    /// </remarks>
-    [Required(ErrorMessage = "岗位编码不能为空")]
-    [StringLength(50, MinimumLength = 2, ErrorMessage = "岗位编码长度必须在2-50个字符之间")]
-    [RegularExpression(@"^[a-zA-Z0-9_]+$", ErrorMessage = "岗位编码只能包含字母、数字和下划线")]
-    public string PostCode { get; set; } = string.Empty;
+  /// <summary>
+  /// 岗位编码
+  /// </summary>
+  /// <remarks>
+  /// 1. 必填字段
+  /// 2. 长度限制：2-50个字符
+  /// 3. 只能包含字母、数字和下划线
+  /// 4. 全局唯一，不区分大小写
+  /// </remarks>
+  [Required(ErrorMessage = "岗位编码不能为空")]
+  [StringLength(50, MinimumLength = 2, ErrorMessage = "岗位编码长度必须在2-50个字符之间")]
+  [RegularExpression(@"^[a-zA-Z0-9_]+$", ErrorMessage = "岗位编码只能包含字母、数字和下划线")]
+  public string PostCode { get; set; } = string.Empty;
 
-    /// <summary>
-    /// 显示顺序
-    /// </summary>
-    /// <remarks>
-    /// 1. 必填字段
-    /// 2. 值越小越靠前
-    /// </remarks>
-    [Required(ErrorMessage = "显示顺序不能为空")]
-    public int OrderNum { get; set; }
+  /// <summary>
+  /// 排序号
+  /// </summary>
+  /// <remarks>
+  /// 1. 必填字段
+  /// 2. 值越小越靠前
+  /// </remarks>
+  [Required(ErrorMessage = "排序号不能为空")]
+  public int OrderNum { get; set; }
 
-    /// <summary>
-    /// 状态
-    /// </summary>
-    /// <remarks>
-    /// 1. 必填字段
-    /// 2. 默认值：正常
-    /// </remarks>
-    [Required(ErrorMessage = "状态不能为空")]
-    public LeanStatus Status { get; set; }
+  /// <summary>
+  /// 备注
+  /// </summary>
+  /// <remarks>
+  /// 1. 选填字段
+  /// 2. 长度限制：最大500个字符
+  /// </remarks>
+  [StringLength(500, ErrorMessage = "备注长度不能超过500个字符")]
+  public string? Remark { get; set; }
 
-    /// <summary>
-    /// 备注
-    /// </summary>
-    /// <remarks>
-    /// 1. 选填字段
-    /// 2. 长度限制：最大500个字符
-    /// </remarks>
-    [StringLength(500, ErrorMessage = "备注长度不能超过500个字符")]
-    public string? Remark { get; set; }
-
-    /// <summary>
-    /// 错误信息
-    /// </summary>
-    public string? ErrorMessage { get; set; }
+  /// <summary>
+  /// 错误信息
+  /// </summary>
+  public string? ErrorMessage { get; set; }
 }
 
 /// <summary>
@@ -396,49 +396,49 @@ public class LeanPostImportDto
 /// </remarks>
 public class LeanPostExportDto
 {
-    /// <summary>
-    /// 岗位名称
-    /// </summary>
-    public string PostName { get; set; } = string.Empty;
+  /// <summary>
+  /// 岗位名称
+  /// </summary>
+  public string PostName { get; set; } = string.Empty;
 
-    /// <summary>
-    /// 岗位编码
-    /// </summary>
-    public string PostCode { get; set; } = string.Empty;
+  /// <summary>
+  /// 岗位编码
+  /// </summary>
+  public string PostCode { get; set; } = string.Empty;
 
-    /// <summary>
-    /// 显示顺序
-    /// </summary>
-    public string OrderNum { get; set; } = string.Empty;
+  /// <summary>
+  /// 排序号
+  /// </summary>
+  public string OrderNum { get; set; } = string.Empty;
 
-    /// <summary>
-    /// 状态
-    /// </summary>
-    /// <remarks>
-    /// 会被格式化为中文：正常、停用
-    /// </remarks>
-    public string Status { get; set; } = string.Empty;
+  /// <summary>
+  /// 状态
+  /// </summary>
+  /// <remarks>
+  /// 会被格式化为中文：正常、停用
+  /// </remarks>
+  public string Status { get; set; } = string.Empty;
 
-    /// <summary>
-    /// 备注
-    /// </summary>
-    public string? Remark { get; set; }
+  /// <summary>
+  /// 备注
+  /// </summary>
+  public string? Remark { get; set; }
 
-    /// <summary>
-    /// 创建时间
-    /// </summary>
-    /// <remarks>
-    /// 格式：yyyy-MM-dd HH:mm:ss
-    /// </remarks>
-    public string CreateTime { get; set; } = string.Empty;
+  /// <summary>
+  /// 创建时间
+  /// </summary>
+  /// <remarks>
+  /// 格式：yyyy-MM-dd HH:mm:ss
+  /// </remarks>
+  public string CreateTime { get; set; } = string.Empty;
 
-    /// <summary>
-    /// 更新时间
-    /// </summary>
-    /// <remarks>
-    /// 格式：yyyy-MM-dd HH:mm:ss
-    /// </remarks>
-    public string? UpdateTime { get; set; }
+  /// <summary>
+  /// 更新时间
+  /// </summary>
+  /// <remarks>
+  /// 格式：yyyy-MM-dd HH:mm:ss
+  /// </remarks>
+  public string? UpdateTime { get; set; }
 }
 
 /// <summary>
@@ -451,25 +451,25 @@ public class LeanPostExportDto
 /// </remarks>
 public class LeanPostImportResultDto
 {
-    /// <summary>
-    /// 总记录数
-    /// </summary>
-    public int TotalCount { get; set; }
+  /// <summary>
+  /// 总记录数
+  /// </summary>
+  public int TotalCount { get; set; }
 
-    /// <summary>
-    /// 成功记录数
-    /// </summary>
-    public int SuccessCount { get; set; }
+  /// <summary>
+  /// 成功记录数
+  /// </summary>
+  public int SuccessCount { get; set; }
 
-    /// <summary>
-    /// 失败记录数
-    /// </summary>
-    public int FailureCount { get; set; }
+  /// <summary>
+  /// 失败记录数
+  /// </summary>
+  public int FailureCount { get; set; }
 
-    /// <summary>
-    /// 失败记录列表
-    /// </summary>
-    public List<LeanPostImportDto> FailureItems { get; set; } = new();
+  /// <summary>
+  /// 失败记录列表
+  /// </summary>
+  public List<LeanPostImportDto> FailureItems { get; set; } = new();
 }
 
 /// <summary>
@@ -482,50 +482,50 @@ public class LeanPostImportResultDto
 /// </remarks>
 public class LeanPostImportTemplateDto
 {
-    /// <summary>
-    /// 岗位名称
-    /// </summary>
-    /// <remarks>
-    /// 示例值：技术总监
-    /// 必填，2-50个字符
-    /// </remarks>
-    public string PostName { get; set; } = "技术总监";
+  /// <summary>
+  /// 岗位名称
+  /// </summary>
+  /// <remarks>
+  /// 示例值：技术总监
+  /// 必填，2-50个字符
+  /// </remarks>
+  public string PostName { get; set; } = "技术总监";
 
-    /// <summary>
-    /// 岗位编码
-    /// </summary>
-    /// <remarks>
-    /// 示例值：tech_director
-    /// 必填，2-50个字符，只能包含字母、数字和下划线
-    /// </remarks>
-    public string PostCode { get; set; } = "tech_director";
+  /// <summary>
+  /// 岗位编码
+  /// </summary>
+  /// <remarks>
+  /// 示例值：tech_director
+  /// 必填，2-50个字符，只能包含字母、数字和下划线
+  /// </remarks>
+  public string PostCode { get; set; } = "tech_director";
 
-    /// <summary>
-    /// 显示顺序
-    /// </summary>
-    /// <remarks>
-    /// 示例值：1
-    /// 必填，数字，值越小越靠前
-    /// </remarks>
-    public string OrderNum { get; set; } = "1";
+  /// <summary>
+  /// 显示顺序
+  /// </summary>
+  /// <remarks>
+  /// 示例值：1
+  /// 必填，数字，值越小越靠前
+  /// </remarks>
+  public string OrderNum { get; set; } = "1";
 
-    /// <summary>
-    /// 状态
-    /// </summary>
-    /// <remarks>
-    /// 示例值：正常
-    /// 必填，可选值：正常、停用
-    /// </remarks>
-    public string Status { get; set; } = "正常";
+  /// <summary>
+  /// 状态
+  /// </summary>
+  /// <remarks>
+  /// 示例值：正常
+  /// 必填，可选值：正常、停用
+  /// </remarks>
+  public string Status { get; set; } = "正常";
 
-    /// <summary>
-    /// 备注
-    /// </summary>
-    /// <remarks>
-    /// 示例值：负责技术团队管理
-    /// 选填，最多500个字符
-    /// </remarks>
-    public string? Remark { get; set; } = "负责技术团队管理";
+  /// <summary>
+  /// 备注
+  /// </summary>
+  /// <remarks>
+  /// 示例值：负责技术团队管理
+  /// 选填，最多500个字符
+  /// </remarks>
+  public string? Remark { get; set; } = "负责技术团队管理";
 }
 
-#endregion 
+#endregion

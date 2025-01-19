@@ -70,7 +70,7 @@ public class LeanUser : LeanBaseEntity
   /// 4. 每个用户唯一
   /// 5. 必填字段
   /// </remarks>
-  [SugarColumn(ColumnName = "password_salt", ColumnDescription = "密码盐值", ColumnDataType = "char", Length = 64, IsNullable = false)]
+  [SugarColumn(ColumnName = "password_salt", ColumnDescription = "密码盐值", ColumnDataType = "nvarchar", Length = 64, IsNullable = false)]
   [Description("密码盐值")]
   public string PasswordSalt { get; set; } = string.Empty;
 
@@ -205,13 +205,13 @@ public class LeanUser : LeanBaseEntity
   /// <summary>
   /// 部门ID
   /// </summary>
-  [SugarColumn(ColumnName = "dept_id", ColumnDescription = "部门ID")]
+  [SugarColumn(ColumnName = "dept_id", ColumnDescription = "部门ID", ColumnDataType = "bigint", IsNullable = true)]
   public long? DeptId { get; set; }
 
   /// <summary>
   /// 岗位ID
   /// </summary>
-  [SugarColumn(ColumnName = "post_id", ColumnDescription = "岗位ID")]
+  [SugarColumn(ColumnName = "post_id", ColumnDescription = "岗位ID", ColumnDataType = "bigint", IsNullable = true)]
   public long? PostId { get; set; }
 
   /// <summary>

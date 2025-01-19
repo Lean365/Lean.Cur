@@ -19,11 +19,11 @@ namespace Lean.Cur.Infrastructure.Services.Admin;
 /// </summary>
 public class LeanUserService : ILeanUserService
 {
-  private readonly ISqlSugarClient _db;
+  private readonly SqlSugarClient _db;
   private readonly ILeanCache _cache;
   private readonly LeanExcelHelper _excel;
 
-  public LeanUserService(ISqlSugarClient db, ILeanCache cache, LeanExcelHelper excel)
+  public LeanUserService(SqlSugarClient db, ILeanCache cache, LeanExcelHelper excel)
   {
     _db = db;
     _cache = cache;

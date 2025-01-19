@@ -19,7 +19,7 @@ namespace Lean.Cur.Infrastructure.Services.Auth;
 /// </summary>
 public class AuthService : IAuthService
 {
-  private readonly ISqlSugarClient _db;
+  private readonly SqlSugarClient _db;
   private readonly SlideVerifyHelper _verifyHelper;
   private readonly JwtHelper _jwtHelper;
   private readonly IMemoryCache _cache;
@@ -27,7 +27,7 @@ public class AuthService : IAuthService
   private readonly IHttpContextAccessor _httpContextAccessor;
 
   public AuthService(
-      ISqlSugarClient db,
+      SqlSugarClient db,
       SlideVerifyHelper verifyHelper,
       JwtHelper jwtHelper,
       IMemoryCache cache,
@@ -237,9 +237,9 @@ public class AuthService : IAuthService
 
     if (userExtend != null)
     {
-        userExtend.OnlineStatus = 0;
-        userExtend.LastActiveTime = DateTime.Now;
-        await _db.Updateable(userExtend).ExecuteCommandAsync();
+      userExtend.OnlineStatus = 0;
+      userExtend.LastActiveTime = DateTime.Now;
+      await _db.Updateable(userExtend).ExecuteCommandAsync();
     }
 
     // 记录登出日志
@@ -437,32 +437,32 @@ public class AuthService : IAuthService
   {
     try
     {
-        var httpContext = _httpContextAccessor.HttpContext;
-        var userAgent = httpContext?.Request.Headers["User-Agent"].ToString();
-        var ip = httpContext?.Connection.RemoteIpAddress?.ToString();
+      var httpContext = _httpContextAccessor.HttpContext;
+      var userAgent = httpContext?.Request.Headers["User-Agent"].ToString();
+      var ip = httpContext?.Connection.RemoteIpAddress?.ToString();
 
-        // 解析User-Agent获取浏览器和操作系统信息
-        var (browser, os) = ParseUserAgent(userAgent);
+      // 解析User-Agent获取浏览器和操作系统信息
+      var (browser, os) = ParseUserAgent(userAgent);
 
-        var log = new LeanLoginLog
-        {
-            UserId = userId,
-            UserName = userName,
-            LoginType = loginType,
-            Status = success ? 1 : 2,
-            LoginTime = DateTime.Now,
-            IpAddress = ip,
-            Browser = browser,
-            Os = os,
-            Device = userAgent,
-            Message = message
-        };
+      var log = new LeanLoginLog
+      {
+        UserId = userId,
+        UserName = userName,
+        LoginType = loginType,
+        Status = success ? 1 : 2,
+        LoginTime = DateTime.Now,
+        IpAddress = ip,
+        Browser = browser,
+        Os = os,
+        Device = userAgent,
+        Message = message
+      };
 
-        await _db.Insertable(log).ExecuteCommandAsync();
+      await _db.Insertable(log).ExecuteCommandAsync();
     }
     catch (Exception ex)
     {
-        _logger.LogError(ex, "记录登录日志时发生错误");
+      _logger.LogError(ex, "记录登录日志时发生错误");
     }
   }
 

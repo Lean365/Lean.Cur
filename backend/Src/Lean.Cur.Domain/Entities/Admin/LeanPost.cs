@@ -22,67 +22,67 @@ namespace Lean.Cur.Domain.Entities.Admin;
 [SugarTable("lean_post")]
 public class LeanPost : LeanBaseEntity
 {
-    /// <summary>
-    /// 岗位名称
-    /// </summary>
-    /// <remarks>
-    /// 1. 必填字段
-    /// 2. 长度限制：2-50个字符
-    /// 3. 同一租户下唯一
-    /// </remarks>
-    [SugarColumn(ColumnName = "post_name", ColumnDescription = "岗位名称", Length = 50, IsNullable = false)]
-    public string PostName { get; set; } = string.Empty;
+  /// <summary>
+  /// 岗位名称
+  /// </summary>
+  /// <remarks>
+  /// 1. 必填字段
+  /// 2. 长度限制：2-50个字符
+  /// 3. 同一租户下唯一
+  /// </remarks>
+  [SugarColumn(ColumnName = "post_name", ColumnDescription = "岗位名称", ColumnDataType = "nvarchar", Length = 50, IsNullable = false)]
+  public string PostName { get; set; } = string.Empty;
 
-    /// <summary>
-    /// 岗位编码
-    /// </summary>
-    /// <remarks>
-    /// 1. 必填字段
-    /// 2. 长度限制：2-50个字符
-    /// 3. 只能包含字母、数字和下划线
-    /// 4. 全局唯一，不区分大小写
-    /// 5. 创建后不可修改
-    /// </remarks>
-    [SugarColumn(ColumnName = "post_code", ColumnDescription = "岗位编码", Length = 50, IsNullable = false)]
-    public string PostCode { get; set; } = string.Empty;
+  /// <summary>
+  /// 岗位编码
+  /// </summary>
+  /// <remarks>
+  /// 1. 必填字段
+  /// 2. 长度限制：2-50个字符
+  /// 3. 只能包含字母、数字和下划线
+  /// 4. 全局唯一，不区分大小写
+  /// 5. 创建后不可修改
+  /// </remarks>
+  [SugarColumn(ColumnName = "post_code", ColumnDescription = "岗位编码", ColumnDataType = "varchar", Length = 50, IsNullable = false)]
+  public string PostCode { get; set; } = string.Empty;
 
-    /// <summary>
-    /// 显示顺序
-    /// </summary>
-    /// <remarks>
-    /// 1. 必填字段
-    /// 2. 值越小越靠前
-    /// 3. 默认值：0
-    /// </remarks>
-    [SugarColumn(ColumnName = "order_num", ColumnDescription = "显示顺序", DefaultValue = "0", IsNullable = false)]
-    public int OrderNum { get; set; }
+  /// <summary>
+  /// 显示顺序
+  /// </summary>
+  /// <remarks>
+  /// 1. 必填字段
+  /// 2. 值越小越靠前
+  /// 3. 默认值：0
+  /// </remarks>
+  [SugarColumn(ColumnName = "order_num", ColumnDescription = "显示顺序", ColumnDataType = "int", DefaultValue = "0", IsNullable = false)]
+  public int OrderNum { get; set; }
 
-    /// <summary>
-    /// 状态
-    /// </summary>
-    /// <remarks>
-    /// 1. 必填字段
-    /// 2. 默认值：正常
-    /// </remarks>
-    [SugarColumn(ColumnName = "status", ColumnDescription = "状态", DefaultValue = "1", IsNullable = false)]
-    public LeanStatus Status { get; set; }
+  /// <summary>
+  /// 状态
+  /// </summary>
+  /// <remarks>
+  /// 1. 必填字段
+  /// 2. 默认值：正常
+  /// </remarks>
+  [SugarColumn(ColumnName = "status", ColumnDescription = "状态", ColumnDataType = "int", DefaultValue = "1", IsNullable = false)]
+  public LeanStatus Status { get; set; }
 
-    /// <summary>
-    /// 备注
-    /// </summary>
-    /// <remarks>
-    /// 1. 选填字段
-    /// 2. 长度限制：最大500个字符
-    /// </remarks>
-    [SugarColumn(ColumnName = "remark", ColumnDescription = "备注", Length = 500, IsNullable = true)]
-    public new string? Remark { get; set; }
+  /// <summary>
+  /// 备注
+  /// </summary>
+  /// <remarks>
+  /// 1. 选填字段
+  /// 2. 长度限制：最大500个字符
+  /// </remarks>
+  [SugarColumn(ColumnName = "remark", ColumnDescription = "备注", ColumnDataType = "nvarchar", Length = 500, IsNullable = true)]
+  public new string? Remark { get; set; }
 
-    /// <summary>
-    /// 构造函数
-    /// </summary>
-    public LeanPost()
-    {
-        OrderNum = 0;
-        Status = LeanStatus.Normal;
-    }
-} 
+  /// <summary>
+  /// 构造函数
+  /// </summary>
+  public LeanPost()
+  {
+    OrderNum = 0;
+    Status = LeanStatus.Normal;
+  }
+}

@@ -8,17 +8,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.1" />
     <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="9.0.0" />
     <PackageReference Include="NLog.Web.AspNetCore" Version="5.3.8" />
-    <PackageReference Include="SqlSugarCore" Version="5.1.4.173" />
+    <PackageReference Include="SqlSugarCore" Version="5.1.4.172" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Lean.Cur.Application\Lean.Cur.Application.csproj" />
     <ProjectReference Include="..\Lean.Cur.Infrastructure\Lean.Cur.Infrastructure.csproj" />
+    <ProjectReference Include="..\Lean.Cur.Generator\Lean.Cur.Generator.csproj" />
   </ItemGroup>
 
 </Project> 
