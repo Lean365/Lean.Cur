@@ -5,7 +5,7 @@ namespace Lean.Cur.Application.Dtos.Logging
   /// <summary>
   /// 操作日志查询DTO
   /// </summary>
-  public class OperationLogQueryDto : PagedRequest
+  public class OperationLogQueryDto : LeanPagedRequest
   {
     /// <summary>
     /// 用户ID

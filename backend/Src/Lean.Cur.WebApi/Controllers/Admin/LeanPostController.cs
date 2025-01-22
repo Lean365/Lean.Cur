@@ -32,7 +32,7 @@ public class LeanPostController : LeanBaseController
   /// <param name="queryDto">查询条件</param>
   /// <returns>岗位分页列表</returns>
   [HttpGet("page")]
-  public async Task<LeanApiResponse<PagedResult<LeanPostDto>>> GetPagedListAsync([FromQuery] LeanPostQueryDto queryDto)
+  public async Task<LeanApiResult<LeanPagedResult<LeanPostDto>>> GetPagedListAsync([FromQuery] LeanPostQueryDto queryDto)
   {
     var result = await _postService.GetPagedListAsync(queryDto);
     return Success(result);
@@ -44,7 +44,7 @@ public class LeanPostController : LeanBaseController
   /// <param name="id">岗位ID</param>
   /// <returns>岗位详情</returns>
   [HttpGet("{id}")]
-  public async Task<LeanApiResponse<LeanPostDto>> GetByIdAsync(long id)
+  public async Task<LeanApiResult<LeanPostDto>> GetByIdAsync(long id)
   {
     if (id <= 0)
     {
@@ -64,7 +64,7 @@ public class LeanPostController : LeanBaseController
   /// <param name="createDto">创建参数</param>
   /// <returns>岗位ID</returns>
   [HttpPost]
-  public async Task<LeanApiResponse<long>> CreateAsync(LeanPostCreateDto createDto)
+  public async Task<LeanApiResult<long>> CreateAsync(LeanPostCreateDto createDto)
   {
     if (string.IsNullOrEmpty(createDto.PostName))
     {
@@ -84,7 +84,7 @@ public class LeanPostController : LeanBaseController
   /// <param name="updateDto">更新参数</param>
   /// <returns>是否成功</returns>
   [HttpPut]
-  public async Task<LeanApiResponse<bool>> UpdateAsync(LeanPostUpdateDto updateDto)
+  public async Task<LeanApiResult<bool>> UpdateAsync(LeanPostUpdateDto updateDto)
   {
     if (updateDto.Id <= 0)
     {
@@ -100,7 +100,7 @@ public class LeanPostController : LeanBaseController
   /// <param name="id">岗位ID</param>
   /// <returns>是否成功</returns>
   [HttpDelete("{id}")]
-  public async Task<LeanApiResponse<bool>> DeleteAsync(long id)
+  public async Task<LeanApiResult<bool>> DeleteAsync(long id)
   {
     if (id <= 0)
     {
@@ -115,7 +115,7 @@ public class LeanPostController : LeanBaseController
   /// </summary>
   /// <returns>岗位选项列表</returns>
   [HttpGet("options")]
-  public async Task<LeanApiResponse<List<LeanOptionModel>>> GetOptionsAsync()
+  public async Task<LeanApiResult<List<LeanOptionModel>>> GetOptionsAsync()
   {
     var result = await _postService.GetOptionsAsync();
     return Success(result);

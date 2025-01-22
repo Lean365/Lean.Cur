@@ -31,7 +31,7 @@ public class LoginLogController : LeanBaseController
   /// <param name="queryDto">查询参数</param>
   /// <returns>分页结果</returns>
   [HttpGet("page")]
-  public async Task<LeanApiResponse<PagedResult<LoginLogDto>>> GetPageAsync([FromQuery] LoginLogQueryDto queryDto)
+  public async Task<LeanApiResult<LeanPagedResult<LoginLogDto>>> GetPageAsync([FromQuery] LoginLogQueryDto queryDto)
   {
     var result = await _loginLogService.GetPageAsync(queryDto);
     return Success(result);
@@ -43,7 +43,7 @@ public class LoginLogController : LeanBaseController
   /// <param name="id">日志ID</param>
   /// <returns>日志详情</returns>
   [HttpGet("{id}")]
-  public async Task<LeanApiResponse<LoginLogDto>> GetAsync(long id)
+  public async Task<LeanApiResult<LoginLogDto>> GetAsync(long id)
   {
     if (id <= 0)
     {
@@ -59,7 +59,7 @@ public class LoginLogController : LeanBaseController
   /// <param name="beforeTime">指定日期</param>
   /// <returns>清空的记录数</returns>
   [HttpDelete("clear")]
-  public async Task<LeanApiResponse<int>> ClearAsync([FromQuery] DateTime beforeTime)
+  public async Task<LeanApiResult<int>> ClearAsync([FromQuery] DateTime beforeTime)
   {
     if (beforeTime > DateTime.Now)
     {
@@ -88,7 +88,7 @@ public class LoginLogController : LeanBaseController
   /// <param name="endTime">结束时间</param>
   /// <returns>统计信息</returns>
   [HttpGet("stats")]
-  public async Task<LeanApiResponse<LoginLogStatsDto>> GetStatsAsync([FromQuery] DateTime? startTime = null, [FromQuery] DateTime? endTime = null)
+  public async Task<LeanApiResult<LoginLogStatsDto>> GetStatsAsync([FromQuery] DateTime? startTime = null, [FromQuery] DateTime? endTime = null)
   {
     if (startTime.HasValue && endTime.HasValue && startTime > endTime)
     {
@@ -104,7 +104,7 @@ public class LoginLogController : LeanBaseController
   /// <param name="days">天数</param>
   /// <returns>趋势数据</returns>
   [HttpGet("trend")]
-  public async Task<LeanApiResponse<List<LoginLogTrendDto>>> GetTrendAsync([FromQuery] int days = 7)
+  public async Task<LeanApiResult<List<LoginLogTrendDto>>> GetTrendAsync([FromQuery] int days = 7)
   {
     if (days <= 0 || days > 90)
     {

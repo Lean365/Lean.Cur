@@ -36,7 +36,7 @@ public interface ILeanRoleService
     /// </summary>
     /// <param name="queryDto">查询条件</param>
     /// <returns>角色分页列表</returns>
-    Task<PagedResult<LeanRoleDto>> GetPagedListAsync(LeanRoleQueryDto queryDto);
+    Task<LeanPagedResult<LeanRoleDto>> GetPagedListAsync(LeanRoleQueryDto queryDto);
 
     /// <summary>
     /// 获取角色详情
@@ -132,7 +132,7 @@ public interface ILeanRoleService
     /// </summary>
     /// <param name="queryDto">查询条件</param>
     /// <returns>用户分页列表</returns>
-    Task<PagedResult<LeanRoleUserListDto>> GetRoleUsersAsync(LeanRoleUserQueryDto queryDto);
+    Task<LeanPagedResult<LeanRoleUserListDto>> GetRoleUsersAsync(LeanRoleUserQueryDto queryDto);
 
     /// <summary>
     /// 分配角色用户

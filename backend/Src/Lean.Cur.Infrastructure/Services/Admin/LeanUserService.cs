@@ -33,7 +33,7 @@ public class LeanUserService : ILeanUserService
   #region 基础操作
 
   /// <inheritdoc/>
-  public async Task<PagedResult<LeanUserDto>> GetPagedListAsync(LeanUserQueryDto queryDto)
+  public async Task<LeanPagedResult<LeanUserDto>> GetPagedListAsync(LeanUserQueryDto queryDto)
   {
     var query = _db.Queryable<LeanUser>()
         .WhereIF(!string.IsNullOrEmpty(queryDto.UserName), u => u.UserName!.Contains(queryDto.UserName!))
@@ -71,7 +71,7 @@ public class LeanUserService : ILeanUserService
         })
         .ToListAsync();
 
-    return new PagedResult<LeanUserDto>
+    return new LeanPagedResult<LeanUserDto>
     {
       Total = total,
       Items = items
@@ -146,7 +146,7 @@ public class LeanUserService : ILeanUserService
         .FirstAsync(u => u.Id == id && u.IsDeleted == 0)
         ?? throw new LeanUserFriendlyException("用户不存在");
 
-    if (user.UserType == UserType.Admin)
+    if (user.UserType == LeanUserType.Admin)
     {
       throw new LeanUserFriendlyException("管理员用户不能删除");
     }
@@ -161,7 +161,7 @@ public class LeanUserService : ILeanUserService
         .FirstAsync(u => u.Id == statusDto.Id && u.IsDeleted == 0)
         ?? throw new LeanUserFriendlyException("用户不存在");
 
-    if (user.UserType == UserType.Admin)
+    if (user.UserType == LeanUserType.Admin)
     {
       throw new LeanUserFriendlyException("管理员用户状态不能修改");
     }
@@ -220,7 +220,7 @@ public class LeanUserService : ILeanUserService
     }
 
     // 检查是否包含管理员用户
-    if (users.Any(u => u.UserType == UserType.Admin))
+    if (users.Any(u => u.UserType == LeanUserType.Admin))
     {
       throw new LeanUserFriendlyException("不能删除管理员用户");
     }
@@ -230,29 +230,42 @@ public class LeanUserService : ILeanUserService
         .ExecuteCommandHasChangeAsync();
   }
 
+  /// <inheritdoc/>
+  public async Task<LeanUserDto> GetCurrentUserAsync()
+  {
+    var userId = LeanUser.GetCurrentUserId();
+    if (userId <= 0)
+    {
+      throw new LeanUserFriendlyException("用户未登录");
+    }
+
+    var user = await _db.Queryable<LeanUser>()
+        .FirstAsync(u => u.Id == userId && u.IsDeleted == 0)
+        ?? throw new LeanUserFriendlyException("用户不存在");
+
+    return user.Adapt<LeanUserDto>();
+  }
+
   #endregion 基础操作
 
   #region 导入导出
 
   /// <inheritdoc/>
-  public Task<byte[]> GetImportTemplateAsync()
+  public async Task<byte[]> GetImportTemplateAsync()
   {
-    var template = new List<LeanUserTempleteDto>
+    var headers = new Dictionary<string, string>
     {
-        new()
-        {
-            UserName = "示例：zhangsan",
-            NickName = "示例：张三",
-            EnglishName = "示例：Zhang San",
-            Gender = Gender.Male,
-            Email = "示例：zhangsan@lean.cur",
-            Phone = "示例：13800138000",
-            UserType = UserType.User,
-            Remark = "示例：备注信息"
-        }
+        { "UserName", "用户名" },
+        { "NickName", "昵称" },
+        { "EnglishName", "英文名称" },
+        { "Gender", "性别" },
+        { "Email", "邮箱" },
+        { "Phone", "手机号" },
+        { "UserType", "用户类型" },
+        { "Remark", "备注" }
     };
 
-    return Task.FromResult(_excel.Export(template));
+    return await _excel.GenerateTemplateAsync<LeanUserImportDto>(headers);
   }
 
   /// <inheritdoc/>
@@ -366,33 +379,47 @@ public class LeanUserService : ILeanUserService
   /// <inheritdoc/>
   public async Task<string> GetUserRoleCodeAsync(long userId)
   {
-    var roleCode = await _db.Queryable<LeanUserRole>()
+    var roleCodes = await _db.Queryable<LeanUserRole>()
         .LeftJoin<LeanRole>((ur, r) => ur.RoleId == r.Id)
         .Where(ur => ur.UserId == userId && ur.IsDeleted == 0)
+        .Where((ur, r) => r.Status == LeanStatus.Normal && r.IsDeleted == 0)
         .Select((ur, r) => r.RoleCode)
-        .FirstAsync();
+        .ToListAsync();
 
-    return roleCode ?? string.Empty;
+    return string.Join(",", roleCodes.Where(x => !string.IsNullOrEmpty(x)));
   }
 
   /// <inheritdoc/>
   public async Task<List<string>> GetUserPermissionsAsync(long userId)
   {
-    var permissions = await _db.Queryable<LeanUserRole>()
+    // 从缓存中获取权限列表
+    var cacheKey = $"user_permissions:{userId}";
+    var permissions = await _cache.GetAsync<List<string>>(cacheKey);
+    if (permissions != null)
+    {
+      return permissions;
+    }
+
+    // 查询用户的所有权限
+    permissions = await _db.Queryable<LeanUserRole>()
         .InnerJoin<LeanRoleMenu>((ur, rm) => ur.RoleId == rm.RoleId)
-        .Where(ur => ur.UserId == userId)
+        .Where(ur => ur.UserId == userId && ur.IsDeleted == 0)
+        .Where((ur, rm) => rm.Status == LeanStatus.Normal && rm.IsDeleted == 0)
         .Select((ur, rm) => rm.Permission)
         .Where(p => !string.IsNullOrEmpty(p))
+        .Distinct()
         .ToListAsync();
 
-    return permissions.Where(p => p != null).Select(p => p!).Distinct().ToList();
+    // 缓存权限列表
+    if (permissions.Any())
+    {
+      await _cache.SetAsync(cacheKey, permissions, TimeSpan.FromMinutes(30));
+    }
+
+    return permissions;
   }
 
-  /// <summary>
-  /// 获取用户菜单权限列表
-  /// </summary>
-  /// <param name="userId">用户ID</param>
-  /// <returns>权限标识列表</returns>
+  /// <inheritdoc/>
   public async Task<List<string>> GetUserMenuPermissionsAsync(long userId)
   {
     // 从缓存中获取权限列表
@@ -407,21 +434,21 @@ public class LeanUserService : ILeanUserService
     permissions = await _db.Queryable<LeanUserRole>()
         .LeftJoin<LeanRole>((ur, r) => ur.RoleId == r.Id)
         .LeftJoin<LeanRoleMenu>((ur, r, rm) => r.Id == rm.RoleId)
-        .Where(ur => ur.UserId == userId)
-        .Where(ur => ur.IsDeleted == 0)
-        .Where((ur, r) => r.Status == LeanStatus.Normal)
-        .Where((ur, r) => r.IsDeleted == 0)
+        .Where(ur => ur.UserId == userId && ur.IsDeleted == 0)
+        .Where((ur, r) => r.Status == LeanStatus.Normal && r.IsDeleted == 0)
+        .Where((ur, r, rm) => rm.Status == LeanStatus.Normal && rm.IsDeleted == 0)
         .Where((ur, r, rm) => !string.IsNullOrEmpty(rm.Permission))
         .Select((ur, r, rm) => rm.Permission)
+        .Distinct()
         .ToListAsync();
 
     // 缓存权限列表
-    if (permissions != null)
+    if (permissions.Any())
     {
       await _cache.SetAsync(cacheKey, permissions, TimeSpan.FromMinutes(30));
     }
 
-    return permissions ?? new List<string>();
+    return permissions;
   }
 
   private void HandleImportError(LeanUserImportDto importDto, string message)

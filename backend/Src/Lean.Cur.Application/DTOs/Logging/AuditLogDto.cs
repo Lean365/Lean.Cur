@@ -6,7 +6,7 @@ namespace Lean.Cur.Application.Dtos.Logging;
 /// <summary>
 /// 审计日志查询参数
 /// </summary>
-public class AuditLogQueryDto : PagedRequest
+public class AuditLogQueryDto : LeanPagedRequest
 {
     /// <summary>
     /// 用户ID

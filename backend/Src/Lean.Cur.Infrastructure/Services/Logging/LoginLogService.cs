@@ -28,7 +28,7 @@ namespace Lean.Cur.Infrastructure.Services.Logging
     }
 
     /// <inheritdoc/>
-    public async Task<PagedResult<LoginLogDto>> GetPageAsync(LoginLogQueryDto queryDto)
+    public async Task<LeanPagedResult<LoginLogDto>> GetPageAsync(LoginLogQueryDto queryDto)
     {
       try
       {
@@ -48,7 +48,7 @@ namespace Lean.Cur.Infrastructure.Services.Logging
             .Select<LoginLogDto>()
             .ToListAsync();
 
-        return new PagedResult<LoginLogDto>(list, total, queryDto.PageIndex, queryDto.PageSize);
+        return new LeanPagedResult<LoginLogDto>(list, total, queryDto.PageIndex, queryDto.PageSize);
       }
       catch (Exception ex)
       {

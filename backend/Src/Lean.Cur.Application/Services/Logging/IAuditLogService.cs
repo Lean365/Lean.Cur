@@ -15,7 +15,7 @@ public interface IAuditLogService
     /// </summary>
     /// <param name="queryDto">查询参数</param>
     /// <returns>分页结果</returns>
-    Task<PagedResult<AuditLogDto>> GetPageAsync(AuditLogQueryDto queryDto);
+    Task<LeanPagedResult<AuditLogDto>> GetPageAsync(AuditLogQueryDto queryDto);
 
     /// <summary>
     /// 获取审计日志详情

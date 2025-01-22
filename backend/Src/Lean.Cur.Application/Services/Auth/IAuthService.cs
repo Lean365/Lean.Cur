@@ -12,7 +12,7 @@ public interface IAuthService
   /// 生成滑块验证码
   /// </summary>
   /// <returns>验证码结果</returns>
-  Task<SlideVerifyResult> GenerateVerifyCodeAsync();
+  Task<LeanSlideVerifyResult> GenerateVerifyCodeAsync();
 
   /// <summary>
   /// 登录

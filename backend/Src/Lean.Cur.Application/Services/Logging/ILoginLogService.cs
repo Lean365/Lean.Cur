@@ -15,7 +15,7 @@ public interface ILoginLogService
   /// </summary>
   /// <param name="queryDto">查询参数</param>
   /// <returns>分页结果</returns>
-  Task<PagedResult<LoginLogDto>> GetPageAsync(LoginLogQueryDto queryDto);
+  Task<LeanPagedResult<LoginLogDto>> GetPageAsync(LoginLogQueryDto queryDto);
 
   /// <summary>
   /// 获取登录日志详情

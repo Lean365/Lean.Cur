@@ -33,7 +33,7 @@ public class LeanMenuService : ILeanMenuService
   #region 基础操作
 
   /// <inheritdoc/>
-  public async Task<PagedResult<LeanMenuDto>> GetPagedListAsync(LeanMenuQueryDto queryDto)
+  public async Task<LeanPagedResult<LeanMenuDto>> GetPagedListAsync(LeanMenuQueryDto queryDto)
   {
     var query = _db.Queryable<LeanMenu>()
         .WhereIF(!string.IsNullOrEmpty(queryDto.MenuName), m => m.MenuName!.Contains(queryDto.MenuName!))
@@ -71,7 +71,7 @@ public class LeanMenuService : ILeanMenuService
         })
         .ToListAsync();
 
-    return new PagedResult<LeanMenuDto>
+    return new LeanPagedResult<LeanMenuDto>
     {
       Total = total,
       Items = items

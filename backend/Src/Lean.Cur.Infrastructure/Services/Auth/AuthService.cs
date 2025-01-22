@@ -20,16 +20,16 @@ namespace Lean.Cur.Infrastructure.Services.Auth;
 public class AuthService : IAuthService
 {
   private readonly SqlSugarClient _db;
-  private readonly SlideVerifyHelper _verifyHelper;
-  private readonly JwtHelper _jwtHelper;
+  private readonly LeanSlideVerifyHelper _verifyHelper;
+  private readonly LeanJwtHelper _jwtHelper;
   private readonly IMemoryCache _cache;
   private readonly ILogger<AuthService> _logger;
   private readonly IHttpContextAccessor _httpContextAccessor;
 
   public AuthService(
       SqlSugarClient db,
-      SlideVerifyHelper verifyHelper,
-      JwtHelper jwtHelper,
+      LeanSlideVerifyHelper verifyHelper,
+      LeanJwtHelper jwtHelper,
       IMemoryCache cache,
       ILogger<AuthService> logger,
       IHttpContextAccessor httpContextAccessor)
@@ -45,7 +45,7 @@ public class AuthService : IAuthService
   /// <summary>
   /// 生成滑块验证码
   /// </summary>
-  public async Task<SlideVerifyResult> GenerateVerifyCodeAsync()
+  public async Task<LeanSlideVerifyResult> GenerateVerifyCodeAsync()
   {
     var result = _verifyHelper.Generate();
     return result;

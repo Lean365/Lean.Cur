@@ -28,7 +28,7 @@ public class OperationLogService : IOperationLogService
   }
 
   /// <inheritdoc/>
-  public async Task<PagedResult<OperationLogDto>> GetPageAsync(OperationLogQueryDto queryDto)
+  public async Task<LeanPagedResult<OperationLogDto>> GetPageAsync(OperationLogQueryDto queryDto)
   {
     try
     {
@@ -50,7 +50,7 @@ public class OperationLogService : IOperationLogService
           .Select<OperationLogDto>()
           .ToListAsync();
 
-      return new PagedResult<OperationLogDto>(list, total, queryDto.PageIndex, queryDto.PageSize);
+      return new LeanPagedResult<OperationLogDto>(list, total, queryDto.PageIndex, queryDto.PageSize);
     }
     catch (Exception ex)
     {

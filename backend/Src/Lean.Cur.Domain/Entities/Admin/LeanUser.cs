@@ -1,6 +1,8 @@
 using SqlSugar;
 using System.ComponentModel;
 using Lean.Cur.Common.Enums;
+using System.Security.Claims;
+using System.Threading;
 
 namespace Lean.Cur.Domain.Entities.Admin;
 
@@ -122,7 +124,7 @@ public class LeanUser : LeanBaseEntity
   /// </remarks>
   [SugarColumn(ColumnName = "gender", ColumnDescription = "性别", ColumnDataType = "int", IsNullable = false)]
   [Description("性别")]
-  public Gender Gender { get; set; }
+  public LeanGender Gender { get; set; }
 
   /// <summary>
   /// 邮箱
@@ -176,7 +178,7 @@ public class LeanUser : LeanBaseEntity
   /// </remarks>
   [SugarColumn(ColumnName = "user_type", ColumnDescription = "用户类型", ColumnDataType = "int", IsNullable = false)]
   [Description("用户类型")]
-  public UserType UserType { get; set; }
+  public LeanUserType UserType { get; set; }
 
   /// <summary>
   /// 导航属性：用户扩展信息
@@ -233,6 +235,17 @@ public class LeanUser : LeanBaseEntity
   public List<LeanUserRole>? UserRoles { get; set; }
 
   /// <summary>
+  /// 获取当前登录用户ID
+  /// </summary>
+  /// <returns>当前用户ID，如果未登录则返回0</returns>
+  public static long GetCurrentUserId()
+  {
+    var identity = Thread.CurrentPrincipal?.Identity as ClaimsIdentity;
+    var userIdClaim = identity?.FindFirst(ClaimTypes.NameIdentifier);
+    return userIdClaim != null ? long.Parse(userIdClaim.Value) : 0;
+  }
+
+  /// <summary>
   /// 构造函数
   /// </summary>
   public LeanUser()
@@ -244,9 +257,9 @@ public class LeanUser : LeanBaseEntity
     EnglishName = string.Empty;
     Email = string.Empty;
     Phone = string.Empty;
-    Gender = Gender.Unknown;
+    Gender = LeanGender.Unknown;
     Status = LeanStatus.Normal;
-    UserType = UserType.User;
+    UserType = LeanUserType.User;
     IsDeleted = 0;
   }
 }

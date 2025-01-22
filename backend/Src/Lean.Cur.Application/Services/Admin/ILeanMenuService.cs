@@ -16,7 +16,7 @@ public interface ILeanMenuService
     /// </summary>
     /// <param name="queryDto">查询条件</param>
     /// <returns>菜单分页列表</returns>
-    Task<PagedResult<LeanMenuDto>> GetPagedListAsync(LeanMenuQueryDto queryDto);
+    Task<LeanPagedResult<LeanMenuDto>> GetPagedListAsync(LeanMenuQueryDto queryDto);
 
     /// <summary>
     /// 获取菜单树形列表

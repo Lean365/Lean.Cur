@@ -97,11 +97,11 @@ public class LeanDeptDto
 /// </summary>
 /// <remarks>
 /// 用于部门列表的查询条件，包含以下特点：
-/// 1. 继承自PagedRequest，支持分页查询
+/// 1. 继承自LeanLeanPagedRequestLeanPagedRequest，支持分页查询
 /// 2. 所有查询条件都是可选的
 /// 3. 支持按时间范围查询
 /// </remarks>
-public class LeanDeptQueryDto : PagedRequest
+public class LeanDeptQueryDto : LeanPagedRequest
 {
     /// <summary>
     /// 部门名称
@@ -365,7 +365,7 @@ public class LeanDeptBatchDeleteDto
     public List<long> Ids { get; set; } = new();
 }
 
-#endregion
+#endregion 基础操作
 
 #region 导入导出
 
@@ -543,4 +543,4 @@ public class LeanDeptImportResultDto
     public List<LeanDeptImportDto> FailureItems { get; set; } = new();
 }
 
-#endregion 
+#endregion 导入导出

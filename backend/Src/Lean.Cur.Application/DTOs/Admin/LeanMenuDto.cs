@@ -130,7 +130,7 @@ public class LeanMenuDto
 /// <summary>
 /// 菜单查询 DTO
 /// </summary>
-public class LeanMenuQueryDto : PagedRequest
+public class LeanMenuQueryDto : LeanPagedRequest
 {
     /// <summary>
     /// 菜单名称

@@ -30,7 +30,7 @@ public interface ILeanUserService
   /// <summary>
   /// 获取用户列表（分页）
   /// </summary>
-  Task<PagedResult<LeanUserDto>> GetPagedListAsync(LeanUserQueryDto queryDto);
+  Task<LeanPagedResult<LeanUserDto>> GetPagedListAsync(LeanUserQueryDto queryDto);
 
   /// <summary>
   /// 获取用户详情
@@ -109,4 +109,10 @@ public interface ILeanUserService
   /// <param name="userId">用户ID</param>
   /// <returns>权限标识列表</returns>
   Task<List<string>> GetUserMenuPermissionsAsync(long userId);
+
+  /// <summary>
+  /// 获取当前用户信息
+  /// </summary>
+  /// <returns>当前用户信息</returns>
+  Task<LeanUserDto> GetCurrentUserAsync();
 }

@@ -1,0 +1,25 @@
+{
+  "SignalR": {
+    "EnableDetailedErrors": true,
+    "KeepAliveInterval": 15,
+    "ClientTimeoutInterval": 30,
+    "MaximumReceiveMessageSize": 32768,
+    "Hubs": {
+      "Message": "/messageHub",
+      "Notice": "/noticeHub",
+      "Online": "/onlineHub"
+    },
+    "Cors": {
+      "Origins": [
+        "http://localhost:5173"
+      ],
+      "Headers": [
+        "Device-Type",
+        "Device-Name",
+        "Location",
+        "Browser",
+        "OS"
+      ]
+    }
+  }
+}

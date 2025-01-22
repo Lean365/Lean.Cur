@@ -7,12 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MailKit" Version="4.9.0" />
+    <PackageReference Include="MimeKit" Version="4.9.0" />
     <PackageReference Include="SqlSugarCore" Version="5.1.4.172" />
     <ProjectReference Include="..\Lean.Cur.Domain\Lean.Cur.Domain.csproj" />
     <ProjectReference Include="..\Lean.Cur.Application\Lean.Cur.Application.csproj" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="8.0.1" />
     <PackageReference Include="StackExchange.Redis" Version="2.8.24" />
     <PackageReference Include="Mapster" Version="7.4.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.2" />
+    <PackageReference Include="IP2Region.Net" Version="2.0.2" />
   </ItemGroup>
 
   <ItemGroup>

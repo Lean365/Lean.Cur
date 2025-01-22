@@ -248,42 +248,21 @@ const todoColumns = [
     title: '任务名称',
     dataIndex: 'taskName',
     key: 'taskName',
-    ellipsis: true
+    width: 100,
+    customRender: ({ text }) => {
+      return h('span', {}, text);
+    }
   },
   {
-    title: '流程名称',
-    dataIndex: 'processName',
-    key: 'processName',
-    ellipsis: true
-  },
-  {
-    title: '业务标题',
-    dataIndex: 'title',
-    key: 'title',
-    ellipsis: true
-  },
-  {
-    title: '发起人',
-    dataIndex: 'startUser',
-    key: 'startUser',
-    width: 120
-  },
-  {
-    title: '发起时间',
-    dataIndex: 'startTime',
-    key: 'startTime',
-    width: 180
-  },
-  {
-    title: '到达时间',
-    dataIndex: 'createTime',
-    key: 'createTime',
-    width: 180
-  },
-  {
-    title: '操作',
-    key: 'action',
-    width: 200
+    title: '审批结果',
+    dataIndex: 'approved',
+    key: 'approved',
+    width: 100,
+    customRender: ({ text }) => {
+      return h('a-tag', {
+        color: text ? 'success' : 'error'
+      }, text ? '同意' : '拒绝');
+    }
   }
 ];
 

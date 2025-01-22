@@ -14,7 +14,7 @@ public interface IOperationLogService
   /// </summary>
   /// <param name="queryDto">查询参数</param>
   /// <returns>分页结果</returns>
-  Task<PagedResult<OperationLogDto>> GetPageAsync(OperationLogQueryDto queryDto);
+  Task<LeanPagedResult<OperationLogDto>> GetPageAsync(OperationLogQueryDto queryDto);
 
   /// <summary>
   /// 获取操作日志详情

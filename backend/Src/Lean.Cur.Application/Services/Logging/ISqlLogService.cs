@@ -14,7 +14,7 @@ public interface ISqlLogService
   /// </summary>
   /// <param name="queryDto">查询参数</param>
   /// <returns>分页结果</returns>
-  Task<PagedResult<SqlLogDto>> GetPageAsync(SqlLogQueryDto queryDto);
+  Task<LeanPagedResult<SqlLogDto>> GetPageAsync(SqlLogQueryDto queryDto);
 
   /// <summary>
   /// 获取SQL差异日志详情

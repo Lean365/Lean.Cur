@@ -91,7 +91,7 @@ public class LeanPostDto
 /// 2. 所有查询条件都是可选的
 /// 3. 支持按时间范围查询
 /// </remarks>
-public class LeanPostQueryDto : PagedRequest
+public class LeanPostQueryDto : LeanPagedRequest
 {
   /// <summary>
   /// 岗位名称

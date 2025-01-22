@@ -92,5 +92,5 @@ public class LoginUserDto
   /// <summary>
   /// 用户类型
   /// </summary>
-  public UserType UserType { get; set; }
+  public LeanUserType UserType { get; set; }
 }

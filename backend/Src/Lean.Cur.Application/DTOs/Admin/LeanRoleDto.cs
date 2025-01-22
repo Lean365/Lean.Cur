@@ -81,11 +81,11 @@ public class LeanRoleDto
 /// </summary>
 /// <remarks>
 /// 用于角色列表的查询条件，包含以下特点：
-/// 1. 继承自PagedRequest，支持分页查询
+/// 1. 继承自LeanPagedRequest，支持分页查询
 /// 2. 所有查询条件都是可选的
 /// 3. 支持按时间范围查询
 /// </remarks>
-public class LeanRoleQueryDto : PagedRequest
+public class LeanRoleQueryDto : LeanPagedRequest
 {
   /// <summary>
   /// 角色名称
@@ -627,7 +627,7 @@ public class LeanRoleUserListDto
   /// <summary>
   /// 用户类型
   /// </summary>
-  public UserType UserType { get; set; }
+  public LeanUserType UserType { get; set; }
 
   /// <summary>
   /// 创建时间
@@ -640,11 +640,11 @@ public class LeanRoleUserListDto
 /// </summary>
 /// <remarks>
 /// 用于查询角色下的用户列表，包含以下特点：
-/// 1. 继承自PagedRequest，支持分页查询
+/// 1. 继承自LeanPagedRequest，支持分页查询
 /// 2. 所有查询条件都是可选的
 /// 3. 支持按用户信息和时间范围查询
 /// </remarks>
-public class LeanRoleUserQueryDto : PagedRequest
+public class LeanRoleUserQueryDto : LeanPagedRequest
 {
   /// <summary>
   /// 角色ID
@@ -689,7 +689,7 @@ public class LeanRoleUserQueryDto : PagedRequest
   /// <summary>
   /// 用户类型
   /// </summary>
-  public UserType? UserType { get; set; }
+  public LeanUserType? UserType { get; set; }
 
   /// <summary>
   /// 开始时间

@@ -6,7 +6,7 @@ namespace Lean.Cur.Application.Dtos.Logging;
 /// <summary>
 /// SQL差异日志查询参数
 /// </summary>
-public class SqlLogQueryDto : PagedRequest
+public class SqlLogQueryDto : LeanPagedRequest
 {
   /// <summary>
   /// 表名

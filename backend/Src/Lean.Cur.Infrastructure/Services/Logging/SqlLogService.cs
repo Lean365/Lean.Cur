@@ -27,7 +27,7 @@ public class SqlLogService : ISqlLogService
   }
 
   /// <inheritdoc/>
-  public async Task<PagedResult<SqlLogDto>> GetPageAsync(SqlLogQueryDto queryDto)
+  public async Task<LeanPagedResult<SqlLogDto>> GetPageAsync(SqlLogQueryDto queryDto)
   {
     try
     {
@@ -48,7 +48,7 @@ public class SqlLogService : ISqlLogService
           .Select<SqlLogDto>()
           .ToListAsync();
 
-      return new PagedResult<SqlLogDto>(list, total, queryDto.PageIndex, queryDto.PageSize);
+      return new LeanPagedResult<SqlLogDto>(list, total, queryDto.PageIndex, queryDto.PageSize);
     }
     catch (Exception ex)
     {

@@ -20,7 +20,7 @@ public interface ILeanPostService
   /// </summary>
   /// <param name="queryDto">查询条件</param>
   /// <returns>岗位分页列表</returns>
-  Task<PagedResult<LeanPostDto>> GetPagedListAsync(LeanPostQueryDto queryDto);
+  Task<LeanPagedResult<LeanPostDto>> GetPagedListAsync(LeanPostQueryDto queryDto);
 
   /// <summary>
   /// 获取岗位详情

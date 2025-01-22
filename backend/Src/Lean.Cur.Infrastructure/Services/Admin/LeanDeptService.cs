@@ -28,7 +28,7 @@ namespace Lean.Cur.Infrastructure.Services.Admin
     }
 
     /// <inheritdoc/>
-    public async Task<PagedResult<LeanDeptDto>> GetPagedListAsync(LeanDeptQueryDto queryDto)
+    public async Task<LeanPagedResult<LeanDeptDto>> GetPagedListAsync(LeanDeptQueryDto queryDto)
     {
       // 构建查询条件
       var query = _db.Queryable<LeanDept>()
@@ -59,7 +59,7 @@ namespace Lean.Cur.Infrastructure.Services.Admin
         }
       }
 
-      return new PagedResult<LeanDeptDto>(dtos, result.Total, result.PageIndex, result.PageSize);
+      return new LeanPagedResult<LeanDeptDto>(dtos, result.Total, result.PageIndex, result.PageSize);
     }
 
     /// <inheritdoc/>

@@ -1,5 +1,6 @@
 using SqlSugar;
 using System.ComponentModel;
+using Lean.Cur.Common.Enums;
 
 namespace Lean.Cur.Domain.Entities.Admin;
 
@@ -23,6 +24,17 @@ public class LeanRoleMenu : LeanBaseEntity
   /// </summary>
   [SugarColumn(ColumnName = "menu_id", ColumnDescription = "菜单ID", ColumnDataType = "bigint", IsNullable = false)]
   public long MenuId { get; set; }
+
+  /// <summary>
+  /// 状态
+  /// </summary>
+  /// <remarks>
+  /// 1. 必填字段
+  /// 2. 默认值：正常
+  /// </remarks>
+  [SugarColumn(ColumnName = "status", ColumnDescription = "状态", ColumnDataType = "int", DefaultValue = "1", IsNullable = false)]
+  [Description("状态")]
+  public LeanStatus Status { get; set; } = LeanStatus.Normal;
 
   /// <summary>
   /// 角色信息

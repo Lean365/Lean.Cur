@@ -11,7 +11,7 @@ using System.ComponentModel;
 namespace Lean.Cur.Common.Enums;
 
 /// <summary>
-/// 业务操作类型
+/// 业务类型枚举
 /// </summary>
 public enum LeanBusinessType
 {
@@ -46,52 +46,78 @@ public enum LeanBusinessType
   Grant = 5,
 
   /// <summary>
-  /// 导出
+  /// 邮件附件
   /// </summary>
-  Export = 6,
+  [Description("邮件附件")]
+  EmailAttachment = 6,
 
   /// <summary>
-  /// 导入
+  /// 用户头像
   /// </summary>
-  Import = 7,
+  [Description("用户头像")]
+  UserAvatar = 7,
+
+  /// <summary>
+  /// 系统文档
+  /// </summary>
+  [Description("系统文档")]
+  SystemDocument = 8,
+
+  /// <summary>
+  /// 导入文件
+  /// </summary>
+  [Description("导入文件")]
+  Import = 9,
+
+  /// <summary>
+  /// 导出文件
+  /// </summary>
+  [Description("导出文件")]
+  Export = 10,
 
   /// <summary>
   /// 强制退出
   /// </summary>
-  ForceLogout = 8,
+  ForceLogout = 11,
 
   /// <summary>
   /// 生成代码
   /// </summary>
-  GenCode = 9,
+  GenCode = 12,
 
   /// <summary>
   /// 清空数据
   /// </summary>
-  Clean = 10,
+  Clean = 13,
 
   /// <summary>
   /// 登录
   /// </summary>
-  Login = 11,
+  Login = 14,
 
   /// <summary>
   /// 退出
   /// </summary>
-  Logout = 12,
+  Logout = 15,
 
   /// <summary>
   /// 注册
   /// </summary>
-  Register = 13,
+  Register = 16,
 
   /// <summary>
   /// 重置密码
   /// </summary>
-  ResetPassword = 14,
+  ResetPassword = 17,
 
   /// <summary>
   /// 修改密码
   /// </summary>
-  ChangePassword = 15
+  ChangePassword = 18,
+
+  /// <summary>
+  /// 临时文件
+  /// </summary>
+  [Description("临时文件")]
+  Temporary = 19
 }

@@ -14,6 +14,11 @@ namespace Lean.Cur.Common.Configs;
 public class LeanSecuritySettings
 {
   /// <summary>
+  /// IP2Region 数据库路径
+  /// </summary>
+  public string Ip2RegionDbPath { get; set; } = "Resources/ip2region.xdb";
+
+  /// <summary>
   /// 限流配置
   /// </summary>
   public LeanRateLimitSettings? RateLimit { get; set; }
@@ -195,35 +200,35 @@ public class LeanPermissionSettings
 /// </summary>
 public class LeanAuditSettings
 {
-    /// <summary>
-    /// 是否启用
-    /// </summary>
-    public bool Enabled { get; set; } = true;
+  /// <summary>
+  /// 是否启用
+  /// </summary>
+  public bool Enabled { get; set; } = true;
 
-    /// <summary>
-    /// 是否记录操作日志
-    /// </summary>
-    public bool LogOperations { get; set; } = true;
+  /// <summary>
+  /// 是否记录操作日志
+  /// </summary>
+  public bool LogOperations { get; set; } = true;
 
-    /// <summary>
-    /// 是否记录敏感数据访问
-    /// </summary>
-    public bool LogSensitiveAccess { get; set; } = true;
+  /// <summary>
+  /// 是否记录敏感数据访问
+  /// </summary>
+  public bool LogSensitiveAccess { get; set; } = true;
 
-    /// <summary>
-    /// 是否记录系统异常
-    /// </summary>
-    public bool LogExceptions { get; set; } = true;
+  /// <summary>
+  /// 是否记录系统异常
+  /// </summary>
+  public bool LogExceptions { get; set; } = true;
 
-    /// <summary>
-    /// 日志保留天数
-    /// </summary>
-    public int LogRetentionDays { get; set; } = 180;
+  /// <summary>
+  /// 日志保留天数
+  /// </summary>
+  public int LogRetentionDays { get; set; } = 180;
 
-    /// <summary>
-    /// 敏感操作类型
-    /// </summary>
-    public List<string> SensitiveOperations { get; set; } = new()
+  /// <summary>
+  /// 敏感操作类型
+  /// </summary>
+  public List<string> SensitiveOperations { get; set; } = new()
     {
         "DELETE",
         "UPDATE",
@@ -231,13 +236,13 @@ public class LeanAuditSettings
         "UPLOAD"
     };
 
-    /// <summary>
-    /// 敏感数据类型
-    /// </summary>
-    public List<string> SensitiveDataTypes { get; set; } = new()
+  /// <summary>
+  /// 敏感数据类型
+  /// </summary>
+  public List<string> SensitiveDataTypes { get; set; } = new()
     {
         "Password",
-        "PhoneNumber", 
+        "PhoneNumber",
         "IdCard",
         "BankCard"
     };
@@ -248,10 +253,10 @@ public class LeanAuditSettings
 /// </summary>
 public class LeanFileUploadSettings
 {
-    /// <summary>
-    /// 允许的文件类型
-    /// </summary>
-    public List<string> AllowedFileTypes { get; set; } = new()
+  /// <summary>
+  /// 允许的文件类型
+  /// </summary>
+  public List<string> AllowedFileTypes { get; set; } = new()
     {
         ".jpg",
         ".jpeg",
@@ -264,38 +269,38 @@ public class LeanFileUploadSettings
         ".xlsx"
     };
 
-    /// <summary>
-    /// 最大文件大小(MB)
-    /// </summary>
-    public int MaxFileSizeMB { get; set; } = 10;
+  /// <summary>
+  /// 最大文件大小(MB)
+  /// </summary>
+  public int MaxFileSizeMB { get; set; } = 10;
 
-    /// <summary>
-    /// 是否扫描病毒
-    /// </summary>
-    public bool ScanVirus { get; set; } = true;
+  /// <summary>
+  /// 是否扫描病毒
+  /// </summary>
+  public bool ScanVirus { get; set; } = true;
 
-    /// <summary>
-    /// 是否验证文件签名
-    /// </summary>
-    public bool ValidateSignature { get; set; } = true;
+  /// <summary>
+  /// 是否验证文件签名
+  /// </summary>
+  public bool ValidateSignature { get; set; } = true;
 
-    /// <summary>
-    /// 上传目录白名单
-    /// </summary>
-    public List<string> AllowedUploadPaths { get; set; } = new()
+  /// <summary>
+  /// 上传目录白名单
+  /// </summary>
+  public List<string> AllowedUploadPaths { get; set; } = new()
     {
         "uploads/images",
         "uploads/documents",
         "uploads/temp"
     };
 
-    /// <summary>
-    /// 是否重命名文件
-    /// </summary>
-    public bool RenameFiles { get; set; } = true;
+  /// <summary>
+  /// 是否重命名文件
+  /// </summary>
+  public bool RenameFiles { get; set; } = true;
 
-    /// <summary>
-    /// 重命名规则
-    /// </summary>
-    public string RenamePattern { get; set; } = "{yyyy}{MM}{dd}{HH}{mm}{ss}{rand:6}";
+  /// <summary>
+  /// 重命名规则
+  /// </summary>
+  public string RenamePattern { get; set; } = "{yyyy}{MM}{dd}{HH}{mm}{ss}{rand:6}";
 }

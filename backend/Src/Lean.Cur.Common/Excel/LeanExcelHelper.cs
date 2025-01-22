@@ -359,7 +359,7 @@ namespace Lean.Cur.Common.Excel
     /// <summary>
     /// 生成导入模板
     /// </summary>
-    public async Task<byte[]> GenerateTemplateAsync(Dictionary<string, string> headers)
+    public async Task<byte[]> GenerateTemplateAsync<T>(Dictionary<string, string> headers) where T : class
     {
       using var package = new ExcelPackage();
       var worksheet = package.Workbook.Worksheets.Add("Template");
@@ -379,6 +379,14 @@ namespace Lean.Cur.Common.Excel
       }
 
       return await package.GetAsByteArrayAsync();
+    }
+
+    /// <summary>
+    /// 生成导入模板
+    /// </summary>
+    public async Task<byte[]> GenerateTemplateAsync(Dictionary<string, string> headers)
+    {
+      return await GenerateTemplateAsync<object>(headers);
     }
 
     /// <summary>

@@ -33,7 +33,7 @@ public class LeanRoleService : ILeanRoleService
   }
 
   /// <inheritdoc/>
-  public async Task<PagedResult<LeanRoleDto>> GetPagedListAsync(LeanRoleQueryDto queryDto)
+  public async Task<LeanPagedResult<LeanRoleDto>> GetPagedListAsync(LeanRoleQueryDto queryDto)
   {
     var query = _db.Queryable<LeanRole>()
         .WhereIF(!string.IsNullOrEmpty(queryDto.RoleName), r => r.RoleName.Contains(queryDto.RoleName!))
@@ -45,7 +45,7 @@ public class LeanRoleService : ILeanRoleService
 
     var result = await query.ToPagedListAsync(queryDto);
     var dtos = result.Items.Adapt<List<LeanRoleDto>>();
-    return new PagedResult<LeanRoleDto>(dtos, result.Total, result.PageIndex, result.PageSize);
+    return new LeanPagedResult<LeanRoleDto>(dtos, result.Total, result.PageIndex, result.PageSize);
   }
 
   /// <inheritdoc/>
@@ -456,7 +456,7 @@ public class LeanRoleService : ILeanRoleService
   }
 
   /// <inheritdoc/>
-  public async Task<PagedResult<LeanRoleUserListDto>> GetRoleUsersAsync(LeanRoleUserQueryDto queryDto)
+  public async Task<LeanPagedResult<LeanRoleUserListDto>> GetRoleUsersAsync(LeanRoleUserQueryDto queryDto)
   {
     var query = _db.Queryable<LeanUser, LeanUserRole>((u, ur) => new JoinQueryInfos(
             JoinType.Inner, u.Id == ur.UserId
@@ -472,7 +472,7 @@ public class LeanRoleService : ILeanRoleService
 
     var result = await query.ToPagedListAsync(queryDto);
     var dtos = result.Items.Adapt<List<LeanRoleUserListDto>>();
-    return new PagedResult<LeanRoleUserListDto>(dtos, result.Total, result.PageIndex, result.PageSize);
+    return new LeanPagedResult<LeanRoleUserListDto>(dtos, result.Total, result.PageIndex, result.PageSize);
   }
 
   /// <inheritdoc/>

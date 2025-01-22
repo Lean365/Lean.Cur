@@ -7,6 +7,7 @@ using Lean.Cur.Domain.Entities;
 using Lean.Cur.Domain.Entities.Admin;
 using Lean.Cur.Domain.Entities.Logging;
 using Lean.Cur.Infrastructure.Database;
+using Lean.Cur.Domain.Entities.Routine;
 
 namespace Lean.Cur.Infrastructure.Extensions
 {
@@ -23,10 +24,14 @@ namespace Lean.Cur.Infrastructure.Extensions
     /// <returns></returns>
     public static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
     {
-      var connectionString = configuration.GetConnectionString("Default");
+      var connectionString = configuration.GetConnectionString("DefaultConnection");
+      if (string.IsNullOrEmpty(connectionString))
+      {
+        throw new ArgumentException("Connection string 'DefaultConnection' not found in configuration.");
+      }
 
       // 配置 SqlSugar
-      services.AddSingleton<SqlSugarClient>(sp =>
+      services.AddScoped(sp =>
       {
         var db = new SqlSugarClient(new ConnectionConfig()
         {
@@ -58,6 +63,9 @@ namespace Lean.Cur.Infrastructure.Extensions
 
         return db;
       });
+
+      // 同时注册接口
+      services.AddScoped<ISqlSugarClient>(sp => sp.GetRequiredService<SqlSugarClient>());
 
       return services;
     }
@@ -165,6 +173,7 @@ namespace Lean.Cur.Infrastructure.Extensions
       // 获取所有需要初始化的表
       var tables = new[]
       {
+        // Admin 模块
         typeof(LeanUser),
         typeof(LeanUserExtend),
         typeof(LeanUserDevice),
@@ -174,7 +183,17 @@ namespace Lean.Cur.Infrastructure.Extensions
         typeof(LeanMenu),
         typeof(LeanDept),
         typeof(LeanPost),
+        typeof(LeanUserPost),
+        typeof(LeanPermAudit),
+
+        // Routine 模块
         typeof(LeanNotice),
+        typeof(LeanNoticeRead),
+        typeof(LeanOnlineUser),
+        typeof(LeanMessage),
+        typeof(LeanMessageDevice),
+
+        // Logging 模块
         typeof(LeanSqlLog),
         typeof(LeanOperationLog),
         typeof(LeanLoginLog),

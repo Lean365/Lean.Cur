@@ -1,0 +1,6 @@
+{
+  "Ip2RegionSettings": {
+    "DbPath": "Resources/ip2region.xdb",
+    "EnableFileCache": true
+  }
+}

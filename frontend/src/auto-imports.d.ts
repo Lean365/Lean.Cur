@@ -42,6 +42,7 @@ declare global {
   const getActivePinia: typeof import('pinia')['getActivePinia']
   const getCurrentInstance: typeof import('vue')['getCurrentInstance']
   const getCurrentScope: typeof import('vue')['getCurrentScope']
+  const getVersion: typeof import('./utils/version')['getVersion']
   const h: typeof import('vue')['h']
   const ignorableWatch: typeof import('@vueuse/core')['ignorableWatch']
   const inject: typeof import('vue')['inject']
@@ -107,6 +108,7 @@ declare global {
   const shallowReactive: typeof import('vue')['shallowReactive']
   const shallowReadonly: typeof import('vue')['shallowReadonly']
   const shallowRef: typeof import('vue')['shallowRef']
+  const showVersion: typeof import('./utils/version')['showVersion']
   const storeToRefs: typeof import('pinia')['storeToRefs']
   const svgBuilder: typeof import('./utils/svgBuilder')['svgBuilder']
   const syncRef: typeof import('@vueuse/core')['syncRef']
@@ -322,16 +324,4 @@ declare global {
   // @ts-ignore
   export type { Component, ComponentPublicInstance, ComputedRef, DirectiveBinding, ExtractDefaultPropTypes, ExtractPropTypes, ExtractPublicPropTypes, InjectionKey, PropType, Ref, MaybeRef, MaybeRefOrGetter, VNode, WritableComputedRef } from 'vue'
   import('vue')
-  // @ts-ignore
-  export type { Locale } from './composables/useLocale'
-  import('./composables/useLocale')
-  // @ts-ignore
-  export type { Theme } from './composables/useTheme'
-  import('./composables/useTheme')
-  // @ts-ignore
-  export type { UserSettings } from './stores/settings'
-  import('./stores/settings')
-  // @ts-ignore
-  export type { UserInfo } from './stores/user'
-  import('./stores/user')
 }

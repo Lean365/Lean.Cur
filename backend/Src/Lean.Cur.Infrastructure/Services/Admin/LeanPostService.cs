@@ -36,7 +36,7 @@ public class LeanPostService : ILeanPostService
   #region 基础操作
 
   /// <inheritdoc/>
-  public async Task<PagedResult<LeanPostDto>> GetPagedListAsync(LeanPostQueryDto queryDto)
+  public async Task<LeanPagedResult<LeanPostDto>> GetPagedListAsync(LeanPostQueryDto queryDto)
   {
     var query = _db.Queryable<LeanPost>()
         .WhereIF(!string.IsNullOrEmpty(queryDto.PostName), p => p.PostName!.Contains(queryDto.PostName!))
@@ -66,7 +66,7 @@ public class LeanPostService : ILeanPostService
         })
         .ToListAsync();
 
-    return new PagedResult<LeanPostDto>
+    return new LeanPagedResult<LeanPostDto>
     {
       Total = total,
       Items = items

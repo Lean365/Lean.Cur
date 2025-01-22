@@ -23,7 +23,7 @@ public interface ILeanDeptService
     /// </summary>
     /// <param name="queryDto">查询条件</param>
     /// <returns>分页结果</returns>
-    Task<PagedResult<LeanDeptDto>> GetPagedListAsync(LeanDeptQueryDto queryDto);
+    Task<LeanPagedResult<LeanDeptDto>> GetPagedListAsync(LeanDeptQueryDto queryDto);
 
     /// <summary>
     /// 获取部门详情
